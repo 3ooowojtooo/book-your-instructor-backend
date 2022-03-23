@@ -8,9 +8,13 @@
 		<module>usecase</module>
 		<module>config</module>
 	</modules>
+	<properties>
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
+	</properties>
 
-	<groupId>com.quary</groupId>
-	<artifactId>bookyourinstructor</artifactId>
+	<groupId>com.quary.bookyourinstructor</groupId>
+	<artifactId>parent</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Book Your Instructor</name>
 	<description>Application for booking lessons with instructors</description>
