@@ -1,4 +1,4 @@
-package com.quary.bookyourinstructor.security;
+package com.quary.bookyourinstructor.configuration.security;
 
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
