@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import static java.util.Objects.nonNull;
+
 @RequiredArgsConstructor
 public class JwtValidatorImpl implements JwtValidator {
 
@@ -16,7 +18,10 @@ public class JwtValidatorImpl implements JwtValidator {
     @Override
     public boolean isTokenValid(String token, String subject) {
         final String extractedSubject = jwtClaimExtractor.extractSubject(token);
-        return subject.equals(extractedSubject) && !isTokenExpired(token);
+        return nonNull(token) &&
+                nonNull(subject) &&
+                subject.equals(extractedSubject) &&
+                !isTokenExpired(token);
     }
 
     @Override

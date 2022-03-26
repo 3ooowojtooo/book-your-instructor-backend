@@ -25,7 +25,7 @@ public class JwtClaimExtractorImpl implements JwtClaimExtractor {
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .setSigningKey(jwtSecret)
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token)
                 .getBody();
     }
 
