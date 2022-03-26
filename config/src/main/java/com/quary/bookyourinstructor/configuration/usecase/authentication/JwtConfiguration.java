@@ -14,27 +14,21 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class JwtConfiguration {
 
-    private final String jwtSecret;
-    private final TimeUtils timeUtils;
-
-    public JwtConfiguration(@Value("${jwt.secret}") final String jwtSecret,
-                            final TimeUtils timeUtils) {
-        this.jwtSecret = jwtSecret;
-        this.timeUtils = timeUtils;
-    }
-
     @Bean
-    public JwtGenerator jwtGenerator() {
+    public JwtGenerator jwtGenerator(@Value("${jwt.secret}") final String jwtSecret,
+                                     final TimeUtils timeUtils) {
         return new JwtGeneratorImpl(jwtSecret, timeUtils);
     }
 
     @Bean
-    public JwtClaimExtractor jwtClaimExtractor() {
+    public JwtClaimExtractor jwtClaimExtractor(@Value("${jwt.secret}") final String jwtSecret,
+                                               final TimeUtils timeUtils) {
         return new JwtClaimExtractorImpl(jwtSecret, timeUtils);
     }
 
     @Bean
-    public JwtValidator jwtValidator() {
-        return new JwtValidatorImpl(jwtClaimExtractor(), timeUtils);
+    public JwtValidator jwtValidator(final JwtClaimExtractor jwtClaimExtractor,
+                                     final TimeUtils timeUtils) {
+        return new JwtValidatorImpl(jwtClaimExtractor, timeUtils);
     }
 }
