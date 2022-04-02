@@ -1,4 +1,4 @@
-package com.quary.bookyourinstructor.model.user;
+package com.quary.bookyourinstructor.model.user.authentication;
 
 import lombok.Getter;
 
@@ -11,9 +11,7 @@ public class EmailAndPassword {
     private final String password;
 
     public EmailAndPassword(String email, String password) {
-        requireNonNull(email);
-        requireNonNull(password);
-        this.email = email;
-        this.password = password;
+        this.email = requireNonNull(email);
+        this.password = requireNonNull(password);
     }
 }
