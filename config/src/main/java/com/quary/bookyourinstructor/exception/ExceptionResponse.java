@@ -1,8 +1,8 @@
 package com.quary.bookyourinstructor.exception;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.quary.bookyourinstructor.model.user.exception.BaseException;
-import com.quary.bookyourinstructor.model.user.exception.ErrorCode;
+import com.quary.bookyourinstructor.model.exception.BaseException;
+import com.quary.bookyourinstructor.model.exception.ErrorCode;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

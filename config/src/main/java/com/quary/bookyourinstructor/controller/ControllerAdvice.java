@@ -2,9 +2,9 @@ package com.quary.bookyourinstructor.controller;
 
 import com.quary.bookyourinstructor.exception.ExceptionResponse;
 import com.quary.bookyourinstructor.exception.SimpleHttpResponseException;
-import com.quary.bookyourinstructor.model.user.exception.BaseInternalException;
-import com.quary.bookyourinstructor.model.user.exception.BaseInvalidInputException;
-import com.quary.bookyourinstructor.model.user.exception.CommonErrorCode;
+import com.quary.bookyourinstructor.model.exception.BaseInternalException;
+import com.quary.bookyourinstructor.model.exception.BaseInvalidInputException;
+import com.quary.bookyourinstructor.model.exception.CommonErrorCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

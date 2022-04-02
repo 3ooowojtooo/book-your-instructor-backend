@@ -1,8 +1,8 @@
 package bookyourinstructor.usecase.authentication;
 
 import bookyourinstructor.usecase.authentication.jwt.JwtGenerator;
-import com.quary.bookyourinstructor.model.user.authentication.EmailAndPassword;
-import com.quary.bookyourinstructor.model.user.authentication.exception.InvalidEmailOrPasswordException;
+import com.quary.bookyourinstructor.model.authentication.EmailAndPassword;
+import com.quary.bookyourinstructor.model.authentication.exception.InvalidEmailOrPasswordException;
 import lombok.RequiredArgsConstructor;
 
 import java.time.Duration;

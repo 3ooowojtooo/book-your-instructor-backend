@@ -1,4 +1,4 @@
-package com.quary.bookyourinstructor.model.user.exception;
+package com.quary.bookyourinstructor.model.exception;
 
 import lombok.Getter;
 
