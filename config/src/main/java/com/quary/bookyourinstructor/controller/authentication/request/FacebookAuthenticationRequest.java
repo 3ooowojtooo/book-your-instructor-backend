@@ -3,8 +3,7 @@ package com.quary.bookyourinstructor.controller.authentication.request;
 import lombok.Data;
 
 @Data
-public class AuthenticationRequest {
+public class FacebookAuthenticationRequest {
 
-    private String email;
-    private String password;
+    private String accessToken;
 }

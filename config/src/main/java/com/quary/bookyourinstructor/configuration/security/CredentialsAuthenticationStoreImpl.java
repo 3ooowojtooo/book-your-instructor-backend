@@ -1,6 +1,6 @@
 package com.quary.bookyourinstructor.configuration.security;
 
-import bookyourinstructor.usecase.authentication.AuthenticationStore;
+import bookyourinstructor.usecase.authentication.credentials.CredentialsAuthenticationStore;
 import com.quary.bookyourinstructor.model.authentication.EmailAndPassword;
 import com.quary.bookyourinstructor.model.authentication.exception.InvalidEmailOrPasswordException;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AuthenticationStoreImpl implements AuthenticationStore {
+public class CredentialsAuthenticationStoreImpl implements CredentialsAuthenticationStore {
 
     private final AuthenticationManager authenticationManager;
 

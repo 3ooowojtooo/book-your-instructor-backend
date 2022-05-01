@@ -1,3 +1,17 @@
 jwt:
-  secret: di02hdf02d203h023n8H)@#0@$640348
+  secret: ${JWT_SECRET}
   validity-duration: PT100S
+
+external-login:
+  facebook:
+    graph-api-base: https://graph.facebook.com
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}

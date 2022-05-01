@@ -1,0 +1,16 @@
+package bookyourinstructor.usecase.authentication.user;
+
+import com.quary.bookyourinstructor.model.authentication.EmailAndPassword;
+import com.quary.bookyourinstructor.model.authentication.exception.UserWithEmailAlreadyExists;
+import com.quary.bookyourinstructor.model.user.User;
+
+import java.util.Optional;
+
+public interface UserStore {
+
+    boolean userExists(String email);
+
+    void registerUser(User user) throws UserWithEmailAlreadyExists;
+
+    Optional<User> getByEmail(String email);
+}

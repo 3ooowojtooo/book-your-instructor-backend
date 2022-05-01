@@ -1,4 +1,4 @@
-package com.quary.bookyourinstructor.configuration.security;
+package com.quary.bookyourinstructor.configuration.security.filter;
 
 import bookyourinstructor.usecase.authentication.jwt.JwtClaimExtractor;
 import bookyourinstructor.usecase.authentication.jwt.JwtValidator;
