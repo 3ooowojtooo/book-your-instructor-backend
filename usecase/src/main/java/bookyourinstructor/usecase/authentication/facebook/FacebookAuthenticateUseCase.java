@@ -27,7 +27,7 @@ public class FacebookAuthenticateUseCase {
     public String authenticate(String facebookAccessKey) throws UserWithEmailAlreadyExists {
         checkArgument(isNotBlank(facebookAccessKey), "Facebook access key cannot be blank");
         final EmailAndExternalIdentity emailAndExternalId = profileDataFetcher.fetchEmailAndExternalId(facebookAccessKey);
-        if (!userStore.userExists(emailAndExternalId.getEmail())) {
+        if (!userStore.userExists(emailAndExternalId.getExternalIdentity())) {
             final User user = createUser(emailAndExternalId);
             userStore.registerUser(user);
         }

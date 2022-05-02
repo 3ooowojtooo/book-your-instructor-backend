@@ -1,7 +1,7 @@
 package com.quary.bookyourinstructor.repository;
 
 import com.quary.bookyourinstructor.entity.UserEntity;
-import com.quary.bookyourinstructor.model.user.User;
+import com.quary.bookyourinstructor.model.user.ExternalIdentityProvider;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,4 +13,6 @@ public interface UserRepository extends CrudRepository<UserEntity, Integer> {
     Optional<UserEntity> findByEmail(String email);
 
     boolean existsByEmail(String email);
+
+    boolean existsByExternalIdAndExternalIdProvider(String externalId, String externalIdProvider);
 }

@@ -4,7 +4,7 @@ CREATE TYPE USER_TYPE AS ENUM ('UNDECLARED', 'INSTRUCTOR', 'STUDENT');
 
 CREATE TYPE EXTERNAL_IDENTITY_PROVIDER AS ENUM ('FACEBOOK');
 
-CREATE TABLE "USER" (
+CREATE TABLE "user" (
                         id int primary key not null,
                         email varchar not null unique,
                         origin USER_ORIGIN not null,

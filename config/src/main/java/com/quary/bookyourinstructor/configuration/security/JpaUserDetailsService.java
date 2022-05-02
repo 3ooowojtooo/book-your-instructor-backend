@@ -3,8 +3,8 @@ package com.quary.bookyourinstructor.configuration.security;
 import bookyourinstructor.usecase.authentication.user.UserStore;
 import com.quary.bookyourinstructor.configuration.security.mapper.UserDetailsMapper;
 import com.quary.bookyourinstructor.entity.UserEntity;
-import com.quary.bookyourinstructor.model.authentication.EmailAndPassword;
 import com.quary.bookyourinstructor.model.authentication.exception.UserWithEmailAlreadyExists;
+import com.quary.bookyourinstructor.model.user.ExternalIdentity;
 import com.quary.bookyourinstructor.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
@@ -40,8 +40,13 @@ public class JpaUserDetailsService implements UserDetailsService, UserStore {
     }
 
     @Override
+    public boolean userExists(ExternalIdentity externalIdentity) {
+        return userRepository.existsByExternalIdAndExternalIdProvider(externalIdentity.getId(), externalIdentity.getProvider().name());
+    }
+
+    @Override
     public void registerUser(com.quary.bookyourinstructor.model.user.User user) throws UserWithEmailAlreadyExists {
-        if (userRepository.existsByEmail(user.getEmail())) {
+        if (userExists(user.getEmail())) {
             throw new UserWithEmailAlreadyExists(user.getEmail());
         }
         final UserEntity userEntity = mapper.mapToEntity(user);

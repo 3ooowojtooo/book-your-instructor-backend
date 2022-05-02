@@ -11,7 +11,7 @@ import lombok.Setter;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "USER")
+@Table(name = "user", schema = "public")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -19,25 +19,28 @@ import javax.persistence.*;
 public class UserEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "password")
     private String password;
 
-    @Column(nullable = false)
+    @Column(name = "origin", nullable = false)
     @Enumerated(EnumType.STRING)
     private UserOrigin origin;
 
-    @Column(nullable = false)
+    @Column(name = "type", nullable = false)
     @Enumerated(EnumType.STRING)
     private UserType type = UserType.UNDECLARED;
 
+    @Column(name = "external_id")
     private String externalId;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "external_id_provider")
     private ExternalIdentityProvider externalIdProvider;
 }
