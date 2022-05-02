@@ -14,5 +14,5 @@ public interface UserRepository extends CrudRepository<UserEntity, Integer> {
 
     boolean existsByEmail(String email);
 
-    boolean existsByExternalIdAndExternalIdProvider(String externalId, String externalIdProvider);
+    boolean existsByExternalIdAndExternalIdProvider(String externalId, ExternalIdentityProvider externalIdProvider);
 }

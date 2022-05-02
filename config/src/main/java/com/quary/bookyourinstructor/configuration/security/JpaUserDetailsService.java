@@ -41,7 +41,7 @@ public class JpaUserDetailsService implements UserDetailsService, UserStore {
 
     @Override
     public boolean userExists(ExternalIdentity externalIdentity) {
-        return userRepository.existsByExternalIdAndExternalIdProvider(externalIdentity.getId(), externalIdentity.getProvider().name());
+        return userRepository.existsByExternalIdAndExternalIdProvider(externalIdentity.getId(), externalIdentity.getProvider());
     }
 
     @Override

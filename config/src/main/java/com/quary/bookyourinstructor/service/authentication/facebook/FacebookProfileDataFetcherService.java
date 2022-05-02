@@ -29,8 +29,8 @@ public class FacebookProfileDataFetcherService implements FacebookProfileDataFet
 
     @Override
     public EmailAndExternalIdentity fetchEmailAndExternalId(String accessToken) {
+        log.info("Getting facebook profile data basing on the access token");
         final String path = "/me?fields=email&redirect=false&access_token=" + accessToken;
-        log.info("Path: {}, accessToken: {}", graphApiBase + path, accessToken);
         final FacebookMeEndpointResponse response = restTemplate.getForObject(graphApiBase + path, FacebookMeEndpointResponse.class);
         Objects.requireNonNull(response, "FB graph api /me endpoint responded with null object");
         return new EmailAndExternalIdentity(response.getEmail(),
