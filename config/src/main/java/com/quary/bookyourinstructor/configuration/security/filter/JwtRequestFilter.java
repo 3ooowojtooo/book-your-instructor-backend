@@ -2,7 +2,10 @@ package com.quary.bookyourinstructor.configuration.security.filter;
 
 import bookyourinstructor.usecase.authentication.jwt.JwtClaimExtractor;
 import bookyourinstructor.usecase.authentication.jwt.JwtValidator;
+import com.quary.bookyourinstructor.model.authentication.exception.ExpiredJwtException;
+import com.quary.bookyourinstructor.model.authentication.exception.InvalidJwtException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,11 +19,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 
 import static java.util.Objects.isNull;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
@@ -41,11 +46,23 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         final String authorizationHeader = getAuthorizationHeader(request);
         final String jwtToken = extractJwtFromAuthorizationHeader(authorizationHeader);
-        final String subject = jwtClaimExtractor.extractSubject(jwtToken);
-        if (jwtValidator.isTokenValid(jwtToken, subject) && securityContextHasNoAuthentication()) {
-            final UserDetails userDetails = loadUserDetails(subject);
-            setAuthenticationInSecurityContext(userDetails, request);
-            filterChain.doFilter(request, response);
+        final Optional<String> subjectOptional = extractSubject(jwtToken);
+        if (subjectOptional.isPresent()) {
+            final String subject = subjectOptional.get();
+            if (jwtValidator.isTokenValid(jwtToken, subject) && securityContextHasNoAuthentication()) {
+                final UserDetails userDetails = loadUserDetails(subject);
+                setAuthenticationInSecurityContext(userDetails, request);
+                filterChain.doFilter(request, response);
+            }
+        }
+    }
+
+    private Optional<String> extractSubject(String jwtToken) {
+        try {
+            return Optional.of(jwtClaimExtractor.extractSubject(jwtToken));
+        } catch (InvalidJwtException | ExpiredJwtException ex) {
+            log.warn("Invalid JWT token passed in Bearer authorization header", ex);
+            return Optional.empty();
         }
     }
 
