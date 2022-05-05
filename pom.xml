@@ -6,7 +6,7 @@
 	<modules>
 		<module>model</module>
 		<module>usecase</module>
-		<module>config</module>
+		<module>adapter</module>
 	</modules>
 	<properties>
 		<java.version>11</java.version>

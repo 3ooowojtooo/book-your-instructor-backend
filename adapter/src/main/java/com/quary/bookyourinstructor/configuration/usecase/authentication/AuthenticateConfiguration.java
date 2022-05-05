@@ -2,6 +2,8 @@ package com.quary.bookyourinstructor.configuration.usecase.authentication;
 
 import bookyourinstructor.usecase.authentication.credentials.CredentialsAuthenticateUseCase;
 import bookyourinstructor.usecase.authentication.credentials.CredentialsAuthenticationStore;
+import bookyourinstructor.usecase.authentication.credentials.NewUserRegistrationCredentialsUseCase;
+import bookyourinstructor.usecase.authentication.credentials.PasswordEncoderHelper;
 import bookyourinstructor.usecase.authentication.facebook.FacebookAuthenticateUseCase;
 import bookyourinstructor.usecase.authentication.facebook.FacebookProfileDataFetcher;
 import bookyourinstructor.usecase.authentication.jwt.JwtGenerator;
@@ -28,5 +30,11 @@ public class AuthenticateConfiguration {
                                                                    final JwtGenerator jwtGenerator,
                                                                    @Value("${jwt.validity-duration}") final Duration tokenValidity) {
         return new FacebookAuthenticateUseCase(emailFetcher, userStore, jwtGenerator, tokenValidity);
+    }
+
+    @Bean
+    public NewUserRegistrationCredentialsUseCase newUserRegistrationCredentialsUseCase(final UserStore userStore,
+                                                                                       final PasswordEncoderHelper passwordEncoderHelper) {
+        return new NewUserRegistrationCredentialsUseCase(userStore, passwordEncoderHelper);
     }
 }

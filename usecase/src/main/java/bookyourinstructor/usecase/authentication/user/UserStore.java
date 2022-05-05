@@ -1,6 +1,5 @@
 package bookyourinstructor.usecase.authentication.user;
 
-import com.quary.bookyourinstructor.model.authentication.EmailAndPassword;
 import com.quary.bookyourinstructor.model.authentication.exception.UserWithEmailAlreadyExists;
 import com.quary.bookyourinstructor.model.user.ExternalIdentity;
 import com.quary.bookyourinstructor.model.user.User;
