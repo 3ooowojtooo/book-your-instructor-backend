@@ -2,8 +2,9 @@ package bookyourinstructor.usecase.authentication.jwt.impl;
 
 import bookyourinstructor.usecase.authentication.jwt.JwtClaimExtractor;
 import bookyourinstructor.usecase.util.time.TimeUtils;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+import com.quary.bookyourinstructor.model.authentication.exception.ExpiredJwtException;
+import com.quary.bookyourinstructor.model.authentication.exception.InvalidJwtException;
+import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -17,25 +18,31 @@ public class JwtClaimExtractorImpl implements JwtClaimExtractor {
     private final TimeUtils timeUtils;
 
     @Override
-    public <T> T extractClaim(String token, Function<Claims, T> claimExtractor) {
+    public <T> T extractClaim(String token, Function<Claims, T> claimExtractor) throws InvalidJwtException, ExpiredJwtException {
         final Claims claims = extractAllClaims(token);
         return claimExtractor.apply(claims);
     }
 
-    private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(jwtSecret)
-                .parseClaimsJws(token)
-                .getBody();
+    private Claims extractAllClaims(String token) throws InvalidJwtException, ExpiredJwtException {
+        try {
+            return Jwts.parser()
+                    .setSigningKey(jwtSecret)
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (MalformedJwtException | SignatureException | UnsupportedJwtException | IllegalArgumentException ex) {
+            throw new InvalidJwtException(ex);
+        } catch (io.jsonwebtoken.ExpiredJwtException ex) {
+            throw new ExpiredJwtException(ex);
+        }
     }
 
     @Override
-    public String extractSubject(String token) {
+    public String extractSubject(String token) throws InvalidJwtException, ExpiredJwtException {
         return extractClaim(token, Claims::getSubject);
     }
 
     @Override
-    public LocalDateTime extractExpirationTime(String token) {
+    public LocalDateTime extractExpirationTime(String token) throws InvalidJwtException, ExpiredJwtException {
         final Date expirationDate = extractClaim(token, Claims::getExpiration);
         return timeUtils.toLocalDateTime(expirationDate.toInstant());
     }

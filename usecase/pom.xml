@@ -17,7 +17,6 @@
         <maven.compiler.target>11</maven.compiler.target>
 
         <io.jwt.version>0.9.1</io.jwt.version>
-        <guava.version>31.1-jre</guava.version>
     </properties>
 
     <dependencies>
@@ -32,13 +31,5 @@
             <artifactId>jjwt</artifactId>
             <version>${io.jwt.version}</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
-        </dependency>
     </dependencies>
-
 </project>
