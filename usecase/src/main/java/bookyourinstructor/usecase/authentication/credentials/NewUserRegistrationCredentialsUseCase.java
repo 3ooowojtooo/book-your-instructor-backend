@@ -27,6 +27,8 @@ public class NewUserRegistrationCredentialsUseCase {
         return User.createNewCredentialsUser(
                 newUserData.getEmail(),
                 encodedPassword,
+                newUserData.getName(),
+                newUserData.getSurname(),
                 mapToUserType(newUserData.getType())
         );
     }

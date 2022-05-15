@@ -18,24 +18,33 @@ public class User {
     private final Integer id;
     private final String email;
     private final String password;
+    private final String name;
+    private final String surname;
     private final UserOrigin origin;
     private final UserType type;
     private final ExternalIdentity externalIdentity;
 
-    public User(Integer id, String email, String password, UserOrigin origin, UserType type, ExternalIdentity externalIdentity) {
-        validateConstructorArgs(email, password, origin, type, externalIdentity);
+    public User(Integer id, String email, String password, String name, String surname, UserOrigin origin, UserType type, ExternalIdentity externalIdentity) {
+        validateConstructorArgs(email, password, name, surname, origin, type, externalIdentity);
         this.id = id;
         this.email = email;
         this.password = password;
+        this.name = name;
+        this.surname = surname;
         this.origin = origin;
         this.type = type;
         this.externalIdentity = externalIdentity;
     }
 
-    private static void validateConstructorArgs(String email, String password, UserOrigin origin, UserType type, ExternalIdentity externalIdentity) {
+    private static void validateConstructorArgs(String email, String password, String name, String surname, UserOrigin origin,
+                                                UserType type, ExternalIdentity externalIdentity) {
         checkArgument(EMAIL_VALIDATOR.isValid(email), "Email is invalid");
         checkNotNull(origin, "User origin cannot be null");
         checkNotNull(type, "User type cannot be null");
+        if (type != UserType.UNDECLARED) {
+            checkArgument(isNotBlank(name), "User name cannot be blank");
+            checkArgument(isNotBlank(surname), "User surname cannot be blank");
+        }
         if (UserOrigin.CREDENTIALS.equals(origin)) {
             checkArgument(isNotBlank(password), "Password cannot be blank for CREDENTIALS user");
         }
@@ -44,11 +53,11 @@ public class User {
         }
     }
 
-    public static User createNewCredentialsUser(String email, String password, UserType type) {
-        return new User(null, email, password, UserOrigin.CREDENTIALS, type, null);
+    public static User createNewCredentialsUser(String email, String password, String name, String surname, UserType type) {
+        return new User(null, email, password, name, surname, UserOrigin.CREDENTIALS, type, null);
     }
 
     public static User createNewExternalUser(String email, UserType type, ExternalIdentity externalIdentity) {
-        return new User(null, email, null, UserOrigin.EXTERNAL, type, externalIdentity);
+        return new User(null, email, null, null, null, UserOrigin.EXTERNAL, type, externalIdentity);
     }
 }

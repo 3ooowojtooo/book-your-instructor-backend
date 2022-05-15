@@ -13,6 +13,7 @@ import com.quary.bookyourinstructor.model.authentication.NewUserData;
 import com.quary.bookyourinstructor.model.authentication.exception.InvalidEmailOrPasswordException;
 import com.quary.bookyourinstructor.model.authentication.exception.UserWithEmailAlreadyExists;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,7 +26,7 @@ public class AuthenticationController {
     private final NewUserRegistrationCredentialsUseCase newUserRegistrationCredentialsUseCase;
     private final AuthenticationMapper authenticationMapper;
 
-    @PostMapping(path = "/credentials", consumes = "application/json", produces = "application/json")
+    @PostMapping(path = "/credentials", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @CrossOrigin(origins = "https://localhost:3000")
     public AuthenticationResponse credentialsAuthenticate(@RequestBody final CredentialsAuthenticationRequest request) throws InvalidEmailOrPasswordException {
         final EmailAndPassword emailAndPassword = authenticationMapper.mapToEmailAndPassword(request);
@@ -33,7 +34,7 @@ public class AuthenticationController {
         return new AuthenticationResponse(jwtToken);
     }
 
-    @PostMapping(path = "/facebook", consumes = "application/json", produces = "application/json")
+    @PostMapping(path = "/facebook", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @CrossOrigin(origins = "https://localhost:3000")
     public AuthenticationResponse facebookAuthenticate(@RequestBody final FacebookAuthenticationRequest request) throws UserWithEmailAlreadyExists {
         String jwtToken = facebookAuthenticateUseCase.authenticate(request.getAccessToken());
@@ -41,7 +42,7 @@ public class AuthenticationController {
     }
 
     @CrossOrigin(origins = "https://localhost:3000")
-    @PostMapping(path = "/credentials/register", consumes = "application/json")
+    @PostMapping(path = "/credentials/register", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void registerNewUserCredentials(@RequestBody final NewUserRegistrationCredentialsRequest request) throws UserWithEmailAlreadyExists {
         final NewUserData newUserData = authenticationMapper.mapToNewUserData(request);
         newUserRegistrationCredentialsUseCase.registerNewUser(newUserData);
