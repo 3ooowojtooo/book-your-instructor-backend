@@ -1,4 +1,4 @@
-package com.quary.bookyourinstructor.configuration.security;
+package com.quary.bookyourinstructor.configuration.security.model;
 
 import com.quary.bookyourinstructor.model.user.UserType;
 import lombok.RequiredArgsConstructor;
