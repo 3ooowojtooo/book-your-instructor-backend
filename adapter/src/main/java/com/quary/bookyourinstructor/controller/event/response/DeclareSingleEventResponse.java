@@ -1,4 +1,4 @@
-package com.quary.bookyourinstructor.controller.schedule.response;
+package com.quary.bookyourinstructor.controller.event.response;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

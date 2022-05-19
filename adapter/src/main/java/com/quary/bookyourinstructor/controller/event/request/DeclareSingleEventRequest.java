@@ -1,4 +1,4 @@
-package com.quary.bookyourinstructor.controller.schedule.request;
+package com.quary.bookyourinstructor.controller.event.request;
 
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;

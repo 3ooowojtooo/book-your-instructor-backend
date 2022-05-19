@@ -11,12 +11,14 @@ import java.util.Objects;
 @Getter
 public class UserContext implements UserDetails {
 
+    private final Integer id;
     private final String email;
     private final String password;
     private final List<GrantedAuthority> authorities;
 
     public UserContext(final UserEntity userEntity) {
         Objects.requireNonNull(userEntity, "UserEntity cannot be null");
+        this.id = userEntity.getId();
         this.email = userEntity.getEmail();
         this.password = userEntity.getPassword();
         this.authorities = List.of(new UserTypeAuthority(userEntity.getType()));

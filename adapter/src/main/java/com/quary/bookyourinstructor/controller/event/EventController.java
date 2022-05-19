@@ -1,9 +1,9 @@
-package com.quary.bookyourinstructor.controller.schedule;
+package com.quary.bookyourinstructor.controller.event;
 
 import com.quary.bookyourinstructor.configuration.security.annotation.InstructorAllowed;
 import com.quary.bookyourinstructor.configuration.security.model.UserContext;
-import com.quary.bookyourinstructor.controller.schedule.request.DeclareSingleEventRequest;
-import com.quary.bookyourinstructor.controller.schedule.response.DeclareSingleEventResponse;
+import com.quary.bookyourinstructor.controller.event.request.DeclareSingleEventRequest;
+import com.quary.bookyourinstructor.controller.event.response.DeclareSingleEventResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/schedule")
+@RequestMapping("/event")
 @RequiredArgsConstructor
-public class ScheduleController {
+public class EventController {
 
     @PostMapping(path = "/single", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @InstructorAllowed

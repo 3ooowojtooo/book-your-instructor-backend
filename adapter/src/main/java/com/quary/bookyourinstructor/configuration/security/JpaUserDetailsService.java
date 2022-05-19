@@ -3,26 +3,22 @@ package com.quary.bookyourinstructor.configuration.security;
 import bookyourinstructor.usecase.authentication.user.UserStore;
 import com.quary.bookyourinstructor.configuration.security.mapper.UserDetailsMapper;
 import com.quary.bookyourinstructor.configuration.security.model.UserContext;
-import com.quary.bookyourinstructor.configuration.security.model.UserTypeAuthority;
 import com.quary.bookyourinstructor.entity.UserEntity;
 import com.quary.bookyourinstructor.model.authentication.exception.UserWithEmailAlreadyExists;
 import com.quary.bookyourinstructor.model.user.ExternalIdentity;
+import com.quary.bookyourinstructor.model.user.User;
 import com.quary.bookyourinstructor.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 public class JpaUserDetailsService implements UserDetailsService, UserStore {
-
-    private static final String NOP_PASSWORD = "password";
 
     private final UserRepository userRepository;
     private final UserDetailsMapper mapper;
@@ -45,7 +41,7 @@ public class JpaUserDetailsService implements UserDetailsService, UserStore {
     }
 
     @Override
-    public void registerUser(com.quary.bookyourinstructor.model.user.User user) throws UserWithEmailAlreadyExists {
+    public void registerUser(User user) throws UserWithEmailAlreadyExists {
         if (userExists(user.getEmail())) {
             throw new UserWithEmailAlreadyExists(user.getEmail());
         }
