@@ -8,7 +8,7 @@
 
 - Build Docker image
 ```bash
-docker build -t backend --no-cache .
+docker build -t backend .
 ```
 
 - Run Docker image
