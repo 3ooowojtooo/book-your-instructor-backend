@@ -6,5 +6,6 @@ public enum AuthenticationErrorCode implements ErrorCode {
     INVALID_EMAIL_OR_PASSWORD,
     USER_WITH_EMAIL_ALREADY_EXISTS,
     JWT_EXPIRED,
-    JWT_INVALID
+    JWT_INVALID,
+    ACCESS_DENIED
 }
