@@ -12,5 +12,7 @@ public class DeclareSingleEventRequest {
     private String description;
     private String location;
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'hh:mm")
-    private LocalDateTime dateTime;
+    private LocalDateTime startDateTime;
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'hh:mm")
+    private LocalDateTime endDateTime;
 }

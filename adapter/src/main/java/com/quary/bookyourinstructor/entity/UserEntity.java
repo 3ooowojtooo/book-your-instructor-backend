@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "user", schema = "public")
@@ -49,4 +51,10 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "external_id_provider")
     private ExternalIdentityProvider externalIdProvider;
+
+    @OneToMany(mappedBy = "instructor", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<EventEntity> events = new ArrayList<>();
+
+    @OneToMany(mappedBy = "student", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<EventRealizationEntity> eventRealizations = new ArrayList<>();
 }

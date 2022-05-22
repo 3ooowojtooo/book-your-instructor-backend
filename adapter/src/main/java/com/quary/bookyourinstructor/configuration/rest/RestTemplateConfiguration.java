@@ -1,4 +1,4 @@
-package com.quary.bookyourinstructor.configuration;
+package com.quary.bookyourinstructor.configuration.rest;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
