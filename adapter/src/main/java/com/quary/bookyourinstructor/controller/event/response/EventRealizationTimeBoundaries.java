@@ -11,7 +11,9 @@ import java.time.Instant;
 @Getter
 @EqualsAndHashCode
 @ToString
-public class DeclareSingleEventResponse {
+public class EventRealizationTimeBoundaries {
 
-    private final EventRealizationTimeBoundaries eventRealization;
+    private final Integer eventRealizationId;
+    private final Instant eventStart;
+    private final Instant eventEnd;
 }

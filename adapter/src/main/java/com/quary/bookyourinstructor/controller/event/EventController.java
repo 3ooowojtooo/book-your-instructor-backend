@@ -4,7 +4,9 @@ import bookyourinstructor.usecase.event.single.DeclareSingleEventUseCase;
 import com.quary.bookyourinstructor.configuration.security.annotation.InstructorAllowed;
 import com.quary.bookyourinstructor.configuration.security.model.UserContext;
 import com.quary.bookyourinstructor.controller.event.mapper.EventMapper;
+import com.quary.bookyourinstructor.controller.event.request.DeclareCyclicEventRequest;
 import com.quary.bookyourinstructor.controller.event.request.DeclareSingleEventRequest;
+import com.quary.bookyourinstructor.controller.event.response.DeclareCyclicEventResponse;
 import com.quary.bookyourinstructor.controller.event.response.DeclareSingleEventResponse;
 import com.quary.bookyourinstructor.model.event.EventRealization;
 import com.quary.bookyourinstructor.model.event.NewSingleEventData;
@@ -31,5 +33,12 @@ public class EventController {
         final NewSingleEventData eventData = mapper.mapToNewSingleEventData(request, user.getId());
         final EventRealization eventRealization = declareSingleEventUseCase.declareNewSingleEvent(eventData);
         return mapper.mapToDeclareSingleEventResponse(eventRealization);
+    }
+
+    @PostMapping(path = "/cyclic", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @InstructorAllowed
+    public DeclareCyclicEventResponse declareCyclicEvent(@RequestBody final DeclareCyclicEventRequest request,
+                                                         @AuthenticationPrincipal final UserContext user) {
+        
     }
 }

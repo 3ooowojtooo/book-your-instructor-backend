@@ -5,13 +5,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.time.Instant;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public class DeclareSingleEventResponse {
+public class DeclareCyclicEventResponse {
 
-    private final EventRealizationTimeBoundaries eventRealization;
+    private final List<EventRealizationTimeBoundaries> eventRealizations;
 }
