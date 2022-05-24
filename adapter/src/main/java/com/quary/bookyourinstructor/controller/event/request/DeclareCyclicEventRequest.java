@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Data
@@ -17,4 +18,8 @@ public class DeclareCyclicEventRequest {
     @DateTimeFormat(pattern = "hh:mm")
     private LocalTime endTime;
     private DayOfWeek dayOfWeek;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private final LocalDate startBoundary;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private final LocalDate endBoundary;
 }

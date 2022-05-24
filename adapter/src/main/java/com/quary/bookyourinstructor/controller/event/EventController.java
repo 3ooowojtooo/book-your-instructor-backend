@@ -1,5 +1,6 @@
 package com.quary.bookyourinstructor.controller.event;
 
+import bookyourinstructor.usecase.event.single.DeclareCyclicEventUseCase;
 import bookyourinstructor.usecase.event.single.DeclareSingleEventUseCase;
 import com.quary.bookyourinstructor.configuration.security.annotation.InstructorAllowed;
 import com.quary.bookyourinstructor.configuration.security.model.UserContext;
@@ -9,6 +10,7 @@ import com.quary.bookyourinstructor.controller.event.request.DeclareSingleEventR
 import com.quary.bookyourinstructor.controller.event.response.DeclareCyclicEventResponse;
 import com.quary.bookyourinstructor.controller.event.response.DeclareSingleEventResponse;
 import com.quary.bookyourinstructor.model.event.EventRealization;
+import com.quary.bookyourinstructor.model.event.NewCyclicEventData;
 import com.quary.bookyourinstructor.model.event.NewSingleEventData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/event")
 @RequiredArgsConstructor
@@ -25,6 +29,7 @@ public class EventController {
 
     private final EventMapper mapper;
     private final DeclareSingleEventUseCase declareSingleEventUseCase;
+    private final DeclareCyclicEventUseCase declareCyclicEventUseCase;
 
     @PostMapping(path = "/single", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @InstructorAllowed
@@ -39,6 +44,8 @@ public class EventController {
     @InstructorAllowed
     public DeclareCyclicEventResponse declareCyclicEvent(@RequestBody final DeclareCyclicEventRequest request,
                                                          @AuthenticationPrincipal final UserContext user) {
-        
+        final NewCyclicEventData eventData = mapper.mapToNewCyclicEventData(request, user.getId());
+        final List<EventRealization> eventRealizations = declareCyclicEventUseCase.declareNewCyclicEvent(eventData);
+        return mapper.mapToDeclareCyclicEventResponse(eventRealizations);
     }
 }

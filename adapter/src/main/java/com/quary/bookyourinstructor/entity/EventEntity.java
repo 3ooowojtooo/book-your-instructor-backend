@@ -7,7 +7,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,11 +47,27 @@ public class EventEntity {
     @Column(name = "location", nullable = false)
     private String location;
 
-    @Column(name = "start_timestamp", nullable = false)
-    private LocalDateTime start;
+    @Column(name = "single_start_timestamp")
+    private LocalDateTime singleEventStart;
 
-    @Column(name = "end_timestamp", nullable = false)
-    private LocalDateTime end;
+    @Column(name = "single_end_timestamp")
+    private LocalDateTime singleEventEnd;
+
+    @Column(name = "cyclic_start_time")
+    private LocalTime cyclicEventStart;
+
+    @Column(name = "cyclic_end_time")
+    private LocalTime cyclicEventEnd;
+
+    @Column(name = "cyclic_day_of_week")
+    @Enumerated(EnumType.STRING)
+    private DayOfWeek cyclicDayOfWeek;
+
+    @Column(name = "cyclic_start_boundary")
+    private LocalDate cyclicStartBoundary;
+
+    @Column(name = "cyclic_end_boundary")
+    private LocalDate cyclicEndBoundary;
 
     @OneToMany(mappedBy = "event", orphanRemoval = true, cascade = CascadeType.ALL)
     List<EventRealizationEntity> realizations = new ArrayList<>();
