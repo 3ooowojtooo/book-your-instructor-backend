@@ -10,6 +10,7 @@ import com.quary.bookyourinstructor.model.event.SingleEvent;
 import lombok.RequiredArgsConstructor;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
 
 @RequiredArgsConstructor
 public class DeclareSingleEventUseCase {
@@ -34,8 +35,8 @@ public class DeclareSingleEventUseCase {
     }
 
     private EventRealization buildEventRealization(final SingleEvent event) {
-        final Instant start = timeUtils.toInstant(event.getStartDateTime());
-        final Instant end = timeUtils.toInstant(event.getEndDateTime());
+        final OffsetDateTime start = timeUtils.toOffsetDataTime(event.getStartDateTime());
+        final OffsetDateTime end = timeUtils.toOffsetDataTime(event.getEndDateTime());
         return EventRealization.newDraft(event.getId(), start, end);
     }
 }

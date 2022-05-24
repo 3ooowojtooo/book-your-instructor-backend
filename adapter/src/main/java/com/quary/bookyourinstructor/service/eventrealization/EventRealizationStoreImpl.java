@@ -7,14 +7,10 @@ import com.quary.bookyourinstructor.model.event.EventRealization;
 import com.quary.bookyourinstructor.repository.EventRealizationRepository;
 import com.quary.bookyourinstructor.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections.IteratorUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Component

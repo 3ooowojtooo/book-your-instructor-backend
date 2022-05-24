@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "event_realization", schema = "public")
@@ -35,8 +36,8 @@ public class EventRealizationEntity {
     private UserEntity student;
 
     @Column(name = "start_timestamp", nullable = false)
-    private Instant start;
+    private OffsetDateTime start;
 
     @Column(name = "end_timestamp", nullable = false)
-    private Instant end;
+    private OffsetDateTime end;
 }

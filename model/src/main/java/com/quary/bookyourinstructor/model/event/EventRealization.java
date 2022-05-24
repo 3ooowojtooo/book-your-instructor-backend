@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
 
 import static com.google.common.base.Preconditions.*;
 
@@ -18,20 +19,15 @@ public class EventRealization {
     private final Integer eventId;
     @Setter
     private Integer studentId;
-    private final Instant start;
-    private final Instant end;
+    private final OffsetDateTime start;
+    private final OffsetDateTime end;
     private EventRealizationStatus status;
 
-    public static EventRealization newDraft(Integer eventId, Instant start, Instant end) {
+    public static EventRealization newDraft(Integer eventId, OffsetDateTime start, OffsetDateTime end) {
         return new EventRealization(null, eventId, null, start, end, EventRealizationStatus.DRAFT);
     }
 
-    public void acceptDraft() {
-        checkState(status == EventRealizationStatus.DRAFT, "Only draft event realization can be accepted");
-        this.status = EventRealizationStatus.ACCEPTED;
-    }
-
-    public EventRealization(Integer id, Integer eventId, Integer studentId, Instant start, Instant end, EventRealizationStatus status) {
+    public EventRealization(Integer id, Integer eventId, Integer studentId, OffsetDateTime start, OffsetDateTime end, EventRealizationStatus status) {
         validateConstructorArgs(eventId, start, end, status);
         this.id = id;
         this.eventId = eventId;
@@ -41,7 +37,7 @@ public class EventRealization {
         this.status = status;
     }
 
-    private static void validateConstructorArgs(Integer eventId, Instant start, Instant end, EventRealizationStatus status) {
+    private static void validateConstructorArgs(Integer eventId, OffsetDateTime start, OffsetDateTime end, EventRealizationStatus status) {
         checkNotNull(eventId, "Event realization id cannot be null");
         checkNotNull(start, "Event realization start timestamp cannot be null");
         checkNotNull(end, "Event realization end timestamp cannot be null");

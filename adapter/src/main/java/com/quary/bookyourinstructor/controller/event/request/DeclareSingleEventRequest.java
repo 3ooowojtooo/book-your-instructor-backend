@@ -1,7 +1,7 @@
 package com.quary.bookyourinstructor.controller.event.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
@@ -11,8 +11,8 @@ public class DeclareSingleEventRequest {
     private String name;
     private String description;
     private String location;
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'hh:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime startDateTime;
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'hh:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime endDateTime;
 }

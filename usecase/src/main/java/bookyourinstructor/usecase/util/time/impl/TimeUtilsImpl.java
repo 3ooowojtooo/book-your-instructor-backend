@@ -4,6 +4,7 @@ import bookyourinstructor.usecase.util.time.TimeUtils;
 
 import java.sql.Time;
 import java.time.*;
+import java.time.temporal.TemporalAdjuster;
 import java.util.Date;
 
 public class TimeUtilsImpl implements TimeUtils {
@@ -29,6 +30,20 @@ public class TimeUtilsImpl implements TimeUtils {
     @Override
     public Instant toInstant(LocalDateTime localDateTime) {
         return localDateTime.toInstant(createZoneOffset());
+    }
+
+    @Override
+    public OffsetDateTime toOffsetDataTime(LocalDateTime localDateTime) {
+        return localDateTime.atOffset(createZoneOffset());
+    }
+
+    @Override
+    public LocalDate findDayOfWeekAtOrAfterDate(DayOfWeek dayOfWeek, LocalDate date) {
+        LocalDate currentDate = date;
+        while (currentDate.getDayOfWeek() != dayOfWeek) {
+            currentDate = currentDate.plusDays(1);
+        }
+        return currentDate;
     }
 
     private ZoneOffset createZoneOffset() {

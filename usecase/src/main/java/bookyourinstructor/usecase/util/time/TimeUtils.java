@@ -1,7 +1,6 @@
 package bookyourinstructor.usecase.util.time;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
+import java.time.*;
 
 public interface TimeUtils {
 
@@ -12,4 +11,8 @@ public interface TimeUtils {
     LocalDateTime toLocalDateTime(Instant instant);
 
     Instant toInstant(LocalDateTime localDateTime);
+
+    OffsetDateTime toOffsetDataTime(LocalDateTime localDateTime);
+
+    LocalDate findDayOfWeekAtOrAfterDate(DayOfWeek dayOfWeek, LocalDate date);
 }

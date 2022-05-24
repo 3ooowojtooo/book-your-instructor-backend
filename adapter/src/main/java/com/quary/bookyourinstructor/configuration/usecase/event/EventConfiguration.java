@@ -2,7 +2,7 @@ package com.quary.bookyourinstructor.configuration.usecase.event;
 
 import bookyourinstructor.usecase.event.EventRealizationStore;
 import bookyourinstructor.usecase.event.EventStore;
-import bookyourinstructor.usecase.event.single.DeclareCyclicEventUseCase;
+import bookyourinstructor.usecase.event.cyclic.DeclareCyclicEventUseCase;
 import bookyourinstructor.usecase.event.single.DeclareSingleEventUseCase;
 import bookyourinstructor.usecase.util.time.TimeUtils;
 import bookyourinstructor.usecase.util.tx.TransactionFacade;
