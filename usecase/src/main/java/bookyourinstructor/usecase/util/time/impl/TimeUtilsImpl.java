@@ -7,7 +7,8 @@ import java.time.*;
 import java.time.temporal.TemporalAdjuster;
 import java.util.Date;
 
-public class TimeUtilsImpl implements TimeUtils {
+public enum TimeUtilsImpl implements TimeUtils {
+    INSTANCE;
 
     private static final Clock CLOCK = Clock.systemDefaultZone();
     private static final ZoneId ZONE_ID = ZoneId.systemDefault();
@@ -18,23 +19,23 @@ public class TimeUtilsImpl implements TimeUtils {
     }
 
     @Override
-    public LocalDateTime nowLocalDateTime() {
+    public LocalDateTime nowLocalDateTimeSystemZone() {
         return LocalDateTime.now(CLOCK);
     }
 
     @Override
-    public LocalDateTime toLocalDateTime(Instant instant) {
+    public LocalDateTime toLocalDateTimeSystemZone(Instant instant) {
         return LocalDateTime.ofInstant(instant, ZONE_ID);
     }
 
     @Override
-    public Instant toInstant(LocalDateTime localDateTime) {
+    public Instant toInstantFromSystemZone(LocalDateTime localDateTime) {
         return localDateTime.toInstant(createZoneOffset());
     }
 
     @Override
-    public OffsetDateTime toOffsetDataTime(LocalDateTime localDateTime) {
-        return localDateTime.atOffset(createZoneOffset());
+    public Instant toInstantFromUTCZone(LocalDateTime localDateTime) {
+        return localDateTime.toInstant(ZoneOffset.UTC);
     }
 
     @Override

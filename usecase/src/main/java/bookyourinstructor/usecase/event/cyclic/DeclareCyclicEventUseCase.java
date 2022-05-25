@@ -64,6 +64,6 @@ public class DeclareCyclicEventUseCase {
     private EventRealization buildEventRealization(LocalDate realizationDate, CyclicEvent event) {
         LocalDateTime startDateTime = LocalDateTime.of(realizationDate, event.getStartTime());
         LocalDateTime endDateTime = LocalDateTime.of(realizationDate, event.getEndTime());
-        return EventRealization.newDraft(event.getId(), timeUtils.toOffsetDataTime(startDateTime), timeUtils.toOffsetDataTime(endDateTime));
+        return EventRealization.newDraft(event.getId(), timeUtils.toInstantFromUTCZone(startDateTime), timeUtils.toInstantFromUTCZone(endDateTime));
     }
 }

@@ -6,13 +6,13 @@ public interface TimeUtils {
 
     Instant nowInstant();
 
-    LocalDateTime nowLocalDateTime();
+    LocalDateTime nowLocalDateTimeSystemZone();
 
-    LocalDateTime toLocalDateTime(Instant instant);
+    LocalDateTime toLocalDateTimeSystemZone(Instant instant);
 
-    Instant toInstant(LocalDateTime localDateTime);
+    Instant toInstantFromSystemZone(LocalDateTime localDateTime);
 
-    OffsetDateTime toOffsetDataTime(LocalDateTime localDateTime);
+    Instant toInstantFromUTCZone(LocalDateTime localDateTime);
 
     LocalDate findDayOfWeekAtOrAfterDate(DayOfWeek dayOfWeek, LocalDate date);
 }

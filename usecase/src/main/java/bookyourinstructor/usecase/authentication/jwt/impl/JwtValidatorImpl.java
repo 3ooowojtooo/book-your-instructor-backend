@@ -7,6 +7,7 @@ import com.quary.bookyourinstructor.model.authentication.exception.ExpiredJwtExc
 import com.quary.bookyourinstructor.model.authentication.exception.InvalidJwtException;
 import lombok.RequiredArgsConstructor;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 import static java.util.Objects.nonNull;
@@ -33,9 +34,9 @@ public class JwtValidatorImpl implements JwtValidator {
     @Override
     public boolean isTokenExpired(String token) {
         try {
-            final LocalDateTime now = timeUtils.nowLocalDateTime();
-            final LocalDateTime tokenExpiration = jwtClaimExtractor.extractExpirationTime(token);
-            return tokenExpiration.isBefore(now) || tokenExpiration.isEqual(now);
+            final Instant now = timeUtils.nowInstant();
+            final Instant tokenExpiration = jwtClaimExtractor.extractExpirationTime(token);
+            return tokenExpiration.isBefore(now) || tokenExpiration.equals(now);
         } catch (InvalidJwtException | ExpiredJwtException ignored) {
             return true;
         }
