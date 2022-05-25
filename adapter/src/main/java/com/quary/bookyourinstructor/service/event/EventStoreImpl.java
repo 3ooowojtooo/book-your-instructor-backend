@@ -2,6 +2,7 @@ package com.quary.bookyourinstructor.service.event;
 
 import bookyourinstructor.usecase.event.EventStore;
 import com.quary.bookyourinstructor.entity.EventEntity;
+import com.quary.bookyourinstructor.model.event.CyclicEvent;
 import com.quary.bookyourinstructor.model.event.SingleEvent;
 import com.quary.bookyourinstructor.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,5 +20,12 @@ public class EventStoreImpl implements EventStore {
         EventEntity entity = mapper.mapToEntity(event);
         EventEntity savedEntity = eventRepository.save(entity);
         return mapper.mapToSingleEvent(savedEntity);
+    }
+
+    @Override
+    public CyclicEvent saveCyclicEvent(CyclicEvent event) {
+        EventEntity eventEntity = mapper.mapToEntity(event);
+        EventEntity savedEntity = eventRepository.save(eventEntity);
+        return mapper.mapToCyclicEvent(savedEntity);
     }
 }

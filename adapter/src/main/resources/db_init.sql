@@ -20,17 +20,32 @@ CREATE TABLE "user"
 
 CREATE TABLE "event"
 (
-    id              int primary key,
-    version         int                         not null,
-    type            varchar(20)                 not null,
-    instructor_id   int references "user" (id),
-    name            varchar(100)                not null,
-    description     varchar(255),
-    location        varchar(255)                not null,
-    start_timestamp timestamp without time zone not null,
-    end_timestamp   timestamp without time zone not null,
-    CHECK ( "start_timestamp" < "end_timestamp" )
+    id                     int primary key,
+    version                int          not null,
+    type                   varchar(20)  not null,
+    instructor_id          int references "user" (id),
+    name                   varchar(100) not null,
+    description            varchar(255),
+    location               varchar(255) not null,
+    single_start_timestamp timestamp without time zone,
+    single_end_timestamp   timestamp without time zone,
+    cyclic_start_time      time,
+    cyclic_end_time        time,
+    cyclic_day_of_week     varchar(20),
+    cyclic_start_boundary  date,
+    cyclic_end_boundary    date,
+    CHECK ( (type = 'SINGLE' AND single_start_timestamp IS NOT NULL) OR (type != 'SINGLE' AND single_start_timestamp IS NULL)),
+    CHECK ( (type = 'SINGLE' AND single_end_timestamp IS NOT NULL) OR (type != 'SINGLE' AND single_end_timestamp IS NULL)),
+    CHECK ( (type = 'SINGLE' AND single_start_timestamp < single_end_timestamp) OR type != 'SINGLE') ,
+    CHECK ((type = 'CYCLIC' AND cyclic_start_time IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_start_time IS NULL)),
+    CHECK ((type = 'CYCLIC' AND cyclic_end_time IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_end_time IS NULL)),
+    CHECK ((type = 'CYCLIC' AND cyclic_day_of_week IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_day_of_week IS NULL)),
+    CHECK ((type = 'CYCLIC' AND cyclic_start_boundary IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_start_boundary IS NULL)),
+    CHECK ((type = 'CYCLIC' AND cyclic_end_boundary IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_end_boundary IS NULL)),
+    CHECK ( (type = 'CYCLIC' AND cyclic_start_time < cyclic_end_time) OR type != 'CYCLIC') ,
+    CHECK ( (type = 'CYCLIC' AND cyclic_start_boundary < cyclic_end_boundary) OR type != 'CYCLIC')
 );
+
 
 CREATE TABLE "event_realization"
 (

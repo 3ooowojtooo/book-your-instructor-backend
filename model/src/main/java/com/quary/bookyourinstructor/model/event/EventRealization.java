@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
 
 import static com.google.common.base.Preconditions.*;
 
@@ -24,11 +25,6 @@ public class EventRealization {
 
     public static EventRealization newDraft(Integer eventId, Instant start, Instant end) {
         return new EventRealization(null, eventId, null, start, end, EventRealizationStatus.DRAFT);
-    }
-
-    public void acceptDraft() {
-        checkState(status == EventRealizationStatus.DRAFT, "Only draft event realization can be accepted");
-        this.status = EventRealizationStatus.ACCEPTED;
     }
 
     public EventRealization(Integer id, Integer eventId, Integer studentId, Instant start, Instant end, EventRealizationStatus status) {

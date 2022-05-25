@@ -7,6 +7,7 @@ import com.quary.bookyourinstructor.model.authentication.exception.InvalidJwtExc
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.function.Function;
@@ -42,8 +43,8 @@ public class JwtClaimExtractorImpl implements JwtClaimExtractor {
     }
 
     @Override
-    public LocalDateTime extractExpirationTime(String token) throws InvalidJwtException, ExpiredJwtException {
+    public Instant extractExpirationTime(String token) throws InvalidJwtException, ExpiredJwtException {
         final Date expirationDate = extractClaim(token, Claims::getExpiration);
-        return timeUtils.toLocalDateTime(expirationDate.toInstant());
+        return expirationDate.toInstant();
     }
 }

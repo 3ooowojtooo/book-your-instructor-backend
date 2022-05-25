@@ -34,8 +34,8 @@ public class DeclareSingleEventUseCase {
     }
 
     private EventRealization buildEventRealization(final SingleEvent event) {
-        final Instant start = timeUtils.toInstant(event.getStartDateTime());
-        final Instant end = timeUtils.toInstant(event.getEndDateTime());
+        final Instant start = timeUtils.toInstantFromUTCZone(event.getStartDateTime());
+        final Instant end = timeUtils.toInstantFromUTCZone(event.getEndDateTime());
         return EventRealization.newDraft(event.getId(), start, end);
     }
 }

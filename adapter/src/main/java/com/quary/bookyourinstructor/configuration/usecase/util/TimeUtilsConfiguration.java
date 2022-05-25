@@ -10,6 +10,6 @@ public class TimeUtilsConfiguration {
 
     @Bean
     public TimeUtils timeUtils() {
-        return new TimeUtilsImpl();
+        return TimeUtilsImpl.INSTANCE;
     }
 }

@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -37,9 +39,7 @@ public class JwtGeneratorImpl implements JwtGenerator {
     }
 
     private Date computeExpirationDate(Instant now, Duration validityDuration) {
-        final LocalDateTime expirationDateTime = timeUtils.toLocalDateTime(now)
-                .plus(validityDuration);
-        final Instant expirationInstant = timeUtils.toInstant(expirationDateTime);
+        final Instant expirationInstant = now.plus(validityDuration);
         return instantToDate(expirationInstant);
     }
 

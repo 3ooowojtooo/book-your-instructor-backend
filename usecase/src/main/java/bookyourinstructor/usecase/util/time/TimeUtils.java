@@ -1,15 +1,18 @@
 package bookyourinstructor.usecase.util.time;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
+import java.time.*;
 
 public interface TimeUtils {
 
     Instant nowInstant();
 
-    LocalDateTime nowLocalDateTime();
+    LocalDateTime nowLocalDateTimeSystemZone();
 
-    LocalDateTime toLocalDateTime(Instant instant);
+    LocalDateTime toLocalDateTimeSystemZone(Instant instant);
 
-    Instant toInstant(LocalDateTime localDateTime);
+    Instant toInstantFromSystemZone(LocalDateTime localDateTime);
+
+    Instant toInstantFromUTCZone(LocalDateTime localDateTime);
+
+    LocalDate findDayOfWeekAtOrAfterDate(DayOfWeek dayOfWeek, LocalDate date);
 }

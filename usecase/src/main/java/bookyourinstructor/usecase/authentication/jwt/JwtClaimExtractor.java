@@ -4,7 +4,7 @@ import com.quary.bookyourinstructor.model.authentication.exception.ExpiredJwtExc
 import com.quary.bookyourinstructor.model.authentication.exception.InvalidJwtException;
 import io.jsonwebtoken.Claims;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.function.Function;
 
 public interface JwtClaimExtractor {
@@ -13,5 +13,5 @@ public interface JwtClaimExtractor {
 
     String extractSubject(String token) throws InvalidJwtException, ExpiredJwtException;
 
-    LocalDateTime extractExpirationTime(String token) throws InvalidJwtException, ExpiredJwtException;
+    Instant extractExpirationTime(String token) throws InvalidJwtException, ExpiredJwtException;
 }

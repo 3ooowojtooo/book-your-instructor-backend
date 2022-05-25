@@ -9,6 +9,10 @@ import com.quary.bookyourinstructor.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 @Component
 @RequiredArgsConstructor
 public class EventRealizationStoreImpl implements EventRealizationStore {
@@ -19,10 +23,25 @@ public class EventRealizationStoreImpl implements EventRealizationStore {
 
     @Override
     public EventRealization saveEventRealization(EventRealization eventRealization) {
-        final EventEntity event = eventRepository.findById(eventRealization.getEventId())
-                .orElseThrow(() -> new IllegalStateException("Event instance with id " + eventRealization.getEventId() + " not found during single event realization creation"));
-        final EventRealizationEntity entity = mapper.mapToNewEntity(eventRealization, event);
+        final EventRealizationEntity entity = mapToEntity(eventRealization);
         final EventRealizationEntity savedEntity = eventRealizationRepository.save(entity);
         return mapper.mapToEventRealization(savedEntity);
+    }
+
+    @Override
+    public List<EventRealization> saveEventRealizations(List<EventRealization> eventRealizations) {
+        final List<EventRealizationEntity> entities = eventRealizations.stream()
+                .map(this::mapToEntity)
+                .collect(Collectors.toList());
+        final Iterable<EventRealizationEntity> savedEntities = eventRealizationRepository.saveAll(entities);
+        return StreamSupport.stream(savedEntities.spliterator(), false)
+                .map(mapper::mapToEventRealization)
+                .collect(Collectors.toList());
+    }
+
+    private EventRealizationEntity mapToEntity(EventRealization eventRealization) {
+        final EventEntity event = eventRepository.findById(eventRealization.getEventId())
+                .orElseThrow(() -> new IllegalStateException("Event instance with id " + eventRealization.getEventId() + " not found during single event realization creation"));
+        return mapper.mapToNewEntity(eventRealization, event);
     }
 }
