@@ -3,6 +3,8 @@ package com.quary.bookyourinstructor.service.event;
 import com.quary.bookyourinstructor.configuration.mapper.DependencyInjectionMapperConfig;
 import com.quary.bookyourinstructor.entity.EventEntity;
 import com.quary.bookyourinstructor.model.event.CyclicEvent;
+import com.quary.bookyourinstructor.model.event.Event;
+import com.quary.bookyourinstructor.model.event.EventType;
 import com.quary.bookyourinstructor.model.event.SingleEvent;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -44,4 +46,12 @@ public interface EventStoreMapper {
     @Mapping(target = "endBoundary", source = "cyclicEndBoundary")
     @Mapping(target = "instructorId", source = "instructor.id")
     CyclicEvent mapToCyclicEvent(EventEntity eventEntity);
+
+    default Event mapToEvent(EventEntity eventEntity) {
+        if (eventEntity.getType() == EventType.SINGLE) {
+            return mapToSingleEvent(eventEntity);
+        } else {
+            return mapToCyclicEvent(eventEntity);
+        }
+    }
 }

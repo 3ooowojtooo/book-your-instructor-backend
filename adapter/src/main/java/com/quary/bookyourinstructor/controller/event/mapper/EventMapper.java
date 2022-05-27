@@ -3,9 +3,11 @@ package com.quary.bookyourinstructor.controller.event.mapper;
 import com.quary.bookyourinstructor.configuration.mapper.DependencyInjectionMapperConfig;
 import com.quary.bookyourinstructor.controller.event.request.DeclareCyclicEventRequest;
 import com.quary.bookyourinstructor.controller.event.request.DeclareSingleEventRequest;
+import com.quary.bookyourinstructor.controller.event.response.CreateEventBookLockResponse;
 import com.quary.bookyourinstructor.controller.event.response.DeclareCyclicEventResponse;
 import com.quary.bookyourinstructor.controller.event.response.DeclareSingleEventResponse;
 import com.quary.bookyourinstructor.controller.event.response.EventRealizationTimeBoundaries;
+import com.quary.bookyourinstructor.model.event.EventLock;
 import com.quary.bookyourinstructor.model.event.EventRealization;
 import com.quary.bookyourinstructor.model.event.NewCyclicEventData;
 import com.quary.bookyourinstructor.model.event.NewSingleEventData;
@@ -27,8 +29,6 @@ public interface EventMapper {
     @Mapping(target = "eventEnd", source = "end")
     EventRealizationTimeBoundaries mapToBoundaries(EventRealization eventRealization);
 
-    List<EventRealizationTimeBoundaries> mapToBoundariesList(List<EventRealization> eventRealizations);
-
     NewCyclicEventData mapToNewCyclicEventData(DeclareCyclicEventRequest request, Integer instructorId);
 
     default DeclareCyclicEventResponse mapToDeclareCyclicEventResponse(List<EventRealization> eventRealizations) {
@@ -37,4 +37,6 @@ public interface EventMapper {
                 .collect(Collectors.toList());
         return new DeclareCyclicEventResponse(boundaries);
     }
+
+    CreateEventBookLockResponse mapToCreateEventBookLockResponse(EventLock eventLock);
 }
