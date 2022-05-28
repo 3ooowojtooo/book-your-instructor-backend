@@ -5,7 +5,6 @@ import bookyourinstructor.usecase.event.store.EventStore;
 import bookyourinstructor.usecase.util.time.TimeUtils;
 import bookyourinstructor.usecase.util.tx.TransactionFacade;
 import com.quary.bookyourinstructor.model.event.EventRealization;
-import com.quary.bookyourinstructor.model.event.NewSingleEventData;
 import com.quary.bookyourinstructor.model.event.SingleEvent;
 import lombok.RequiredArgsConstructor;
 
@@ -19,12 +18,13 @@ public class DeclareSingleEventUseCase {
     private final TimeUtils timeUtils;
     private final TransactionFacade transactionFacade;
 
-    public EventRealization declareNewSingleEvent(final NewSingleEventData eventData) {
+    public DeclareSingleEventResult declareNewSingleEvent(final NewSingleEventData eventData) {
         return transactionFacade.executeInTransaction(() -> {
             SingleEvent event = buildSingleEvent(eventData);
             SingleEvent savedEvent = eventStore.saveSingleEvent(event);
             EventRealization eventRealization = buildEventRealization(savedEvent);
-            return eventRealizationStore.saveEventRealization(eventRealization);
+            EventRealization savedEventRealization = eventRealizationStore.saveEventRealization(eventRealization);
+            return buildResult(savedEvent, savedEventRealization);
         });
     }
 
@@ -37,5 +37,9 @@ public class DeclareSingleEventUseCase {
         final Instant start = timeUtils.toInstantFromUTCZone(event.getStartDateTime());
         final Instant end = timeUtils.toInstantFromUTCZone(event.getEndDateTime());
         return EventRealization.newDraft(event.getId(), start, end);
+    }
+
+    private static DeclareSingleEventResult buildResult(final SingleEvent event, final EventRealization eventRealization) {
+        return new DeclareSingleEventResult(event.getId(), eventRealization);
     }
 }

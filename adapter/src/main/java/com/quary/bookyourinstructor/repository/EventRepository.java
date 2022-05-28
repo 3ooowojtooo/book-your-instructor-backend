@@ -1,6 +1,8 @@
 package com.quary.bookyourinstructor.repository;
 
 import com.quary.bookyourinstructor.entity.EventEntity;
+import com.quary.bookyourinstructor.model.event.EventStatus;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -14,4 +16,11 @@ public interface EventRepository extends CrudRepository<EventEntity, Integer> {
 
     @Query(value = "select * from event where id = ?1 for share", nativeQuery = true)
     Optional<EventEntity> findByIdAndLockForShare(Integer id);
+
+    @Query(value = "select * from event where id = ?1 for update", nativeQuery = true)
+    Optional<EventEntity> findByIdAndLockForUpdate(Integer id);
+
+    @Modifying
+    @Query(value = "update EventEntity e set e.status = ?2, e.version = e.version + 1 where e.id = ?1")
+    void setStatusById(Integer id, EventStatus eventStatus);
 }

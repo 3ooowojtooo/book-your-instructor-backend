@@ -21,6 +21,7 @@ public interface EventStoreMapper {
     @Mapping(target = "cyclicStartBoundary", ignore = true)
     @Mapping(target = "cyclicEndBoundary", ignore = true)
     @Mapping(target = "realizations", ignore = true)
+    @Mapping(target = "locks", ignore = true)
     EventEntity mapToEntity(SingleEvent singleEvent);
 
     @Mapping(target = "startDateTime", source = "singleEventStart")
@@ -37,6 +38,7 @@ public interface EventStoreMapper {
     @Mapping(target = "cyclicDayOfWeek", source = "dayOfWeek")
     @Mapping(target = "cyclicStartBoundary", source = "startBoundary")
     @Mapping(target = "cyclicEndBoundary", source = "endBoundary")
+    @Mapping(target = "locks", ignore = true)
     EventEntity mapToEntity(CyclicEvent cyclicEvent);
 
     @Mapping(target = "startTime", source = "cyclicEventStart")

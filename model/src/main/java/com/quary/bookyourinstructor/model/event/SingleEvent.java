@@ -20,12 +20,12 @@ public final class SingleEvent extends Event {
     public static SingleEvent newSingleEvent(int instructorId, String name, String description, String location,
                                              LocalDateTime startDateTime, LocalDateTime endDateTime) {
         return new SingleEvent(null, null, EventType.SINGLE, instructorId, name, description, location,
-                startDateTime, endDateTime);
+                EventStatus.DRAFT, startDateTime, endDateTime);
     }
 
     public SingleEvent(Integer id, Integer version, EventType type, Integer instructorId, String name, String description,
-                       String location, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        super(id, version, type, instructorId, name, description, location);
+                       String location, EventStatus status, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        super(id, version, type, instructorId, name, description, location, status);
         validateConstructorArgs(startDateTime, endDateTime);
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;

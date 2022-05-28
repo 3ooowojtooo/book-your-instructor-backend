@@ -13,5 +13,6 @@ import java.time.Instant;
 @ToString
 public class DeclareSingleEventResponse {
 
+    private final Integer eventId;
     private final EventRealizationTimeBoundaries eventRealization;
 }

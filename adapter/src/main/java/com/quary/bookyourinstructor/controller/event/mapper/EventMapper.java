@@ -1,5 +1,7 @@
 package com.quary.bookyourinstructor.controller.event.mapper;
 
+import bookyourinstructor.usecase.event.cyclic.DeclareCyclicEventResult;
+import bookyourinstructor.usecase.event.single.DeclareSingleEventResult;
 import com.quary.bookyourinstructor.configuration.mapper.DependencyInjectionMapperConfig;
 import com.quary.bookyourinstructor.controller.event.request.DeclareCyclicEventRequest;
 import com.quary.bookyourinstructor.controller.event.request.DeclareSingleEventRequest;
@@ -9,8 +11,8 @@ import com.quary.bookyourinstructor.controller.event.response.DeclareSingleEvent
 import com.quary.bookyourinstructor.controller.event.response.EventRealizationTimeBoundaries;
 import com.quary.bookyourinstructor.model.event.EventLock;
 import com.quary.bookyourinstructor.model.event.EventRealization;
-import com.quary.bookyourinstructor.model.event.NewCyclicEventData;
-import com.quary.bookyourinstructor.model.event.NewSingleEventData;
+import bookyourinstructor.usecase.event.cyclic.NewCyclicEventData;
+import bookyourinstructor.usecase.event.single.NewSingleEventData;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -22,7 +24,7 @@ public interface EventMapper {
 
     NewSingleEventData mapToNewSingleEventData(DeclareSingleEventRequest request, Integer instructorId);
 
-    DeclareSingleEventResponse mapToDeclareSingleEventResponse(EventRealization eventRealization);
+    DeclareSingleEventResponse mapToDeclareSingleEventResponse(DeclareSingleEventResult result);
 
     @Mapping(target = "eventRealizationId", source = "id")
     @Mapping(target = "eventStart", source = "start")
@@ -31,12 +33,7 @@ public interface EventMapper {
 
     NewCyclicEventData mapToNewCyclicEventData(DeclareCyclicEventRequest request, Integer instructorId);
 
-    default DeclareCyclicEventResponse mapToDeclareCyclicEventResponse(List<EventRealization> eventRealizations) {
-        List<EventRealizationTimeBoundaries> boundaries = eventRealizations.stream()
-                .map(this::mapToBoundaries)
-                .collect(Collectors.toList());
-        return new DeclareCyclicEventResponse(boundaries);
-    }
+    DeclareCyclicEventResponse mapToDeclareCyclicEventResponse(DeclareCyclicEventResult result);
 
     CreateEventBookLockResponse mapToCreateEventBookLockResponse(EventLock eventLock);
 }

@@ -4,6 +4,7 @@ import bookyourinstructor.usecase.event.store.EventStore;
 import com.quary.bookyourinstructor.entity.EventEntity;
 import com.quary.bookyourinstructor.model.event.CyclicEvent;
 import com.quary.bookyourinstructor.model.event.Event;
+import com.quary.bookyourinstructor.model.event.EventStatus;
 import com.quary.bookyourinstructor.model.event.SingleEvent;
 import com.quary.bookyourinstructor.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,8 +34,19 @@ public class EventStoreImpl implements EventStore {
     }
 
     @Override
-    public Optional<Event> getByIdWithLockForShare(Integer id) {
+    public Optional<Event> findByIdWithLockForShare(Integer id) {
         return eventRepository.findByIdAndLockForShare(id)
                 .map(mapper::mapToEvent);
+    }
+
+    @Override
+    public Optional<Event> findByIdWithLockForUpdate(Integer id) {
+        return eventRepository.findByIdAndLockForUpdate(id)
+                .map(mapper::mapToEvent);
+    }
+
+    @Override
+    public void setStatusById(Integer id, EventStatus status) {
+        eventRepository.setStatusById(id, status);
     }
 }

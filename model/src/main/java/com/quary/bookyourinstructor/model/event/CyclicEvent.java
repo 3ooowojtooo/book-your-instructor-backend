@@ -25,13 +25,14 @@ public class CyclicEvent extends Event {
     public static CyclicEvent newCyclicEvent(int instructorId, String name, String description, String location,
                                              LocalTime startTime, LocalTime endTime, DayOfWeek dayOfWeek, LocalDate startBoundary,
                                              LocalDate endBoundary) {
-        return new CyclicEvent(null, null, EventType.CYCLIC, instructorId, name, description, location, startTime,
-                endTime, dayOfWeek, startBoundary, endBoundary);
+        return new CyclicEvent(null, null, EventType.CYCLIC, instructorId, name, description, location, EventStatus.DRAFT,
+                startTime, endTime, dayOfWeek, startBoundary, endBoundary);
     }
 
     public CyclicEvent(Integer id, Integer version, EventType type, Integer instructorId, String name, String description,
-                       String location, LocalTime startTime, LocalTime endTime, DayOfWeek dayOfWeek, LocalDate startBoundary, LocalDate endBoundary) {
-        super(id, version, type, instructorId, name, description, location);
+                       String location, EventStatus status, LocalTime startTime, LocalTime endTime, DayOfWeek dayOfWeek,
+                       LocalDate startBoundary, LocalDate endBoundary) {
+        super(id, version, type, instructorId, name, description, location, status);
         validateConstructorArgs(startTime, endTime, dayOfWeek, startBoundary, endBoundary);
         this.startTime = startTime;
         this.endTime = endTime;
