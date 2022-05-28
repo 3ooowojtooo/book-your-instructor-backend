@@ -1,6 +1,7 @@
 package com.quary.bookyourinstructor.configuration.tx;
 
 import bookyourinstructor.usecase.util.tx.TransactionFacade;
+import bookyourinstructor.usecase.util.tx.TransactionIsolation;
 import bookyourinstructor.usecase.util.tx.TransactionPropagation;
 import bookyourinstructor.usecase.util.tx.exception.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +20,12 @@ public class TransactionFacadeImpl implements TransactionFacade {
     private final PlatformTransactionManager platformTransactionManager;
 
     @Override
-    public <T> T executeInTransaction(TransactionPropagation transactionPropagation, Supplier<T> action) throws ConstraintViolationException {
+    public <T> T executeInTransaction(TransactionPropagation transactionPropagation, TransactionIsolation transactionIsolation,
+                                      Supplier<T> action) throws ConstraintViolationException {
         try {
             TransactionTemplate template = new TransactionTemplate(platformTransactionManager);
             template.setPropagationBehavior(mapToPropagationBehaviour(transactionPropagation));
+            template.setIsolationLevel(mapToIsolationLevel(transactionIsolation));
             return template.execute(status -> action.get());
         } catch (DataIntegrityViolationException ex) {
             throwIfConstraintViolationException(ex.getCause());
@@ -32,7 +35,7 @@ public class TransactionFacadeImpl implements TransactionFacade {
 
     @Override
     public <T> T executeInTransaction(final Supplier<T> action) throws ConstraintViolationException {
-        return executeInTransaction(TransactionPropagation.REQUIRED, action);
+        return executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.DEFAULT, action);
     }
 
     private static int mapToPropagationBehaviour(TransactionPropagation propagation) {
@@ -52,7 +55,24 @@ public class TransactionFacadeImpl implements TransactionFacade {
             case NESTED:
                 return TransactionDefinition.PROPAGATION_NESTED;
             default:
-                throw new IllegalStateException("Unknown propagation level: " + propagation);
+                throw new IllegalStateException("Unknown transaction propagation level: " + propagation);
+        }
+    }
+
+    private static int mapToIsolationLevel(TransactionIsolation transactionIsolation) {
+        switch (transactionIsolation) {
+            case DEFAULT:
+                return TransactionDefinition.ISOLATION_DEFAULT;
+            case READ_UNCOMMITTED:
+                return TransactionDefinition.ISOLATION_READ_UNCOMMITTED;
+            case READ_COMMITTED:
+                return TransactionDefinition.ISOLATION_READ_COMMITTED;
+            case REPEATABLE_READ:
+                return TransactionDefinition.ISOLATION_REPEATABLE_READ;
+            case SERIALIZABLE:
+                return TransactionDefinition.ISOLATION_SERIALIZABLE;
+            default:
+                throw new IllegalStateException("Unknown transaction isolation level: " + transactionIsolation);
         }
     }
 

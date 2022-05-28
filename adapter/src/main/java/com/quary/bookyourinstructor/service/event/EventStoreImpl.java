@@ -33,8 +33,8 @@ public class EventStoreImpl implements EventStore {
     }
 
     @Override
-    public Optional<Event> getById(Integer id) {
-        return eventRepository.findById(id)
+    public Optional<Event> getByIdWithLockForShare(Integer id) {
+        return eventRepository.findByIdAndLockForShare(id)
                 .map(mapper::mapToEvent);
     }
 }

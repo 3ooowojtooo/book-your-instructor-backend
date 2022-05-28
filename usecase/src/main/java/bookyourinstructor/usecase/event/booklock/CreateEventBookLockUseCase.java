@@ -5,6 +5,8 @@ import bookyourinstructor.usecase.event.store.EventLockStore;
 import bookyourinstructor.usecase.event.store.EventStore;
 import bookyourinstructor.usecase.util.time.TimeUtils;
 import bookyourinstructor.usecase.util.tx.TransactionFacade;
+import bookyourinstructor.usecase.util.tx.TransactionIsolation;
+import bookyourinstructor.usecase.util.tx.TransactionPropagation;
 import bookyourinstructor.usecase.util.tx.exception.ConstraintViolationException;
 import com.quary.bookyourinstructor.model.event.CreateEventBookLockData;
 import com.quary.bookyourinstructor.model.event.Event;
@@ -30,8 +32,8 @@ public class CreateEventBookLockUseCase {
         try {
             final Instant now = timeUtils.nowInstant();
             final Instant expirationTime = now.plus(lockExpirationDuration);
-            return transactionFacade.executeInTransaction(() -> {
-                final Event event = findEventOrThrow(data.getEventId());
+            return transactionFacade.executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.REPEATABLE_READ, () -> {
+                final Event event = findEventWithLockForShareOrThrow(data.getEventId());
                 validateEventVersion(event, data.getEventVersion());
                 final EventLock eventLock = buildEventLock(event, data, expirationTime);
                 return eventLockStore.saveEventLock(eventLock);
@@ -43,8 +45,8 @@ public class CreateEventBookLockUseCase {
         }
     }
 
-    private Event findEventOrThrow(Integer id) {
-        return eventStore.getById(id)
+    private Event findEventWithLockForShareOrThrow(Integer id) {
+        return eventStore.getByIdWithLockForShare(id)
                 .orElseThrow(() -> new IllegalStateException("Event with id " + id + " was not found"));
     }
 

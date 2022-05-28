@@ -12,5 +12,5 @@ public interface EventStore {
 
     CyclicEvent saveCyclicEvent(CyclicEvent event);
 
-    Optional<Event> getById(Integer id);
+    Optional<Event> getByIdWithLockForShare(Integer id);
 }
