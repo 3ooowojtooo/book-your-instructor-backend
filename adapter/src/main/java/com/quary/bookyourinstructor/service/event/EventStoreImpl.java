@@ -1,12 +1,15 @@
 package com.quary.bookyourinstructor.service.event;
 
-import bookyourinstructor.usecase.event.EventStore;
+import bookyourinstructor.usecase.event.store.EventStore;
 import com.quary.bookyourinstructor.entity.EventEntity;
 import com.quary.bookyourinstructor.model.event.CyclicEvent;
+import com.quary.bookyourinstructor.model.event.Event;
 import com.quary.bookyourinstructor.model.event.SingleEvent;
 import com.quary.bookyourinstructor.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -27,5 +30,11 @@ public class EventStoreImpl implements EventStore {
         EventEntity eventEntity = mapper.mapToEntity(event);
         EventEntity savedEntity = eventRepository.save(eventEntity);
         return mapper.mapToCyclicEvent(savedEntity);
+    }
+
+    @Override
+    public Optional<Event> getByIdWithLockForShare(Integer id) {
+        return eventRepository.findByIdAndLockForShare(id)
+                .map(mapper::mapToEvent);
     }
 }

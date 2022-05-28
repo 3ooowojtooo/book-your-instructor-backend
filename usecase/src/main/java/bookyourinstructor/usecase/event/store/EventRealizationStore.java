@@ -1,4 +1,4 @@
-package bookyourinstructor.usecase.event;
+package bookyourinstructor.usecase.event.store;
 
 import com.quary.bookyourinstructor.model.event.EventRealization;
 

@@ -1,8 +1,8 @@
 package bookyourinstructor.usecase.event.cyclic;
 
-import bookyourinstructor.usecase.event.EventRealizationStore;
-import bookyourinstructor.usecase.event.EventStore;
-import bookyourinstructor.usecase.event.cyclic.exception.NoDayOfWeekFoundWithinBoundaries;
+import bookyourinstructor.usecase.event.cyclic.exception.NoDayOfWeekFoundWithinBoundariesRuntimeException;
+import bookyourinstructor.usecase.event.store.EventRealizationStore;
+import bookyourinstructor.usecase.event.store.EventStore;
 import bookyourinstructor.usecase.util.time.TimeUtils;
 import bookyourinstructor.usecase.util.tx.TransactionFacade;
 import com.quary.bookyourinstructor.model.event.CyclicEvent;
@@ -32,7 +32,7 @@ public class DeclareCyclicEventUseCase {
                 List<EventRealization> eventRealizations = findEventRealizations(savedEvent);
                 return eventRealizationStore.saveEventRealizations(eventRealizations);
             });
-        } catch (NoDayOfWeekFoundWithinBoundaries ex) {
+        } catch (NoDayOfWeekFoundWithinBoundariesRuntimeException ex) {
             throw new InvalidCyclicEventBoundariesException();
         }
     }
@@ -43,10 +43,10 @@ public class DeclareCyclicEventUseCase {
                 eventData.getStartBoundary(), eventData.getEndBoundary());
     }
 
-    private List<EventRealization> findEventRealizations(final CyclicEvent cyclicEvent) throws NoDayOfWeekFoundWithinBoundaries {
+    private List<EventRealization> findEventRealizations(final CyclicEvent cyclicEvent) throws NoDayOfWeekFoundWithinBoundariesRuntimeException {
         LocalDate firstRealizationDate = timeUtils.findDayOfWeekAtOrAfterDate(cyclicEvent.getDayOfWeek(), cyclicEvent.getStartBoundary());
         if (firstRealizationDate.isAfter(cyclicEvent.getEndBoundary())) {
-            throw new NoDayOfWeekFoundWithinBoundaries(cyclicEvent.getDayOfWeek(), cyclicEvent.getStartBoundary(), cyclicEvent.getEndBoundary());
+            throw new NoDayOfWeekFoundWithinBoundariesRuntimeException(cyclicEvent.getDayOfWeek(), cyclicEvent.getStartBoundary(), cyclicEvent.getEndBoundary());
         }
 
         List<EventRealization> eventRealizations = new ArrayList<>();

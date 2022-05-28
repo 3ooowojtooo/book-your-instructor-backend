@@ -71,4 +71,7 @@ public class EventEntity {
 
     @OneToMany(mappedBy = "event", orphanRemoval = true, cascade = CascadeType.ALL)
     List<EventRealizationEntity> realizations = new ArrayList<>();
+
+    @OneToMany(mappedBy = "event", orphanRemoval = true, cascade = CascadeType.ALL)
+    List<EventLockEntity> locks = new ArrayList<>();
 }

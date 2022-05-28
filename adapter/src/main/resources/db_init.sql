@@ -34,15 +34,18 @@ CREATE TABLE "event"
     cyclic_day_of_week     varchar(20),
     cyclic_start_boundary  date,
     cyclic_end_boundary    date,
-    CHECK ( (type = 'SINGLE' AND single_start_timestamp IS NOT NULL) OR (type != 'SINGLE' AND single_start_timestamp IS NULL)),
-    CHECK ( (type = 'SINGLE' AND single_end_timestamp IS NOT NULL) OR (type != 'SINGLE' AND single_end_timestamp IS NULL)),
-    CHECK ( (type = 'SINGLE' AND single_start_timestamp < single_end_timestamp) OR type != 'SINGLE') ,
+    CHECK ( (type = 'SINGLE' AND single_start_timestamp IS NOT NULL) OR
+            (type != 'SINGLE' AND single_start_timestamp IS NULL)),
+    CHECK ( (type = 'SINGLE' AND single_end_timestamp IS NOT NULL) OR
+            (type != 'SINGLE' AND single_end_timestamp IS NULL)),
+    CHECK ( (type = 'SINGLE' AND single_start_timestamp < single_end_timestamp) OR type != 'SINGLE'),
     CHECK ((type = 'CYCLIC' AND cyclic_start_time IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_start_time IS NULL)),
     CHECK ((type = 'CYCLIC' AND cyclic_end_time IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_end_time IS NULL)),
     CHECK ((type = 'CYCLIC' AND cyclic_day_of_week IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_day_of_week IS NULL)),
-    CHECK ((type = 'CYCLIC' AND cyclic_start_boundary IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_start_boundary IS NULL)),
+    CHECK ((type = 'CYCLIC' AND cyclic_start_boundary IS NOT NULL) OR
+           (type != 'CYCLIC' AND cyclic_start_boundary IS NULL)),
     CHECK ((type = 'CYCLIC' AND cyclic_end_boundary IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_end_boundary IS NULL)),
-    CHECK ( (type = 'CYCLIC' AND cyclic_start_time < cyclic_end_time) OR type != 'CYCLIC') ,
+    CHECK ( (type = 'CYCLIC' AND cyclic_start_time < cyclic_end_time) OR type != 'CYCLIC'),
     CHECK ( (type = 'CYCLIC' AND cyclic_start_boundary < cyclic_end_boundary) OR type != 'CYCLIC')
 );
 
@@ -56,4 +59,13 @@ CREATE TABLE "event_realization"
     end_timestamp   timestamp with time zone    not null,
     status          varchar(20)                 not null,
     CHECK ( "start_timestamp" < "end_timestamp" )
+);
+
+CREATE TABLE "event_lock"
+(
+    id                   int primary key,
+    event_id             int references "event" (id) not null unique,
+    event_version        int                         not null,
+    user_id              int references "user" (id)  not null,
+    expiration_timestamp timestamp with time zone    not null
 );

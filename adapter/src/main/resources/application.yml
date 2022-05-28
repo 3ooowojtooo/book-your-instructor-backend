@@ -1,10 +1,14 @@
 jwt:
   secret: ${jwt.token.secret}
-  validity-duration: PT3600S
+  validity-duration: PT1H
 
 external-login:
   facebook:
     graph-api-base: https://graph.facebook.com
+
+event:
+  lock:
+    validity-duration: PT15M
 
 cors:
   allowed-origins: ${allowed.origins}
