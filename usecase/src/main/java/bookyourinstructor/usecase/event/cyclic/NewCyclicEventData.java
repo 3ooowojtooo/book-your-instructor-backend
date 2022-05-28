@@ -1,4 +1,4 @@
-package com.quary.bookyourinstructor.model.event;
+package bookyourinstructor.usecase.event.cyclic;
 
 import lombok.Getter;
 

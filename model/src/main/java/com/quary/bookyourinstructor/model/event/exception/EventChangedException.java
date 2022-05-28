@@ -5,6 +5,6 @@ import com.quary.bookyourinstructor.model.exception.BaseInvalidInputException;
 public class EventChangedException extends BaseInvalidInputException {
 
     public EventChangedException() {
-        super(EventErrorCode.EVENT_CHANGED_EXCEPTION, "Event has been changed (versions mismatch)");
+        super(EventErrorCode.EVENT_CHANGED, "Event has been changed (versions mismatch)");
     }
 }

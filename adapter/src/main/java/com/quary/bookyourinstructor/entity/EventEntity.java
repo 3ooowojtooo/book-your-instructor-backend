@@ -1,5 +1,6 @@
 package com.quary.bookyourinstructor.entity;
 
+import com.quary.bookyourinstructor.model.event.EventStatus;
 import com.quary.bookyourinstructor.model.event.EventType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -46,6 +47,10 @@ public class EventEntity {
 
     @Column(name = "location", nullable = false)
     private String location;
+
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private EventStatus status;
 
     @Column(name = "single_start_timestamp")
     private LocalDateTime singleEventStart;

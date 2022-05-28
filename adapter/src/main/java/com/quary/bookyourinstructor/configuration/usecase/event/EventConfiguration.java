@@ -1,5 +1,6 @@
 package com.quary.bookyourinstructor.configuration.usecase.event;
 
+import bookyourinstructor.usecase.event.booklock.ConfirmEventBookLockUseCase;
 import bookyourinstructor.usecase.event.booklock.CreateEventBookLockUseCase;
 import bookyourinstructor.usecase.event.store.EventLockStore;
 import bookyourinstructor.usecase.event.store.EventRealizationStore;
@@ -33,5 +34,11 @@ public class EventConfiguration {
     CreateEventBookLockUseCase createEventBookLockUseCase(TransactionFacade transactionFacade, TimeUtils timeUtils, EventLockStore eventLockStore,
                                                           EventStore eventStore, @Value("${event.lock.validity-duration}") final Duration lockExpirationDuration) {
         return new CreateEventBookLockUseCase(transactionFacade, timeUtils, eventLockStore, eventStore, lockExpirationDuration);
+    }
+
+    @Bean
+    ConfirmEventBookLockUseCase confirmEventBookLockUseCase(TransactionFacade transactionFacade, TimeUtils timeUtils, EventStore eventStore,
+                                                            EventLockStore eventLockStore, EventRealizationStore eventRealizationStore) {
+        return new ConfirmEventBookLockUseCase(transactionFacade, timeUtils, eventStore, eventLockStore, eventRealizationStore);
     }
 }

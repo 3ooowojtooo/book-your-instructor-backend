@@ -7,7 +7,6 @@ import bookyourinstructor.usecase.util.time.TimeUtils;
 import bookyourinstructor.usecase.util.tx.TransactionFacade;
 import com.quary.bookyourinstructor.model.event.CyclicEvent;
 import com.quary.bookyourinstructor.model.event.EventRealization;
-import com.quary.bookyourinstructor.model.event.NewCyclicEventData;
 import com.quary.bookyourinstructor.model.event.exception.InvalidCyclicEventBoundariesException;
 import lombok.RequiredArgsConstructor;
 
@@ -24,13 +23,14 @@ public class DeclareCyclicEventUseCase {
     private final TimeUtils timeUtils;
     private final TransactionFacade transactionFacade;
 
-    public List<EventRealization> declareNewCyclicEvent(final NewCyclicEventData eventData) throws InvalidCyclicEventBoundariesException {
+    public DeclareCyclicEventResult declareNewCyclicEvent(final NewCyclicEventData eventData) throws InvalidCyclicEventBoundariesException {
         try {
             return transactionFacade.executeInTransaction(() -> {
                 CyclicEvent event = buildCyclicEvent(eventData);
                 CyclicEvent savedEvent = eventStore.saveCyclicEvent(event);
                 List<EventRealization> eventRealizations = findEventRealizations(savedEvent);
-                return eventRealizationStore.saveEventRealizations(eventRealizations);
+                List<EventRealization> savedEventRealizations = eventRealizationStore.saveEventRealizations(eventRealizations);
+                return buildResult(savedEvent, savedEventRealizations);
             });
         } catch (NoDayOfWeekFoundWithinBoundariesRuntimeException ex) {
             throw new InvalidCyclicEventBoundariesException();
@@ -65,5 +65,9 @@ public class DeclareCyclicEventUseCase {
         LocalDateTime startDateTime = LocalDateTime.of(realizationDate, event.getStartTime());
         LocalDateTime endDateTime = LocalDateTime.of(realizationDate, event.getEndTime());
         return EventRealization.newDraft(event.getId(), timeUtils.toInstantFromUTCZone(startDateTime), timeUtils.toInstantFromUTCZone(endDateTime));
+    }
+
+    private static DeclareCyclicEventResult buildResult(CyclicEvent event, List<EventRealization> eventRealizations) {
+        return new DeclareCyclicEventResult(event.getId(), eventRealizations);
     }
 }

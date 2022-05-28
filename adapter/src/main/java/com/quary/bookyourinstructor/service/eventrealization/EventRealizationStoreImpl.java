@@ -39,6 +39,11 @@ public class EventRealizationStoreImpl implements EventRealizationStore {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public void setStudentIdForEventRealizations(Integer studentId, Integer eventId) {
+        eventRealizationRepository.setStudentIdForEventRealizations(studentId, eventId);
+    }
+
     private EventRealizationEntity mapToEntity(EventRealization eventRealization) {
         final EventEntity event = eventRepository.findById(eventRealization.getEventId())
                 .orElseThrow(() -> new IllegalStateException("Event instance with id " + eventRealization.getEventId() + " not found during single event realization creation"));

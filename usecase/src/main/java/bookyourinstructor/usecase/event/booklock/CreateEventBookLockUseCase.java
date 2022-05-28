@@ -8,7 +8,6 @@ import bookyourinstructor.usecase.util.tx.TransactionFacade;
 import bookyourinstructor.usecase.util.tx.TransactionIsolation;
 import bookyourinstructor.usecase.util.tx.TransactionPropagation;
 import bookyourinstructor.usecase.util.tx.exception.ConstraintViolationException;
-import com.quary.bookyourinstructor.model.event.CreateEventBookLockData;
 import com.quary.bookyourinstructor.model.event.Event;
 import com.quary.bookyourinstructor.model.event.EventLock;
 import com.quary.bookyourinstructor.model.event.exception.EventBookingAlreadyLockedException;
@@ -18,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
+
+import static com.quary.bookyourinstructor.model.event.EventStatus.FREE;
 
 @RequiredArgsConstructor
 public class CreateEventBookLockUseCase {
@@ -35,6 +36,7 @@ public class CreateEventBookLockUseCase {
             return transactionFacade.executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.REPEATABLE_READ, () -> {
                 final Event event = findEventWithLockForShareOrThrow(data.getEventId());
                 validateEventVersion(event, data.getEventVersion());
+                validateEventFree(event);
                 final EventLock eventLock = buildEventLock(event, data, expirationTime);
                 return eventLockStore.saveEventLock(eventLock);
             });
@@ -46,13 +48,19 @@ public class CreateEventBookLockUseCase {
     }
 
     private Event findEventWithLockForShareOrThrow(Integer id) {
-        return eventStore.getByIdWithLockForShare(id)
+        return eventStore.findByIdWithLockForShare(id)
                 .orElseThrow(() -> new IllegalStateException("Event with id " + id + " was not found"));
     }
 
     private void validateEventVersion(Event event, Integer version) throws EventChangedRuntimeException {
         if (!Objects.equals(event.getVersion(), version)) {
             throw new EventChangedRuntimeException();
+        }
+    }
+
+    private void validateEventFree(Event event) {
+        if (event.getStatus() != FREE) {
+            throw new IllegalStateException("Event with id " + event.getId() + " is not free.");
         }
     }
 

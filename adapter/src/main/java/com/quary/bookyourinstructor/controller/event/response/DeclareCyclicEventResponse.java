@@ -13,5 +13,6 @@ import java.util.List;
 @ToString
 public class DeclareCyclicEventResponse {
 
+    private final Integer eventId;
     private final List<EventRealizationTimeBoundaries> eventRealizations;
 }

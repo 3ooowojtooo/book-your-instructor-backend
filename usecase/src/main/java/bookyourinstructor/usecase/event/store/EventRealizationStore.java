@@ -9,4 +9,6 @@ public interface EventRealizationStore {
     EventRealization saveEventRealization(final EventRealization eventRealization);
 
     List<EventRealization> saveEventRealizations(final List<EventRealization> eventRealizations);
+
+    void setStudentIdForEventRealizations(final Integer studentId, final Integer eventId);
 }

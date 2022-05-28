@@ -11,6 +11,8 @@ import com.quary.bookyourinstructor.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 @RequiredArgsConstructor
 public class EventLockStoreImpl implements EventLockStore {
@@ -29,5 +31,16 @@ public class EventLockStoreImpl implements EventLockStore {
         final EventLockEntity entity = mapper.mapToEntity(eventLock, user, event);
         final EventLockEntity savedEntity = eventLockRepository.save(entity);
         return mapper.mapToEventLock(savedEntity);
+    }
+
+    @Override
+    public Optional<EventLock> findById(Integer id) {
+        return eventLockRepository.findById(id)
+                .map(mapper::mapToEventLock);
+    }
+
+    @Override
+    public void deleteById(Integer id) {
+        eventLockRepository.deleteById(id);
     }
 }

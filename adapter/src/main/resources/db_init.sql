@@ -27,6 +27,7 @@ CREATE TABLE "event"
     name                   varchar(100) not null,
     description            varchar(255),
     location               varchar(255) not null,
+    status                 varchar(20)  not null,
     single_start_timestamp timestamp without time zone,
     single_end_timestamp   timestamp without time zone,
     cyclic_start_time      time,
@@ -46,7 +47,8 @@ CREATE TABLE "event"
            (type != 'CYCLIC' AND cyclic_start_boundary IS NULL)),
     CHECK ((type = 'CYCLIC' AND cyclic_end_boundary IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_end_boundary IS NULL)),
     CHECK ( (type = 'CYCLIC' AND cyclic_start_time < cyclic_end_time) OR type != 'CYCLIC'),
-    CHECK ( (type = 'CYCLIC' AND cyclic_start_boundary < cyclic_end_boundary) OR type != 'CYCLIC')
+    CHECK ( (type = 'CYCLIC' AND cyclic_start_boundary < cyclic_end_boundary) OR type != 'CYCLIC'),
+    CHECK (status = 'DRAFT' OR status = 'FREE' OR status = 'BOOKED')
 );
 
 
