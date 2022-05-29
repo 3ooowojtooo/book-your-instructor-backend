@@ -16,7 +16,7 @@ public interface EventStoreMapper {
     @Mapping(target = "singleEventEnd", source = "endDateTime")
     @Mapping(target = "instructor.id", source = "instructorId")
     @Mapping(target = "cyclicEventStart", ignore = true)
-    @Mapping(target = "cyclicEventEnd", ignore = true)
+    @Mapping(target = "cyclicEventDuration", ignore = true)
     @Mapping(target = "cyclicDayOfWeek", ignore = true)
     @Mapping(target = "cyclicStartBoundary", ignore = true)
     @Mapping(target = "cyclicEndBoundary", ignore = true)
@@ -34,7 +34,7 @@ public interface EventStoreMapper {
     @Mapping(target = "singleEventEnd", ignore = true)
     @Mapping(target = "realizations", ignore = true)
     @Mapping(target = "cyclicEventStart", source = "startTime")
-    @Mapping(target = "cyclicEventEnd", source = "endTime")
+    @Mapping(target = "cyclicEventDuration", source = "duration")
     @Mapping(target = "cyclicDayOfWeek", source = "dayOfWeek")
     @Mapping(target = "cyclicStartBoundary", source = "startBoundary")
     @Mapping(target = "cyclicEndBoundary", source = "endBoundary")
@@ -42,7 +42,7 @@ public interface EventStoreMapper {
     EventEntity mapToEntity(CyclicEvent cyclicEvent);
 
     @Mapping(target = "startTime", source = "cyclicEventStart")
-    @Mapping(target = "endTime", source = "cyclicEventEnd")
+    @Mapping(target = "duration", source = "cyclicEventDuration")
     @Mapping(target = "dayOfWeek", source = "cyclicDayOfWeek")
     @Mapping(target = "startBoundary", source = "cyclicStartBoundary")
     @Mapping(target = "endBoundary", source = "cyclicEndBoundary")
