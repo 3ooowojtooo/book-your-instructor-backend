@@ -2,6 +2,7 @@ package com.quary.bookyourinstructor.configuration.usecase.event;
 
 import bookyourinstructor.usecase.event.booklock.ConfirmEventBookLockUseCase;
 import bookyourinstructor.usecase.event.booklock.CreateEventBookLockUseCase;
+import bookyourinstructor.usecase.event.cyclic.helper.CyclicEventRealizationsFinder;
 import bookyourinstructor.usecase.event.store.EventLockStore;
 import bookyourinstructor.usecase.event.store.EventRealizationStore;
 import bookyourinstructor.usecase.event.store.EventStore;
@@ -27,7 +28,8 @@ public class EventConfiguration {
     @Bean
     DeclareCyclicEventUseCase declareCyclicEventUseCase(EventStore eventStore, EventRealizationStore eventRealizationStore,
                                                         TimeUtils timeUtils, TransactionFacade transactionFacade) {
-        return new DeclareCyclicEventUseCase(eventStore, eventRealizationStore, timeUtils, transactionFacade);
+        final CyclicEventRealizationsFinder realizationsFinder = new CyclicEventRealizationsFinder(timeUtils);
+        return new DeclareCyclicEventUseCase(eventStore, eventRealizationStore, transactionFacade, realizationsFinder);
     }
 
     @Bean

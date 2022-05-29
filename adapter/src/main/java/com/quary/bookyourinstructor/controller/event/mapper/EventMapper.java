@@ -1,6 +1,6 @@
 package com.quary.bookyourinstructor.controller.event.mapper;
 
-import bookyourinstructor.usecase.event.cyclic.DeclareCyclicEventResult;
+import bookyourinstructor.usecase.event.cyclic.result.DeclareCyclicEventResult;
 import bookyourinstructor.usecase.event.single.DeclareSingleEventResult;
 import com.quary.bookyourinstructor.configuration.mapper.DependencyInjectionMapperConfig;
 import com.quary.bookyourinstructor.controller.event.request.DeclareCyclicEventRequest;
@@ -11,13 +11,10 @@ import com.quary.bookyourinstructor.controller.event.response.DeclareSingleEvent
 import com.quary.bookyourinstructor.controller.event.response.EventRealizationTimeBoundaries;
 import com.quary.bookyourinstructor.model.event.EventLock;
 import com.quary.bookyourinstructor.model.event.EventRealization;
-import bookyourinstructor.usecase.event.cyclic.NewCyclicEventData;
+import bookyourinstructor.usecase.event.cyclic.data.NewCyclicEventData;
 import bookyourinstructor.usecase.event.single.NewSingleEventData;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Mapper(config = DependencyInjectionMapperConfig.class)
 public interface EventMapper {

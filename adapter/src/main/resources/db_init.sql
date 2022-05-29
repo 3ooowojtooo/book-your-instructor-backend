@@ -31,7 +31,7 @@ CREATE TABLE "event"
     single_start_timestamp timestamp without time zone,
     single_end_timestamp   timestamp without time zone,
     cyclic_start_time      time,
-    cyclic_end_time        time,
+    cyclic_duration        interval,
     cyclic_day_of_week     varchar(20),
     cyclic_start_boundary  date,
     cyclic_end_boundary    date,

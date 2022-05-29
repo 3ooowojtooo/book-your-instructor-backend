@@ -8,10 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,8 +58,8 @@ public class EventEntity {
     @Column(name = "cyclic_start_time")
     private LocalTime cyclicEventStart;
 
-    @Column(name = "cyclic_end_time")
-    private LocalTime cyclicEventEnd;
+    @Column(name = "cyclic_duration")
+    private Duration cyclicEventDuration;
 
     @Column(name = "cyclic_day_of_week")
     @Enumerated(EnumType.STRING)
