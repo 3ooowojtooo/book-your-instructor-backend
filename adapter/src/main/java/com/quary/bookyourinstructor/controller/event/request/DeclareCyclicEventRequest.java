@@ -15,8 +15,7 @@ public class DeclareCyclicEventRequest {
     private String location;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     private LocalTime startTime;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
-    private LocalTime endTime;
+    private Integer durationSeconds;
     private DayOfWeek dayOfWeek;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate startBoundary;

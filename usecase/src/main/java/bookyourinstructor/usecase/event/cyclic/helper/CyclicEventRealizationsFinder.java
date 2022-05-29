@@ -17,27 +17,32 @@ public class CyclicEventRealizationsFinder {
     private final TimeUtils timeUtils;
 
     public List<EventRealization> findCyclicEventRealizations(final CyclicEvent cyclicEvent) throws NoRealizationsOfCyclicEventFoundRuntimeException {
-        LocalDate firstRealizationDate = timeUtils.findDayOfWeekAtOrAfterDate(cyclicEvent.getDayOfWeek(), cyclicEvent.getStartBoundary());
-        if (firstRealizationDate.isAfter(cyclicEvent.getEndBoundary())) {
+        LocalDate firstRealizationDateStart = timeUtils.findDayOfWeekAtOrAfterDate(cyclicEvent.getDayOfWeek(), cyclicEvent.getStartBoundary());
+        if (firstRealizationDateStart.isAfter(cyclicEvent.getEndBoundary())) {
+            throw new NoRealizationsOfCyclicEventFoundRuntimeException();
+        }
+        LocalDateTime firstRealizationDateTimeStart = LocalDateTime.of(firstRealizationDateStart, cyclicEvent.getStartTime());
+        LocalDateTime firstRealizationDateTimeEnd = firstRealizationDateTimeStart.plus(cyclicEvent.getDuration());
+        if (firstRealizationDateTimeEnd.toLocalDate().isAfter(cyclicEvent.getEndBoundary())) {
             throw new NoRealizationsOfCyclicEventFoundRuntimeException();
         }
 
         List<EventRealization> eventRealizations = new ArrayList<>();
 
-        LocalDate currentRealizationDate = firstRealizationDate;
-        while (currentRealizationDate.isBefore(cyclicEvent.getEndBoundary()) || currentRealizationDate.isEqual(cyclicEvent.getEndBoundary())) {
-            EventRealization eventRealization = buildEventRealization(currentRealizationDate, cyclicEvent);
+        LocalDateTime currentRealizationDateTimeStart = firstRealizationDateTimeStart;
+        LocalDateTime currentRealizationDateTimeEnd = firstRealizationDateTimeEnd;
+        while (currentRealizationDateTimeEnd.toLocalDate().isBefore(cyclicEvent.getEndBoundary()) || currentRealizationDateTimeEnd.toLocalDate().isEqual(cyclicEvent.getEndBoundary())) {
+            EventRealization eventRealization = buildEventRealization(currentRealizationDateTimeStart, currentRealizationDateTimeEnd, cyclicEvent);
             eventRealizations.add(eventRealization);
-            currentRealizationDate = currentRealizationDate.plusWeeks(1);
+            currentRealizationDateTimeStart = currentRealizationDateTimeStart.plusWeeks(1);
+            currentRealizationDateTimeEnd = currentRealizationDateTimeEnd.plusWeeks(1);
         }
 
         return eventRealizations;
     }
 
-    private EventRealization buildEventRealization(LocalDate realizationDate, CyclicEvent event) {
-        LocalDateTime startDateTime = LocalDateTime.of(realizationDate, event.getStartTime());
-        LocalDateTime endDateTime = LocalDateTime.of(realizationDate, event.getEndTime());
-        return EventRealization.newDraft(event.getId(), timeUtils.toInstantFromUTCZone(startDateTime), timeUtils.toInstantFromUTCZone(endDateTime));
+    private EventRealization buildEventRealization(LocalDateTime realizationStart, LocalDateTime realizationEnd, CyclicEvent event) {
+        return EventRealization.newDraft(event.getId(), timeUtils.toInstantFromUTCZone(realizationStart), timeUtils.toInstantFromUTCZone(realizationEnd));
     }
 
 }

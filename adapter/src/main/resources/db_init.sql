@@ -31,7 +31,7 @@ CREATE TABLE "event"
     single_start_timestamp timestamp without time zone,
     single_end_timestamp   timestamp without time zone,
     cyclic_start_time      time,
-    cyclic_duration        interval,
+    cyclic_duration        bigint,
     cyclic_day_of_week     varchar(20),
     cyclic_start_boundary  date,
     cyclic_end_boundary    date,
@@ -41,12 +41,11 @@ CREATE TABLE "event"
             (type != 'SINGLE' AND single_end_timestamp IS NULL)),
     CHECK ( (type = 'SINGLE' AND single_start_timestamp < single_end_timestamp) OR type != 'SINGLE'),
     CHECK ((type = 'CYCLIC' AND cyclic_start_time IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_start_time IS NULL)),
-    CHECK ((type = 'CYCLIC' AND cyclic_end_time IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_end_time IS NULL)),
+    CHECK ((type = 'CYCLIC' AND cyclic_duration IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_duration IS NULL)),
     CHECK ((type = 'CYCLIC' AND cyclic_day_of_week IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_day_of_week IS NULL)),
     CHECK ((type = 'CYCLIC' AND cyclic_start_boundary IS NOT NULL) OR
            (type != 'CYCLIC' AND cyclic_start_boundary IS NULL)),
     CHECK ((type = 'CYCLIC' AND cyclic_end_boundary IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_end_boundary IS NULL)),
-    CHECK ( (type = 'CYCLIC' AND cyclic_start_time < cyclic_end_time) OR type != 'CYCLIC'),
     CHECK ( (type = 'CYCLIC' AND cyclic_start_boundary < cyclic_end_boundary) OR type != 'CYCLIC'),
     CHECK (status = 'DRAFT' OR status = 'FREE' OR status = 'BOOKED')
 );

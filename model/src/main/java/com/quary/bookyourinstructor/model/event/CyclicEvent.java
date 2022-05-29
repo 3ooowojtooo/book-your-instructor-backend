@@ -17,6 +17,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @ToString
 public class CyclicEvent extends Event {
 
+    private static final Duration MAX_CYCLIC_EVENT_DURATION = Duration.ofDays(7);
+
     private final LocalTime startTime;
     private final Duration duration;
     private final DayOfWeek dayOfWeek;
@@ -46,10 +48,11 @@ public class CyclicEvent extends Event {
                                                 LocalDate startBoundary, LocalDate endBoundary) {
         checkNotNull(startTime, "Cyclic event start time cannot be null");
         checkNotNull(duration, "Cyclic event end time cannot be null");
+        checkArgument(!duration.isZero(), "Cyclic event duration cannot be zero");
+        checkArgument(duration.compareTo(MAX_CYCLIC_EVENT_DURATION) < 0, "Cyclic event duration must be shorter than 1 week");
         checkNotNull(dayOfWeek, "Cyclic event day of week cannot be null");
         checkNotNull(startBoundary, "Cyclic event start boundary cannot be null");
         checkNotNull(endBoundary, "Cyclic event end boundary cannot be null");
-        checkArgument(!duration.isZero(), "Cyclic event duration cannot be zero");
         checkArgument(endBoundary.isAfter(startBoundary), "Cyclic event end boundary must be after start boundary");
     }
 }
