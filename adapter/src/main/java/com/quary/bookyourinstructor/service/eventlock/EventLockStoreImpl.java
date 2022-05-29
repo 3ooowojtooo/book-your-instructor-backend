@@ -1,6 +1,6 @@
 package com.quary.bookyourinstructor.service.eventlock;
 
-import bookyourinstructor.usecase.event.store.EventLockStore;
+import bookyourinstructor.usecase.event.common.store.EventLockStore;
 import com.quary.bookyourinstructor.entity.EventEntity;
 import com.quary.bookyourinstructor.entity.EventLockEntity;
 import com.quary.bookyourinstructor.entity.UserEntity;

@@ -1,6 +1,6 @@
 package com.quary.bookyourinstructor.service.event;
 
-import bookyourinstructor.usecase.event.store.EventStore;
+import bookyourinstructor.usecase.event.common.store.EventStore;
 import com.quary.bookyourinstructor.entity.EventEntity;
 import com.quary.bookyourinstructor.model.event.CyclicEvent;
 import com.quary.bookyourinstructor.model.event.Event;

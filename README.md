@@ -17,3 +17,18 @@ docker run -p 8080:8080 -e JWT_SECRET='di02hdf02d203h023n8H)@#0@$640348' -e DB_U
 ```
 
 On Mac / Windows use `host.docker.internal` db host instead of static address `172.17.0.1`.
+
+## ToDo list
+
+- [x] acceptEvent
+- [ ] modifyCyclicEventRealization
+- [ ] removeLock
+- [ ] removeEventDraft
+- [ ] deleting obsolete locks in createEventBookLock
+- [ ] (?) scheduler for deleting obsolete locks and event drafts
+- [ ] getSchedule
+- [ ] getEventDetails
+- [ ] getNearestEvent
+- [ ] searchEventsList
+- [ ] declareAbsence
+- [ ] modifyEvent

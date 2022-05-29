@@ -1,6 +1,6 @@
 package com.quary.bookyourinstructor.service.eventrealization;
 
-import bookyourinstructor.usecase.event.store.EventRealizationStore;
+import bookyourinstructor.usecase.event.common.store.EventRealizationStore;
 import com.quary.bookyourinstructor.entity.EventEntity;
 import com.quary.bookyourinstructor.entity.EventRealizationEntity;
 import com.quary.bookyourinstructor.model.event.EventRealization;

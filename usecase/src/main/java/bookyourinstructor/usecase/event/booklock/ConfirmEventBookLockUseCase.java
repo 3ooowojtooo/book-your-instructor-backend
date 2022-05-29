@@ -3,9 +3,9 @@ package bookyourinstructor.usecase.event.booklock;
 import bookyourinstructor.usecase.event.booklock.data.ConfirmEventBookLockData;
 import bookyourinstructor.usecase.event.booklock.exception.EventBookLockExpiredRuntimeException;
 import bookyourinstructor.usecase.event.common.exception.EventChangedRuntimeException;
-import bookyourinstructor.usecase.event.store.EventLockStore;
-import bookyourinstructor.usecase.event.store.EventRealizationStore;
-import bookyourinstructor.usecase.event.store.EventStore;
+import bookyourinstructor.usecase.event.common.store.EventLockStore;
+import bookyourinstructor.usecase.event.common.store.EventRealizationStore;
+import bookyourinstructor.usecase.event.common.store.EventStore;
 import bookyourinstructor.usecase.util.time.TimeUtils;
 import bookyourinstructor.usecase.util.tx.TransactionFacade;
 import bookyourinstructor.usecase.util.tx.TransactionIsolation;
@@ -20,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import java.time.Instant;
 import java.util.Objects;
 
+import static com.google.common.base.Preconditions.checkState;
+
 @RequiredArgsConstructor
 public class ConfirmEventBookLockUseCase {
 
@@ -33,7 +35,8 @@ public class ConfirmEventBookLockUseCase {
         final Instant now = timeUtils.nowInstant();
         try {
             transactionFacade.executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.REPEATABLE_READ, () -> {
-                final EventLock eventLock = findEventLock(data.getBookLockId());
+                final EventLock eventLock = findEventLockOrThrow(data.getBookLockId());
+                validateEventLockOwner(eventLock, data.getStudentId());
                 final Event event = findEventWithLockForUpdateOrThrow(eventLock.getEventId());
                 validateEventVersion(event, eventLock.getEventVersion());
                 validateEventFree(event);
@@ -50,9 +53,13 @@ public class ConfirmEventBookLockUseCase {
         }
     }
 
-    private EventLock findEventLock(Integer id) {
+    private EventLock findEventLockOrThrow(Integer id) {
         return eventLockStore.findById(id)
-                .orElseThrow(() -> new IllegalStateException("Event lock with id " + id + " was not found"));
+                .orElseThrow(EventBookLockExpiredRuntimeException::new);
+    }
+
+    private void validateEventLockOwner(EventLock eventLock, Integer ownerId) {
+        checkState(Objects.equals(eventLock.getUserId(), ownerId), "You can confirm only book lock that you have previously booked");
     }
 
     private Event findEventWithLockForUpdateOrThrow(Integer id) {

@@ -2,8 +2,8 @@ package bookyourinstructor.usecase.event.single;
 
 import bookyourinstructor.usecase.event.single.data.NewSingleEventData;
 import bookyourinstructor.usecase.event.single.result.DeclareSingleEventResult;
-import bookyourinstructor.usecase.event.store.EventRealizationStore;
-import bookyourinstructor.usecase.event.store.EventStore;
+import bookyourinstructor.usecase.event.common.store.EventRealizationStore;
+import bookyourinstructor.usecase.event.common.store.EventStore;
 import bookyourinstructor.usecase.util.time.TimeUtils;
 import bookyourinstructor.usecase.util.tx.TransactionFacade;
 import com.quary.bookyourinstructor.model.event.EventRealization;
