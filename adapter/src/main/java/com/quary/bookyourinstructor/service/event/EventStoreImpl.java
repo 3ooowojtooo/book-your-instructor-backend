@@ -49,4 +49,10 @@ public class EventStoreImpl implements EventStore {
     public void setStatusById(Integer id, EventStatus status) {
         eventRepository.setStatusById(id, status);
     }
+
+    @Override
+    public Optional<Event> findById(Integer id) {
+        return eventRepository.findById(id)
+                .map(mapper::mapToEvent);
+    }
 }

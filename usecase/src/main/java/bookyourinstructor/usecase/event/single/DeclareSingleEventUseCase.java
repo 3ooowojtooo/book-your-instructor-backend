@@ -1,5 +1,7 @@
 package bookyourinstructor.usecase.event.single;
 
+import bookyourinstructor.usecase.event.single.data.NewSingleEventData;
+import bookyourinstructor.usecase.event.single.result.DeclareSingleEventResult;
 import bookyourinstructor.usecase.event.store.EventRealizationStore;
 import bookyourinstructor.usecase.event.store.EventStore;
 import bookyourinstructor.usecase.util.time.TimeUtils;

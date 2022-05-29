@@ -1,6 +1,7 @@
 package bookyourinstructor.usecase.event.booklock;
 
-import bookyourinstructor.usecase.event.booklock.exception.EventChangedRuntimeException;
+import bookyourinstructor.usecase.event.booklock.data.CreateEventBookLockData;
+import bookyourinstructor.usecase.event.common.exception.EventChangedRuntimeException;
 import bookyourinstructor.usecase.event.store.EventLockStore;
 import bookyourinstructor.usecase.event.store.EventStore;
 import bookyourinstructor.usecase.util.time.TimeUtils;

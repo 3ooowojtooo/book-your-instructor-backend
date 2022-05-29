@@ -1,15 +1,17 @@
 package com.quary.bookyourinstructor.controller.event;
 
-import bookyourinstructor.usecase.event.booklock.ConfirmEventBookLockData;
 import bookyourinstructor.usecase.event.booklock.ConfirmEventBookLockUseCase;
-import bookyourinstructor.usecase.event.booklock.CreateEventBookLockData;
 import bookyourinstructor.usecase.event.booklock.CreateEventBookLockUseCase;
-import bookyourinstructor.usecase.event.cyclic.result.DeclareCyclicEventResult;
+import bookyourinstructor.usecase.event.booklock.data.ConfirmEventBookLockData;
+import bookyourinstructor.usecase.event.booklock.data.CreateEventBookLockData;
+import bookyourinstructor.usecase.event.common.AcceptEventUseCase;
+import bookyourinstructor.usecase.event.common.data.AcceptEventData;
 import bookyourinstructor.usecase.event.cyclic.DeclareCyclicEventUseCase;
 import bookyourinstructor.usecase.event.cyclic.data.NewCyclicEventData;
-import bookyourinstructor.usecase.event.single.DeclareSingleEventResult;
+import bookyourinstructor.usecase.event.cyclic.result.DeclareCyclicEventResult;
 import bookyourinstructor.usecase.event.single.DeclareSingleEventUseCase;
-import bookyourinstructor.usecase.event.single.NewSingleEventData;
+import bookyourinstructor.usecase.event.single.data.NewSingleEventData;
+import bookyourinstructor.usecase.event.single.result.DeclareSingleEventResult;
 import com.quary.bookyourinstructor.configuration.security.annotation.InstructorAllowed;
 import com.quary.bookyourinstructor.configuration.security.annotation.StudentAllowed;
 import com.quary.bookyourinstructor.configuration.security.model.UserContext;
@@ -39,6 +41,7 @@ public class EventController {
     private final DeclareCyclicEventUseCase declareCyclicEventUseCase;
     private final CreateEventBookLockUseCase createEventBookLockUseCase;
     private final ConfirmEventBookLockUseCase confirmEventBookLockUseCase;
+    private final AcceptEventUseCase acceptEventUseCase;
 
     @PostMapping(path = "/single", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @InstructorAllowed
@@ -56,6 +59,14 @@ public class EventController {
         final NewCyclicEventData eventData = mapper.mapToNewCyclicEventData(request, user.getId());
         final DeclareCyclicEventResult result = declareCyclicEventUseCase.declareNewCyclicEvent(eventData);
         return mapper.mapToDeclareCyclicEventResponse(result);
+    }
+
+    @PutMapping(path = "/{id}/accept")
+    @InstructorAllowed
+    public void acceptEvent(@PathVariable("id") final Integer eventId,
+                            @AuthenticationPrincipal final UserContext user) {
+        final AcceptEventData data = new AcceptEventData(eventId, user.getId());
+        acceptEventUseCase.acceptEvent(data);
     }
 
     @PostMapping(path = "/{id}/{version}/book-lock", produces = MediaType.APPLICATION_JSON_VALUE)

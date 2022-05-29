@@ -1,4 +1,4 @@
-package bookyourinstructor.usecase.event.single;
+package bookyourinstructor.usecase.event.single.data;
 
 import lombok.Getter;
 
