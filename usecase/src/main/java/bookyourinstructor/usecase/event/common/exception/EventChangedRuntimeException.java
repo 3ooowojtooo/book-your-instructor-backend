@@ -1,4 +1,4 @@
-package bookyourinstructor.usecase.event.booklock.exception;
+package bookyourinstructor.usecase.event.common.exception;
 
 public class EventChangedRuntimeException extends RuntimeException {
 

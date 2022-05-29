@@ -4,6 +4,7 @@ import bookyourinstructor.usecase.event.store.EventRealizationStore;
 import com.quary.bookyourinstructor.entity.EventEntity;
 import com.quary.bookyourinstructor.entity.EventRealizationEntity;
 import com.quary.bookyourinstructor.model.event.EventRealization;
+import com.quary.bookyourinstructor.model.event.EventRealizationStatus;
 import com.quary.bookyourinstructor.repository.EventRealizationRepository;
 import com.quary.bookyourinstructor.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,11 @@ public class EventRealizationStoreImpl implements EventRealizationStore {
     @Override
     public void setStudentIdForEventRealizations(Integer studentId, Integer eventId) {
         eventRealizationRepository.setStudentIdForEventRealizations(studentId, eventId);
+    }
+
+    @Override
+    public void setStatusForEventRealizations(EventRealizationStatus status, Integer eventId) {
+        eventRealizationRepository.setStatusForEventRealizations(status, eventId);
     }
 
     private EventRealizationEntity mapToEntity(EventRealization eventRealization) {

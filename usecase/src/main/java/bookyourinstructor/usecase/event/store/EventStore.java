@@ -18,4 +18,6 @@ public interface EventStore {
     Optional<Event> findByIdWithLockForUpdate(Integer id);
 
     void setStatusById(Integer id, EventStatus status);
+
+    Optional<Event> findById(Integer id);
 }

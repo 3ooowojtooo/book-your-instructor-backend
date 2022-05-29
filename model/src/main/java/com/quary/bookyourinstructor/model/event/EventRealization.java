@@ -21,7 +21,7 @@ public class EventRealization {
     private Integer studentId;
     private final Instant start;
     private final Instant end;
-    private EventRealizationStatus status;
+    private final EventRealizationStatus status;
 
     public static EventRealization newDraft(Integer eventId, Instant start, Instant end) {
         return new EventRealization(null, eventId, null, start, end, EventRealizationStatus.DRAFT);

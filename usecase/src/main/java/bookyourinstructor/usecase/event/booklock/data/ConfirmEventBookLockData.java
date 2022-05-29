@@ -1,4 +1,4 @@
-package bookyourinstructor.usecase.event.booklock;
+package bookyourinstructor.usecase.event.booklock.data;
 
 import lombok.Getter;
 

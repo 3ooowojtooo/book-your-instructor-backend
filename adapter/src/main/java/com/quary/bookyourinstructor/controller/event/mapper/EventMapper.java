@@ -1,7 +1,7 @@
 package com.quary.bookyourinstructor.controller.event.mapper;
 
 import bookyourinstructor.usecase.event.cyclic.result.DeclareCyclicEventResult;
-import bookyourinstructor.usecase.event.single.DeclareSingleEventResult;
+import bookyourinstructor.usecase.event.single.result.DeclareSingleEventResult;
 import com.quary.bookyourinstructor.configuration.mapper.DependencyInjectionMapperConfig;
 import com.quary.bookyourinstructor.controller.event.request.DeclareCyclicEventRequest;
 import com.quary.bookyourinstructor.controller.event.request.DeclareSingleEventRequest;
@@ -12,7 +12,7 @@ import com.quary.bookyourinstructor.controller.event.response.EventRealizationTi
 import com.quary.bookyourinstructor.model.event.EventLock;
 import com.quary.bookyourinstructor.model.event.EventRealization;
 import bookyourinstructor.usecase.event.cyclic.data.NewCyclicEventData;
-import bookyourinstructor.usecase.event.single.NewSingleEventData;
+import bookyourinstructor.usecase.event.single.data.NewSingleEventData;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

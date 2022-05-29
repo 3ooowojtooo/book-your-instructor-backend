@@ -1,7 +1,8 @@
 package bookyourinstructor.usecase.event.booklock;
 
+import bookyourinstructor.usecase.event.booklock.data.ConfirmEventBookLockData;
 import bookyourinstructor.usecase.event.booklock.exception.EventBookLockExpiredRuntimeException;
-import bookyourinstructor.usecase.event.booklock.exception.EventChangedRuntimeException;
+import bookyourinstructor.usecase.event.common.exception.EventChangedRuntimeException;
 import bookyourinstructor.usecase.event.store.EventLockStore;
 import bookyourinstructor.usecase.event.store.EventRealizationStore;
 import bookyourinstructor.usecase.event.store.EventStore;

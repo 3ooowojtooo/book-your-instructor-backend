@@ -1,4 +1,4 @@
-package bookyourinstructor.usecase.event.single;
+package bookyourinstructor.usecase.event.single.result;
 
 import com.quary.bookyourinstructor.model.event.EventRealization;
 import lombok.Getter;
