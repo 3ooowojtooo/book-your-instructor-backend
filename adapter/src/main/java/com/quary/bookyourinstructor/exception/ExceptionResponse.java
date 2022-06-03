@@ -14,6 +14,11 @@ public final class ExceptionResponse {
 
     private final String errorCode;
     private final String message;
+    private final Object data;
+
+    private ExceptionResponse(String errorCode, String message) {
+        this(errorCode, message, null);
+    }
 
     public static ExceptionResponse of(final BaseException baseException) {
         return new ExceptionResponse(baseException.getErrorCode().getStringRepresentation(), baseException.getMessage());
@@ -27,7 +32,8 @@ public final class ExceptionResponse {
         return new ExceptionResponse(errorCode.getStringRepresentation(), null);
     }
 
-    public static ExceptionResponse of(final String message) {
-        return new ExceptionResponse(null, message);
+    public static ExceptionResponse of(final BaseException baseException, final Object data) {
+        return new ExceptionResponse(baseException.getErrorCode().getStringRepresentation(),
+                baseException.getMessage(), data);
     }
 }

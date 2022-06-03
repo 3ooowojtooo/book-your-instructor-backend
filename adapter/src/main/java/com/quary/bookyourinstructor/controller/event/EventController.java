@@ -7,7 +7,9 @@ import bookyourinstructor.usecase.event.booklock.data.CreateEventBookLockData;
 import bookyourinstructor.usecase.event.common.AcceptEventUseCase;
 import bookyourinstructor.usecase.event.common.data.AcceptEventData;
 import bookyourinstructor.usecase.event.cyclic.DeclareCyclicEventUseCase;
+import bookyourinstructor.usecase.event.cyclic.UpdateCyclicEventRealizationUseCase;
 import bookyourinstructor.usecase.event.cyclic.data.NewCyclicEventData;
+import bookyourinstructor.usecase.event.cyclic.data.UpdateCyclicEventRealizationData;
 import bookyourinstructor.usecase.event.cyclic.result.DeclareCyclicEventResult;
 import bookyourinstructor.usecase.event.single.DeclareSingleEventUseCase;
 import bookyourinstructor.usecase.event.single.data.NewSingleEventData;
@@ -18,14 +20,12 @@ import com.quary.bookyourinstructor.configuration.security.model.UserContext;
 import com.quary.bookyourinstructor.controller.event.mapper.EventMapper;
 import com.quary.bookyourinstructor.controller.event.request.DeclareCyclicEventRequest;
 import com.quary.bookyourinstructor.controller.event.request.DeclareSingleEventRequest;
+import com.quary.bookyourinstructor.controller.event.request.UpdateCyclicEventRealizationRequest;
 import com.quary.bookyourinstructor.controller.event.response.CreateEventBookLockResponse;
 import com.quary.bookyourinstructor.controller.event.response.DeclareCyclicEventResponse;
 import com.quary.bookyourinstructor.controller.event.response.DeclareSingleEventResponse;
 import com.quary.bookyourinstructor.model.event.EventLock;
-import com.quary.bookyourinstructor.model.event.exception.EventBookLockExpiredException;
-import com.quary.bookyourinstructor.model.event.exception.EventBookingAlreadyLockedException;
-import com.quary.bookyourinstructor.model.event.exception.EventChangedException;
-import com.quary.bookyourinstructor.model.event.exception.InvalidCyclicEventBoundariesException;
+import com.quary.bookyourinstructor.model.event.exception.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -42,6 +42,7 @@ public class EventController {
     private final CreateEventBookLockUseCase createEventBookLockUseCase;
     private final ConfirmEventBookLockUseCase confirmEventBookLockUseCase;
     private final AcceptEventUseCase acceptEventUseCase;
+    private final UpdateCyclicEventRealizationUseCase updateCyclicEventRealizationUseCase;
 
     @PostMapping(path = "/single", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @InstructorAllowed
@@ -59,6 +60,16 @@ public class EventController {
         final NewCyclicEventData eventData = mapper.mapToNewCyclicEventData(request, user.getId());
         final DeclareCyclicEventResult result = declareCyclicEventUseCase.declareNewCyclicEvent(eventData);
         return mapper.mapToDeclareCyclicEventResponse(result);
+    }
+
+    @PutMapping(path = "/cyclic/realization/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @InstructorAllowed
+    public void updateCyclicEventRealization(@RequestBody final UpdateCyclicEventRealizationRequest request,
+                                             @PathVariable("id") Integer eventRealizationId,
+                                             @AuthenticationPrincipal final UserContext user) throws CyclicEventRealizationCollisionException {
+        UpdateCyclicEventRealizationData data = mapper.mapToUpdateCyclicEventRealizationData(request, eventRealizationId,
+                user.getId());
+        updateCyclicEventRealizationUseCase.updateCyclicEventRealization(data);
     }
 
     @PutMapping(path = "/{id}/accept")

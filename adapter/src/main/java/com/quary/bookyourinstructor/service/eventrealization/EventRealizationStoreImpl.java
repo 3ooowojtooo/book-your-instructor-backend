@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -48,6 +49,20 @@ public class EventRealizationStoreImpl implements EventRealizationStore {
     @Override
     public void setStatusForEventRealizations(EventRealizationStatus status, Integer eventId) {
         eventRealizationRepository.setStatusForEventRealizations(status, eventId);
+    }
+
+    @Override
+    public Optional<EventRealization> findById(Integer eventRealizationId) {
+        return eventRealizationRepository.findById(eventRealizationId)
+                .map(mapper::mapToEventRealization);
+    }
+
+    @Override
+    public List<EventRealization> findAllRealizations(Integer eventId) {
+        return eventRealizationRepository.findAllByEventId(eventId)
+                .stream()
+                .map(mapper::mapToEventRealization)
+                .collect(Collectors.toList());
     }
 
     private EventRealizationEntity mapToEntity(EventRealization eventRealization) {
