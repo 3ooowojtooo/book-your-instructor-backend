@@ -54,7 +54,7 @@ public class EventConfiguration {
 
     @Bean
     UpdateCyclicEventRealizationUseCase updateCyclicEventRealizationUseCase(EventStore eventStore, EventRealizationStore eventRealizationStore,
-                                                                            TransactionFacade transactionFacade) {
-        return new UpdateCyclicEventRealizationUseCase(eventStore, eventRealizationStore, transactionFacade);
+                                                                            TransactionFacade transactionFacade, TimeUtils timeUtils) {
+        return new UpdateCyclicEventRealizationUseCase(eventStore, eventRealizationStore, transactionFacade, timeUtils);
     }
 }

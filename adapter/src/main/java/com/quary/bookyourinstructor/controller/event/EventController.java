@@ -66,7 +66,8 @@ public class EventController {
     @InstructorAllowed
     public void updateCyclicEventRealization(@RequestBody final UpdateCyclicEventRealizationRequest request,
                                              @PathVariable("id") Integer eventRealizationId,
-                                             @AuthenticationPrincipal final UserContext user) throws CyclicEventRealizationCollisionException {
+                                             @AuthenticationPrincipal final UserContext user)
+            throws CyclicEventRealizationCollisionException, CyclicEventRealizationOutOfEventBoundException {
         UpdateCyclicEventRealizationData data = mapper.mapToUpdateCyclicEventRealizationData(request, eventRealizationId,
                 user.getId());
         updateCyclicEventRealizationUseCase.updateCyclicEventRealization(data);

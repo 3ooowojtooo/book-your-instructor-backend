@@ -4,17 +4,18 @@ import bookyourinstructor.usecase.event.common.store.EventRealizationStore;
 import bookyourinstructor.usecase.event.common.store.EventStore;
 import bookyourinstructor.usecase.event.cyclic.data.UpdateCyclicEventRealizationData;
 import bookyourinstructor.usecase.event.cyclic.exception.CyclicEventRealizationCollisionRuntimeException;
+import bookyourinstructor.usecase.event.cyclic.exception.CyclicEventRealizationOutOfEventBoundRuntimeException;
+import bookyourinstructor.usecase.util.time.TimeUtils;
 import bookyourinstructor.usecase.util.tx.TransactionFacade;
 import bookyourinstructor.usecase.util.tx.TransactionIsolation;
 import bookyourinstructor.usecase.util.tx.TransactionPropagation;
-import com.quary.bookyourinstructor.model.event.Event;
-import com.quary.bookyourinstructor.model.event.EventRealization;
-import com.quary.bookyourinstructor.model.event.EventRealizationStatus;
-import com.quary.bookyourinstructor.model.event.EventType;
+import com.quary.bookyourinstructor.model.event.*;
 import com.quary.bookyourinstructor.model.event.exception.CyclicEventRealizationCollisionException;
+import com.quary.bookyourinstructor.model.event.exception.CyclicEventRealizationOutOfEventBoundException;
 import lombok.RequiredArgsConstructor;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -28,15 +29,18 @@ public class UpdateCyclicEventRealizationUseCase {
     private final EventStore eventStore;
     private final EventRealizationStore eventRealizationStore;
     private final TransactionFacade transactionFacade;
+    private final TimeUtils timeUtils;
 
-    public void updateCyclicEventRealization(final UpdateCyclicEventRealizationData data) throws CyclicEventRealizationCollisionException {
+    public void updateCyclicEventRealization(final UpdateCyclicEventRealizationData data)
+            throws CyclicEventRealizationCollisionException, CyclicEventRealizationOutOfEventBoundException {
         try {
             transactionFacade.executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.READ_COMMITTED, () -> {
                 EventRealization eventRealization = findEventRealizationOrThrow(data.getEventRealizationId());
                 Event event = findEventOrThrow(eventRealization.getEventId());
-                validateEventCyclic(event);
+                CyclicEvent cyclicEvent = validateEventCyclic(event);
                 validateEventOwner(event, data.getInstructorId());
                 validateEventRealizationDraft(eventRealization);
+                validateNewRealizationTimeWithinEventBoundaries(cyclicEvent, data.getStart(), data.getEnd());
                 validateNoCollisionWithOtherRealizations(eventRealization, data.getStart(), data.getEnd());
                 eventRealization.setNewTimeBoundaries(data.getStart(), data.getEnd());
                 eventRealizationStore.saveEventRealization(eventRealization);
@@ -44,6 +48,8 @@ public class UpdateCyclicEventRealizationUseCase {
             });
         } catch (CyclicEventRealizationCollisionRuntimeException e) {
             throw new CyclicEventRealizationCollisionException(e.getCollidingRealizations(), e);
+        } catch (CyclicEventRealizationOutOfEventBoundRuntimeException e) {
+            throw new CyclicEventRealizationOutOfEventBoundException(e);
         }
     }
 
@@ -57,8 +63,9 @@ public class UpdateCyclicEventRealizationUseCase {
                 .orElseThrow(() -> new IllegalArgumentException("Event with id " + eventId + " was not found"));
     }
 
-    private void validateEventCyclic(Event event) {
+    private CyclicEvent validateEventCyclic(Event event) {
         checkState(event.getType() == EventType.CYCLIC, "You can only change realization of cyclic event");
+        return (CyclicEvent) event;
     }
 
     private void validateEventRealizationDraft(EventRealization eventRealization) {
@@ -67,6 +74,15 @@ public class UpdateCyclicEventRealizationUseCase {
 
     private void validateEventOwner(Event event, Integer ownerId) {
         checkArgument(Objects.equals(event.getInstructorId(), ownerId), "You can only change realization of your event");
+    }
+
+    private void validateNewRealizationTimeWithinEventBoundaries(CyclicEvent event, Instant newStart, Instant newEnd)
+            throws CyclicEventRealizationOutOfEventBoundRuntimeException {
+        LocalDate newStartLocalDate = timeUtils.toLocalDateTimeUTCZone(newStart).toLocalDate();
+        LocalDate newEndLocalDate = timeUtils.toLocalDateTimeUTCZone(newEnd).toLocalDate();
+        if (newStartLocalDate.isBefore(event.getStartBoundary()) || newEndLocalDate.isAfter(event.getEndBoundary())) {
+            throw new CyclicEventRealizationOutOfEventBoundRuntimeException();
+        }
     }
 
     private void validateNoCollisionWithOtherRealizations(EventRealization currentRealization, Instant newStart, Instant newEnd)

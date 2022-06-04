@@ -29,6 +29,12 @@ public enum TimeUtilsImpl implements TimeUtils {
     }
 
     @Override
+    public LocalDateTime toLocalDateTimeUTCZone(Instant instant) {
+        return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
+    }
+
+
+    @Override
     public Instant toInstantFromSystemZone(LocalDateTime localDateTime) {
         return localDateTime.toInstant(createZoneOffset());
     }
