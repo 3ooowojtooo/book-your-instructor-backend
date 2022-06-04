@@ -1,4 +1,4 @@
-package bookyourinstructor.usecase.event.store;
+package bookyourinstructor.usecase.event.common.store;
 
 import com.quary.bookyourinstructor.model.event.EventLock;
 

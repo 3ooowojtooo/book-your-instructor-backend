@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface EventRealizationRepository extends CrudRepository<EventRealizationEntity, Integer> {
 
@@ -17,4 +19,7 @@ public interface EventRealizationRepository extends CrudRepository<EventRealizat
     @Modifying
     @Query("update EventRealizationEntity r set r.status = ?1 where r.event.id = ?2")
     void setStatusForEventRealizations(EventRealizationStatus status, Integer eventId);
+
+    @Query("select r from EventRealizationEntity r where r.event.id = ?1")
+    List<EventRealizationEntity> findAllByEventId(final Integer eventId);
 }

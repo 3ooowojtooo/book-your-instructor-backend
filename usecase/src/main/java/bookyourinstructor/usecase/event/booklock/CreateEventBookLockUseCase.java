@@ -2,8 +2,8 @@ package bookyourinstructor.usecase.event.booklock;
 
 import bookyourinstructor.usecase.event.booklock.data.CreateEventBookLockData;
 import bookyourinstructor.usecase.event.common.exception.EventChangedRuntimeException;
-import bookyourinstructor.usecase.event.store.EventLockStore;
-import bookyourinstructor.usecase.event.store.EventStore;
+import bookyourinstructor.usecase.event.common.store.EventLockStore;
+import bookyourinstructor.usecase.event.common.store.EventStore;
 import bookyourinstructor.usecase.util.time.TimeUtils;
 import bookyourinstructor.usecase.util.tx.TransactionFacade;
 import bookyourinstructor.usecase.util.tx.TransactionIsolation;

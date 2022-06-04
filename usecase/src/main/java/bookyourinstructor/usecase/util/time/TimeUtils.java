@@ -10,6 +10,8 @@ public interface TimeUtils {
 
     LocalDateTime toLocalDateTimeSystemZone(Instant instant);
 
+    LocalDateTime toLocalDateTimeUTCZone(Instant instant);
+
     Instant toInstantFromSystemZone(LocalDateTime localDateTime);
 
     Instant toInstantFromUTCZone(LocalDateTime localDateTime);

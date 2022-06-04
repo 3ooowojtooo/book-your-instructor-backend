@@ -6,9 +6,9 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.Instant;
-import java.time.OffsetDateTime;
 
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 @Getter
 @EqualsAndHashCode
@@ -19,8 +19,8 @@ public class EventRealization {
     private final Integer eventId;
     @Setter
     private Integer studentId;
-    private final Instant start;
-    private final Instant end;
+    private Instant start;
+    private Instant end;
     private final EventRealizationStatus status;
 
     public static EventRealization newDraft(Integer eventId, Instant start, Instant end) {
@@ -43,5 +43,19 @@ public class EventRealization {
         checkNotNull(end, "Event realization end timestamp cannot be null");
         checkArgument(end.isAfter(start), "Event realization end timestamp must be after start timestamp");
         checkNotNull(status, "Event realization status cannot be null");
+    }
+
+    public void setNewTimeBoundaries(Instant start, Instant end) {
+        checkNotNull(start, "Event realization start cannot be null");
+        checkNotNull(end, "Event realization end cannot be null");
+        checkArgument(start.isBefore(end), "Event realization start must be before end");
+        this.start = start;
+        this.end = end;
+    }
+
+    public boolean collidesWithTimeBoundaries(Instant start, Instant end) {
+        boolean hasNoCollision = (start.isBefore(this.start) && (end.isBefore(this.start) || end.equals(this.start))) ||
+                ((start.isAfter(this.end) || start.equals(this.end)) && end.isAfter(this.end));
+        return !hasNoCollision;
     }
 }
