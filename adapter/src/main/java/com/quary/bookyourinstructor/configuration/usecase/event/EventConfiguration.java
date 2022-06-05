@@ -4,6 +4,7 @@ import bookyourinstructor.usecase.event.booklock.ConfirmEventBookLockUseCase;
 import bookyourinstructor.usecase.event.booklock.CreateEventBookLockUseCase;
 import bookyourinstructor.usecase.event.booklock.DeleteEventBookLockUseCase;
 import bookyourinstructor.usecase.event.common.AcceptEventUseCase;
+import bookyourinstructor.usecase.event.common.DeleteDraftEventUseCase;
 import bookyourinstructor.usecase.event.cyclic.DeclareCyclicEventUseCase;
 import bookyourinstructor.usecase.event.cyclic.UpdateCyclicEventRealizationUseCase;
 import bookyourinstructor.usecase.event.cyclic.helper.CyclicEventRealizationsFinder;
@@ -62,5 +63,11 @@ public class EventConfiguration {
     @Bean
     DeleteEventBookLockUseCase deleteEventBookLockUseCase(EventLockStore eventLockStore, TransactionFacade transactionFacade) {
         return new DeleteEventBookLockUseCase(eventLockStore, transactionFacade);
+    }
+
+    @Bean
+    DeleteDraftEventUseCase deleteDraftEventUseCase(EventStore eventStore, EventRealizationStore eventRealizationStore,
+                                                    TransactionFacade transactionFacade) {
+        return new DeleteDraftEventUseCase(eventStore, eventRealizationStore, transactionFacade);
     }
 }
