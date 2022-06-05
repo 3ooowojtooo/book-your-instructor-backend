@@ -7,7 +7,9 @@ import bookyourinstructor.usecase.event.booklock.data.ConfirmEventBookLockData;
 import bookyourinstructor.usecase.event.booklock.data.CreateEventBookLockData;
 import bookyourinstructor.usecase.event.booklock.data.DeleteEventBookLockData;
 import bookyourinstructor.usecase.event.common.AcceptEventUseCase;
+import bookyourinstructor.usecase.event.common.DeleteDraftEventUseCase;
 import bookyourinstructor.usecase.event.common.data.AcceptEventData;
+import bookyourinstructor.usecase.event.common.data.DeleteDraftEventData;
 import bookyourinstructor.usecase.event.cyclic.DeclareCyclicEventUseCase;
 import bookyourinstructor.usecase.event.cyclic.UpdateCyclicEventRealizationUseCase;
 import bookyourinstructor.usecase.event.cyclic.data.NewCyclicEventData;
@@ -46,6 +48,7 @@ public class EventController {
     private final AcceptEventUseCase acceptEventUseCase;
     private final UpdateCyclicEventRealizationUseCase updateCyclicEventRealizationUseCase;
     private final DeleteEventBookLockUseCase deleteEventBookLockUseCase;
+    private final DeleteDraftEventUseCase deleteDraftEventUseCase;
 
     @PostMapping(path = "/single", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @InstructorAllowed
@@ -63,6 +66,14 @@ public class EventController {
         final NewCyclicEventData eventData = mapper.mapToNewCyclicEventData(request, user.getId());
         final DeclareCyclicEventResult result = declareCyclicEventUseCase.declareNewCyclicEvent(eventData);
         return mapper.mapToDeclareCyclicEventResponse(result);
+    }
+
+    @DeleteMapping(path = "/{id}/draft")
+    @InstructorAllowed
+    public void deleteEventDraft(@PathVariable("id") Integer eventId,
+                                 @AuthenticationPrincipal UserContext user) {
+        DeleteDraftEventData data = new DeleteDraftEventData(eventId, user.getId());
+        deleteDraftEventUseCase.deleteDraftEvent(data);
     }
 
     @PutMapping(path = "/cyclic/realization/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)

@@ -55,4 +55,9 @@ public class EventStoreImpl implements EventStore {
         return eventRepository.findById(id)
                 .map(mapper::mapToEvent);
     }
+
+    @Override
+    public void deleteById(Integer id) {
+        eventRepository.deleteById(id);
+    }
 }

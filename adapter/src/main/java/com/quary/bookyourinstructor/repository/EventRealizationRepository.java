@@ -22,4 +22,7 @@ public interface EventRealizationRepository extends CrudRepository<EventRealizat
 
     @Query("select r from EventRealizationEntity r where r.event.id = ?1")
     List<EventRealizationEntity> findAllByEventId(final Integer eventId);
+
+    @Modifying
+    void deleteAllByEventId(Integer eventId);
 }

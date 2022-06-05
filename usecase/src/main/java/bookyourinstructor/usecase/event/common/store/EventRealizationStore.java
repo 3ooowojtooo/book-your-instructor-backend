@@ -19,4 +19,6 @@ public interface EventRealizationStore {
     void setStatusForEventRealizations(final EventRealizationStatus status, final Integer eventId);
 
     List<EventRealization> findAllRealizations(final Integer eventId);
+
+    void deleteRealizationsByEventId(final Integer eventId);
 }
