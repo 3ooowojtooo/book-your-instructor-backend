@@ -2,8 +2,10 @@ package com.quary.bookyourinstructor.controller.event;
 
 import bookyourinstructor.usecase.event.booklock.ConfirmEventBookLockUseCase;
 import bookyourinstructor.usecase.event.booklock.CreateEventBookLockUseCase;
+import bookyourinstructor.usecase.event.booklock.DeleteEventBookLockUseCase;
 import bookyourinstructor.usecase.event.booklock.data.ConfirmEventBookLockData;
 import bookyourinstructor.usecase.event.booklock.data.CreateEventBookLockData;
+import bookyourinstructor.usecase.event.booklock.data.DeleteEventBookLockData;
 import bookyourinstructor.usecase.event.common.AcceptEventUseCase;
 import bookyourinstructor.usecase.event.common.data.AcceptEventData;
 import bookyourinstructor.usecase.event.cyclic.DeclareCyclicEventUseCase;
@@ -43,6 +45,7 @@ public class EventController {
     private final ConfirmEventBookLockUseCase confirmEventBookLockUseCase;
     private final AcceptEventUseCase acceptEventUseCase;
     private final UpdateCyclicEventRealizationUseCase updateCyclicEventRealizationUseCase;
+    private final DeleteEventBookLockUseCase deleteEventBookLockUseCase;
 
     @PostMapping(path = "/single", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @InstructorAllowed
@@ -97,5 +100,13 @@ public class EventController {
                                 @AuthenticationPrincipal final UserContext user) throws EventChangedException, EventBookLockExpiredException {
         ConfirmEventBookLockData data = new ConfirmEventBookLockData(bookLockId, user.getId());
         confirmEventBookLockUseCase.confirmEventBookLock(data);
+    }
+
+    @DeleteMapping(path = "/book-lock/{id}")
+    @StudentAllowed
+    public void removeBookLock(@PathVariable("id") final Integer bookLockId,
+                               @AuthenticationPrincipal final UserContext user) {
+        DeleteEventBookLockData data = new DeleteEventBookLockData(bookLockId, user.getId());
+        deleteEventBookLockUseCase.deleteBookLock(data);
     }
 }
