@@ -43,7 +43,7 @@ public class ConfirmEventBookLockUseCase {
                 validateEventBookLockValidity(eventLock, now);
                 eventRealizationStore.setStudentIdForEventRealizations(data.getStudentId(), event.getId());
                 eventLockStore.deleteById(eventLock.getId());
-                eventStore.setStatusById(event.getId(), EventStatus.BOOKED);
+                eventStore.setStatusByIdAndIncrementVersion(event.getId(), EventStatus.BOOKED);
                 return null;
             });
         } catch (EventChangedRuntimeException e) {

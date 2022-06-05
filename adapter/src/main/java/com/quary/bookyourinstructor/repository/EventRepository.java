@@ -22,5 +22,5 @@ public interface EventRepository extends CrudRepository<EventEntity, Integer> {
 
     @Modifying
     @Query(value = "update EventEntity e set e.status = ?2, e.version = e.version + 1 where e.id = ?1")
-    void setStatusById(Integer id, EventStatus eventStatus);
+    void setStatusByIdAndIncrementVersion(Integer id, EventStatus eventStatus);
 }

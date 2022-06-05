@@ -46,8 +46,8 @@ public class EventStoreImpl implements EventStore {
     }
 
     @Override
-    public void setStatusById(Integer id, EventStatus status) {
-        eventRepository.setStatusById(id, status);
+    public void setStatusByIdAndIncrementVersion(Integer id, EventStatus status) {
+        eventRepository.setStatusByIdAndIncrementVersion(id, status);
     }
 
     @Override
