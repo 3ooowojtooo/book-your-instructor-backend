@@ -35,8 +35,10 @@ public class StudentAbsenceReporter {
         try {
             transactionFacade.executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.REPEATABLE_READ, () -> {
                 EventRealization eventRealization = findEventRealizationWithLockForUpdateOrThrow(data.getEventRealizationId());
-                validateEventNotStarted(eventRealization, now);
+                validateEventRealizationStatus(eventRealization);
+                validateEventRealizationNotStarted(eventRealization, now);
                 validateEventRealizationOwner(eventRealization, data.getUser().getId());
+                validateEventRealizationNotReportedAbsence(eventRealization, data.getUser().getId());
                 Event event = findEventWithLockForUpdateOrThrow(eventRealization.getEventId());
                 validateEventVersion(event, data.getEventVersion());
                 EventStudentAbsence absence = buildAbsence(event, eventRealization, data.getUser().getId());
@@ -63,12 +65,21 @@ public class StudentAbsenceReporter {
                 .orElseThrow(() -> new IllegalArgumentException("Event realization with id " + eventRealizationId + " was not found"));
     }
 
-    private static void validateEventNotStarted(EventRealization eventRealization, Instant now) {
+    private static void validateEventRealizationStatus(EventRealization eventRealization) {
+        checkState(eventRealization.getStatus() == EventRealizationStatus.ACCEPTED, "You can only report abuse for accepted event");
+    }
+
+    private static void validateEventRealizationNotStarted(EventRealization eventRealization, Instant now) {
         checkState(now.isBefore(eventRealization.getStart()), "You can report absence only on not started events");
     }
 
     private static void validateEventRealizationOwner(EventRealization eventRealization, Integer ownerId) {
         checkArgument(Objects.equals(eventRealization.getStudentId(), ownerId), "You can only report absent for your own events");
+    }
+
+    private void validateEventRealizationNotReportedAbsence(EventRealization eventRealization, Integer studentId) {
+        boolean absenceExists = eventStudentAbsenceStore.existsByRealizationIdAndStudentId(eventRealization.getId(), studentId);
+        checkState(!absenceExists, "You already reported absence for this event");
     }
 
     private Event findEventWithLockForUpdateOrThrow(Integer id) {

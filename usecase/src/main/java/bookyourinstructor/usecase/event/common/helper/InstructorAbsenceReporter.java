@@ -12,7 +12,6 @@ import bookyourinstructor.usecase.util.tx.TransactionPropagation;
 import com.quary.bookyourinstructor.model.event.Event;
 import com.quary.bookyourinstructor.model.event.EventRealization;
 import com.quary.bookyourinstructor.model.event.EventRealizationStatus;
-import com.quary.bookyourinstructor.model.event.EventType;
 import com.quary.bookyourinstructor.model.event.exception.EventChangedException;
 import lombok.RequiredArgsConstructor;
 
@@ -36,7 +35,8 @@ public class InstructorAbsenceReporter {
         try {
             transactionFacade.executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.REPEATABLE_READ, () -> {
                 EventRealization eventRealization = findEventRealizationWithLockForUpdateOrThrow(data.getEventRealizationId());
-                validateEventNotStarted(eventRealization, now);
+                validateEventRealizationStatus(eventRealization);
+                validateEventRealizationNotStarted(eventRealization, now);
                 Event event = findEventWithLockForUpdateOrThrow(eventRealization.getEventId());
                 validateEventOwner(event, data.getUser().getId());
                 validateEventVersion(event, data.getEventVersion());
@@ -58,7 +58,11 @@ public class InstructorAbsenceReporter {
                 .orElseThrow(() -> new IllegalArgumentException("Event realization with id " + eventRealizationId + " was not found"));
     }
 
-    private static void validateEventNotStarted(EventRealization eventRealization, Instant now) {
+    private static void validateEventRealizationStatus(EventRealization eventRealization) {
+        checkState(eventRealization.getStatus() == EventRealizationStatus.ACCEPTED, "You can only report abuse for accepted event");
+    }
+
+    private static void validateEventRealizationNotStarted(EventRealization eventRealization, Instant now) {
         checkState(now.isBefore(eventRealization.getStart()), "You can report absence only on not started events");
     }
 

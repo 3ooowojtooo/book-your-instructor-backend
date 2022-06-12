@@ -28,6 +28,11 @@ public class EventStudentAbsenceStoreImpl implements EventStudentAbsenceStore {
         absenceRepository.save(entity);
     }
 
+    @Override
+    public boolean existsByRealizationIdAndStudentId(Integer eventRealizationId, Integer studentId) {
+        return absenceRepository.existsByRealizationIdAndStudentId(eventRealizationId, studentId);
+    }
+
     private EventStudentAbsenceEntity mapToEntity(EventStudentAbsence absence) {
         Integer eventRealizationId = absence.getEventRealizationId();
         Integer studentId = absence.getStudentId();
