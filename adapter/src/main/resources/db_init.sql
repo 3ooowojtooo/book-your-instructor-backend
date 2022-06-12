@@ -39,7 +39,8 @@ CREATE TABLE "event"
             (type != 'SINGLE' AND single_start_timestamp IS NULL)),
     CHECK ( (type = 'SINGLE' AND single_end_timestamp IS NOT NULL) OR
             (type != 'SINGLE' AND single_end_timestamp IS NULL)),
-    CHECK ( (type = 'SINGLE' AND single_start_timestamp < single_end_timestamp) OR type != 'SINGLE'),
+    CHECK ( (type = 'SINGLE' AND single_start_timestamp < single_end_timestamp) OR type != 'SINGLE'
+) ,
     CHECK ((type = 'CYCLIC' AND cyclic_start_time IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_start_time IS NULL)),
     CHECK ((type = 'CYCLIC' AND cyclic_duration IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_duration IS NULL)),
     CHECK ((type = 'CYCLIC' AND cyclic_day_of_week IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_day_of_week IS NULL)),
@@ -69,4 +70,17 @@ CREATE TABLE "event_lock"
     event_version        int                         not null,
     user_id              int references "user" (id)  not null,
     expiration_timestamp timestamp with time zone    not null
+);
+
+CREATE TABLE "event_student_absence"
+(
+    id                    int primary key,
+    event_realization_id  int references "event_realization" (id) not null,
+    student_id            int references "user" (id)              not null,
+    event_name            varchar(100)                            not null,
+    event_location        varchar(255)                            not null,
+    event_description     varchar(255),
+    event_start_timestamp timestamp with time zone                not null,
+    event_end_timestamp   timestamp with time zone                not null,
+    unique (event_realization_id, student_id)
 );

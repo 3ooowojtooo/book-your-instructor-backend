@@ -19,6 +19,8 @@ public interface EventStore {
 
     void setStatusByIdAndIncrementVersion(Integer id, EventStatus status);
 
+    void incrementVersion(Integer id);
+
     Optional<Event> findById(Integer id);
 
     void deleteById(Integer id);

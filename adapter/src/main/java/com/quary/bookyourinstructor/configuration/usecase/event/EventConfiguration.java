@@ -5,6 +5,10 @@ import bookyourinstructor.usecase.event.booklock.CreateEventBookLockUseCase;
 import bookyourinstructor.usecase.event.booklock.DeleteEventBookLockUseCase;
 import bookyourinstructor.usecase.event.common.AcceptEventUseCase;
 import bookyourinstructor.usecase.event.common.DeleteDraftEventUseCase;
+import bookyourinstructor.usecase.event.common.ReportAbsenceUseCase;
+import bookyourinstructor.usecase.event.common.helper.InstructorAbsenceReporter;
+import bookyourinstructor.usecase.event.common.helper.StudentAbsenceReporter;
+import bookyourinstructor.usecase.event.common.store.EventStudentAbsenceStore;
 import bookyourinstructor.usecase.event.cyclic.DeclareCyclicEventUseCase;
 import bookyourinstructor.usecase.event.cyclic.UpdateCyclicEventRealizationUseCase;
 import bookyourinstructor.usecase.event.cyclic.helper.CyclicEventRealizationsFinder;
@@ -69,5 +73,16 @@ public class EventConfiguration {
     DeleteDraftEventUseCase deleteDraftEventUseCase(EventStore eventStore, EventRealizationStore eventRealizationStore,
                                                     TransactionFacade transactionFacade) {
         return new DeleteDraftEventUseCase(eventStore, eventRealizationStore, transactionFacade);
+    }
+
+    @Bean
+    ReportAbsenceUseCase reportAbsenceUseCase(EventStore eventStore, EventRealizationStore eventRealizationStore,
+                                              EventStudentAbsenceStore eventStudentAbsenceStore, TimeUtils timeUtils,
+                                              TransactionFacade transactionFacade) {
+        InstructorAbsenceReporter instructorAbsenceReporter = new InstructorAbsenceReporter(eventStore, eventRealizationStore,
+                timeUtils, transactionFacade);
+        StudentAbsenceReporter studentAbsenceReporter = new StudentAbsenceReporter(eventStore, eventRealizationStore,
+                eventStudentAbsenceStore, transactionFacade, timeUtils);
+        return new ReportAbsenceUseCase(instructorAbsenceReporter, studentAbsenceReporter);
     }
 }

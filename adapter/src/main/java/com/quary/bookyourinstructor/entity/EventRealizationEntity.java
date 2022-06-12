@@ -8,6 +8,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "event_realization", schema = "public")
@@ -39,4 +41,8 @@ public class EventRealizationEntity {
 
     @Column(name = "end_timestamp", nullable = false)
     private Instant end;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "eventRealization", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<EventStudentAbsenceEntity> studentAbsences = new ArrayList<>();
+
 }

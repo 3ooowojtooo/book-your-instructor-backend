@@ -8,8 +8,10 @@ import bookyourinstructor.usecase.event.booklock.data.CreateEventBookLockData;
 import bookyourinstructor.usecase.event.booklock.data.DeleteEventBookLockData;
 import bookyourinstructor.usecase.event.common.AcceptEventUseCase;
 import bookyourinstructor.usecase.event.common.DeleteDraftEventUseCase;
+import bookyourinstructor.usecase.event.common.ReportAbsenceUseCase;
 import bookyourinstructor.usecase.event.common.data.AcceptEventData;
 import bookyourinstructor.usecase.event.common.data.DeleteDraftEventData;
+import bookyourinstructor.usecase.event.common.data.ReportAbsenceData;
 import bookyourinstructor.usecase.event.cyclic.DeclareCyclicEventUseCase;
 import bookyourinstructor.usecase.event.cyclic.UpdateCyclicEventRealizationUseCase;
 import bookyourinstructor.usecase.event.cyclic.data.NewCyclicEventData;
@@ -19,11 +21,13 @@ import bookyourinstructor.usecase.event.single.DeclareSingleEventUseCase;
 import bookyourinstructor.usecase.event.single.data.NewSingleEventData;
 import bookyourinstructor.usecase.event.single.result.DeclareSingleEventResult;
 import com.quary.bookyourinstructor.configuration.security.annotation.InstructorAllowed;
+import com.quary.bookyourinstructor.configuration.security.annotation.InstructorAndStudentAllowed;
 import com.quary.bookyourinstructor.configuration.security.annotation.StudentAllowed;
 import com.quary.bookyourinstructor.configuration.security.model.UserContext;
 import com.quary.bookyourinstructor.controller.event.mapper.EventMapper;
 import com.quary.bookyourinstructor.controller.event.request.DeclareCyclicEventRequest;
 import com.quary.bookyourinstructor.controller.event.request.DeclareSingleEventRequest;
+import com.quary.bookyourinstructor.controller.event.request.ReportAbsenceRequest;
 import com.quary.bookyourinstructor.controller.event.request.UpdateCyclicEventRealizationRequest;
 import com.quary.bookyourinstructor.controller.event.response.CreateEventBookLockResponse;
 import com.quary.bookyourinstructor.controller.event.response.DeclareCyclicEventResponse;
@@ -49,6 +53,7 @@ public class EventController {
     private final UpdateCyclicEventRealizationUseCase updateCyclicEventRealizationUseCase;
     private final DeleteEventBookLockUseCase deleteEventBookLockUseCase;
     private final DeleteDraftEventUseCase deleteDraftEventUseCase;
+    private final ReportAbsenceUseCase reportAbsenceUseCase;
 
     @PostMapping(path = "/single", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @InstructorAllowed
@@ -119,5 +124,14 @@ public class EventController {
                                @AuthenticationPrincipal final UserContext user) {
         DeleteEventBookLockData data = new DeleteEventBookLockData(bookLockId, user.getId());
         deleteEventBookLockUseCase.deleteBookLock(data);
+    }
+
+    @PostMapping(path = "/realization/{id}/absence", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @InstructorAndStudentAllowed
+    public void reportAbsence(@PathVariable("id") final Integer eventRealizationId,
+                              @RequestBody final ReportAbsenceRequest request,
+                              @AuthenticationPrincipal final UserContext user) throws EventChangedException {
+        ReportAbsenceData data = new ReportAbsenceData(eventRealizationId, request.getEventVersion(), user);
+        reportAbsenceUseCase.reportAbsence(data);
     }
 }
