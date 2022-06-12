@@ -14,7 +14,13 @@ public interface EventRealizationStore {
 
     Optional<EventRealization> findById(Integer eventRealizationId);
 
+    Optional<EventRealization> findByIdWithLockForUpdate(Integer eventRealizationId);
+
     void setStudentIdForEventRealizations(final Integer studentId, final Integer eventId);
+
+    void setStudentIdForEventRealization(Integer studentId, Integer id);
+
+    void setStatusForEventRealization(EventRealizationStatus status, Integer id);
 
     void setStatusForEventRealizations(final EventRealizationStatus status, final Integer eventId);
 

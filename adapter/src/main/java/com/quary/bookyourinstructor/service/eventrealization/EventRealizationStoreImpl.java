@@ -70,6 +70,22 @@ public class EventRealizationStoreImpl implements EventRealizationStore {
         eventRealizationRepository.deleteAllByEventId(eventId);
     }
 
+    @Override
+    public Optional<EventRealization> findByIdWithLockForUpdate(Integer eventRealizationId) {
+        return eventRealizationRepository.findByIdWithLockForUpdate(eventRealizationId)
+                .map(mapper::mapToEventRealization);
+    }
+
+    @Override
+    public void setStudentIdForEventRealization(Integer studentId, Integer id) {
+        eventRealizationRepository.setStudentIdForEventRealization(studentId, id);
+    }
+
+    @Override
+    public void setStatusForEventRealization(EventRealizationStatus status, Integer id) {
+        eventRealizationRepository.setStatusForEventRealization(status, id);
+    }
+
     private EventRealizationEntity mapToEntity(EventRealization eventRealization) {
         final EventEntity event = eventRepository.findById(eventRealization.getEventId())
                 .orElseThrow(() -> new IllegalStateException("Event instance with id " + eventRealization.getEventId() + " not found during single event realization creation"));

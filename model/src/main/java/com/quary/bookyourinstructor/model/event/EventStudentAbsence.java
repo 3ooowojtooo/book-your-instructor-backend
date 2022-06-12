@@ -19,27 +19,32 @@ public class EventStudentAbsence {
     private final Integer eventRealizationId;
     private final Integer studentId;
     private final String eventName;
-    private final String description;
+    private final String eventDescription;
     private final String eventLocation;
     private final Instant eventStart;
     private final Instant eventEnd;
 
-    public EventStudentAbsence(Integer id, Integer eventRealizationId, Integer studentId, String eventName, String description,
+    public static EventStudentAbsence newAbsence(Integer eventRealizationId, Integer studentId, String eventName, String eventDescription,
+                                                 String eventLocation, Instant eventStart, Instant eventEnd) {
+        return new EventStudentAbsence(null, eventRealizationId, studentId, eventName, eventDescription, eventLocation,
+                eventStart, eventEnd);
+    }
+
+    public EventStudentAbsence(Integer id, Integer eventRealizationId, Integer studentId, String eventName, String eventDescription,
                                String eventLocation, Instant eventStart, Instant eventEnd) {
-        validateConstructorArgs(id, eventRealizationId, studentId, eventName, eventLocation, eventStart, eventEnd);
+        validateConstructorArgs(eventRealizationId, studentId, eventName, eventLocation, eventStart, eventEnd);
         this.id = id;
         this.eventRealizationId = eventRealizationId;
         this.studentId = studentId;
         this.eventName = eventName;
-        this.description = description;
+        this.eventDescription = eventDescription;
         this.eventLocation = eventLocation;
         this.eventStart = eventStart;
         this.eventEnd = eventEnd;
     }
 
-    private static void validateConstructorArgs(Integer id, Integer eventRealizationId, Integer studentId, String eventName,
+    private static void validateConstructorArgs(Integer eventRealizationId, Integer studentId, String eventName,
                                                 String eventLocation, Instant eventStart, Instant eventEnd) {
-        checkNotNull(id, "Id cannot be null");
         checkNotNull(eventRealizationId, "Event realization id cannot be null");
         checkNotNull(studentId, "Student id cannot be null");
         checkArgument(isNotBlank(eventName), "Event name cannot be blank");

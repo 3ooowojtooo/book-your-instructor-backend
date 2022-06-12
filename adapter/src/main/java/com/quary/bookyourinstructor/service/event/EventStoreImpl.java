@@ -60,4 +60,9 @@ public class EventStoreImpl implements EventStore {
     public void deleteById(Integer id) {
         eventRepository.deleteById(id);
     }
+
+    @Override
+    public void incrementVersion(Integer id) {
+        eventRepository.incrementVersion(id);
+    }
 }
