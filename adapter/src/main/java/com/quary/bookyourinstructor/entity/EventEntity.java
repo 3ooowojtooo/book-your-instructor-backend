@@ -26,13 +26,14 @@ public class EventEntity {
     private Integer id;
 
     @Version
+    @Column(name = "version")
     private Integer version;
 
     @Column(name = "type", nullable = false)
     @Enumerated(EnumType.STRING)
     private EventType type;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "instructor_id", nullable = false)
     private UserEntity instructor;
 
@@ -71,9 +72,9 @@ public class EventEntity {
     @Column(name = "cyclic_end_boundary")
     private LocalDate cyclicEndBoundary;
 
-    @OneToMany(mappedBy = "event", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event", orphanRemoval = true, cascade = CascadeType.ALL)
     List<EventRealizationEntity> realizations = new ArrayList<>();
 
-    @OneToMany(mappedBy = "event", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event", orphanRemoval = true, cascade = CascadeType.ALL)
     List<EventLockEntity> locks = new ArrayList<>();
 }
