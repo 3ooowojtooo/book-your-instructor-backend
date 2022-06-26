@@ -76,6 +76,15 @@ public class EventEntity {
     @Column(name = "cyclic_end_boundary")
     private LocalDate cyclicEndBoundary;
 
+    @Column(name = "cyclic_absence_event", nullable = false)
+    private Boolean cyclicAbsenceEvent;
+
+    @Column(name = "cyclic_absence_event_name")
+    private String cyclicAbsenceEventName;
+
+    @Column(name = "cyclic_absence_event_description")
+    private String cyclicAbsenceEventDescription;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "event", orphanRemoval = true, cascade = CascadeType.ALL)
     List<EventRealizationEntity> realizations = new ArrayList<>();
 
