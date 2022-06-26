@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ public class EventEntity {
     @Enumerated(EnumType.STRING)
     private EventType type;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "instructor_id", nullable = false)
     private UserEntity instructor;
 
@@ -49,6 +50,9 @@ public class EventEntity {
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private EventStatus status;
+
+    @Column(name = "price", nullable = false)
+    private BigDecimal price;
 
     @Column(name = "single_start_timestamp")
     private LocalDateTime singleEventStart;

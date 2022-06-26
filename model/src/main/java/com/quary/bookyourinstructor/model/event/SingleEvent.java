@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -17,15 +18,15 @@ public final class SingleEvent extends Event {
     private final LocalDateTime startDateTime;
     private final LocalDateTime endDateTime;
 
-    public static SingleEvent newSingleEvent(int instructorId, String name, String description, String location,
+    public static SingleEvent newSingleEvent(int instructorId, String name, String description, String location, BigDecimal price,
                                              LocalDateTime startDateTime, LocalDateTime endDateTime) {
         return new SingleEvent(null, null, EventType.SINGLE, instructorId, name, description, location,
-                EventStatus.DRAFT, startDateTime, endDateTime);
+                EventStatus.DRAFT, price, startDateTime, endDateTime);
     }
 
     public SingleEvent(Integer id, Integer version, EventType type, Integer instructorId, String name, String description,
-                       String location, EventStatus status, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        super(id, version, type, instructorId, name, description, location, status);
+                       String location, EventStatus status, BigDecimal price, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        super(id, version, type, instructorId, name, description, location, status, price);
         validateConstructorArgs(startDateTime, endDateTime);
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;

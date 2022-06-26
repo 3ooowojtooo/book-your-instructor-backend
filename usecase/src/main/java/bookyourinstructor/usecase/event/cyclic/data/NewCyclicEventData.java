@@ -2,6 +2,7 @@ package bookyourinstructor.usecase.event.cyclic.data;
 
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ public class NewCyclicEventData {
     private final String name;
     private final String description;
     private final String location;
+    private final BigDecimal price;
     private final LocalTime startTime;
     private final Duration duration;
     private final DayOfWeek dayOfWeek;
@@ -26,12 +28,13 @@ public class NewCyclicEventData {
     private final LocalDate endBoundary;
     private final Integer instructorId;
 
-    public NewCyclicEventData(String name, String description, String location, LocalTime startTime, Integer durationSeconds,
+    public NewCyclicEventData(String name, String description, String location, BigDecimal price, LocalTime startTime, Integer durationSeconds,
                               DayOfWeek dayOfWeek, LocalDate startBoundary, LocalDate endBoundary, Integer instructorId) {
-        validateConstructorArgs(name, location, startTime, durationSeconds, dayOfWeek, startBoundary, endBoundary, instructorId);
+        validateConstructorArgs(name, location, price, startTime, durationSeconds, dayOfWeek, startBoundary, endBoundary, instructorId);
         this.name = name;
         this.description = description;
         this.location = location;
+        this.price = price;
         this.startTime = startTime;
         this.duration = Duration.ofSeconds(durationSeconds);
         this.dayOfWeek = dayOfWeek;
@@ -40,11 +43,13 @@ public class NewCyclicEventData {
         this.instructorId = instructorId;
     }
 
-    private static void validateConstructorArgs(String name, String location, LocalTime startTime, Integer durationSeconds,
+    private static void validateConstructorArgs(String name, String location, BigDecimal price, LocalTime startTime, Integer durationSeconds,
                                                 DayOfWeek dayOfWeek, LocalDate startBoundary, LocalDate endBoundary,
                                                 Integer instructorId) {
         checkArgument(isNotBlank(name), "Cyclic event name cannot be blank");
         checkArgument(isNotBlank(location), "Cyclic event location cannot be blank");
+        checkNotNull(price, "Cyclic event price cannot be null");
+        checkArgument(price.compareTo(BigDecimal.ZERO) > 0, "Cyclic event price must be greater than 0");
         checkNotNull(startTime, "Cyclic event start time cannot be null");
         checkNotNull(durationSeconds, "Cyclic event duration seconds cannot be null");
         checkArgument(durationSeconds > 0, "Cyclic event duration seconds must be positive");
