@@ -3,6 +3,7 @@ package com.quary.bookyourinstructor.controller.event.request;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -13,6 +14,7 @@ public class DeclareCyclicEventRequest {
     private String name;
     private String description;
     private String location;
+    private BigDecimal price;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     private LocalTime startTime;
     private Integer durationSeconds;

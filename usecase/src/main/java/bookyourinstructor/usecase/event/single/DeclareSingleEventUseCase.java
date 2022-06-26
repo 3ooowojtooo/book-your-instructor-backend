@@ -32,7 +32,7 @@ public class DeclareSingleEventUseCase {
 
     private static SingleEvent buildSingleEvent(final NewSingleEventData eventData) {
         return SingleEvent.newSingleEvent(eventData.getInstructorId(), eventData.getName(), eventData.getDescription(),
-                eventData.getLocation(), eventData.getStartDateTime(), eventData.getEndDateTime());
+                eventData.getLocation(), eventData.getPrice(), eventData.getStartDateTime(), eventData.getEndDateTime());
     }
 
     private EventRealization buildEventRealization(final SingleEvent event) {

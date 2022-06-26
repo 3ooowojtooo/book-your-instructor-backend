@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -25,17 +26,17 @@ public class CyclicEvent extends Event {
     private final LocalDate startBoundary;
     private final LocalDate endBoundary;
 
-    public static CyclicEvent newCyclicEvent(int instructorId, String name, String description, String location,
+    public static CyclicEvent newCyclicEvent(int instructorId, String name, String description, String location, BigDecimal price,
                                              LocalTime startTime, Duration duration, DayOfWeek dayOfWeek, LocalDate startBoundary,
                                              LocalDate endBoundary) {
         return new CyclicEvent(null, null, EventType.CYCLIC, instructorId, name, description, location, EventStatus.DRAFT,
-                startTime, duration, dayOfWeek, startBoundary, endBoundary);
+                price, startTime, duration, dayOfWeek, startBoundary, endBoundary);
     }
 
     public CyclicEvent(Integer id, Integer version, EventType type, Integer instructorId, String name, String description,
-                       String location, EventStatus status, LocalTime startTime, Duration duration, DayOfWeek dayOfWeek,
+                       String location, EventStatus status, BigDecimal price, LocalTime startTime, Duration duration, DayOfWeek dayOfWeek,
                        LocalDate startBoundary, LocalDate endBoundary) {
-        super(id, version, type, instructorId, name, description, location, status);
+        super(id, version, type, instructorId, name, description, location, status, price);
         validateConstructorArgs(startTime, duration, dayOfWeek, startBoundary, endBoundary);
         this.startTime = startTime;
         this.duration = duration;

@@ -28,6 +28,7 @@ CREATE TABLE "event"
     description            varchar(255),
     location               varchar(255) not null,
     status                 varchar(20)  not null,
+    price                  decimal      not null,
     single_start_timestamp timestamp without time zone,
     single_end_timestamp   timestamp without time zone,
     cyclic_start_time      time,
@@ -35,6 +36,7 @@ CREATE TABLE "event"
     cyclic_day_of_week     varchar(20),
     cyclic_start_boundary  date,
     cyclic_end_boundary    date,
+    CHECK (price > 0),
     CHECK ( (type = 'SINGLE' AND single_start_timestamp IS NOT NULL) OR
             (type != 'SINGLE' AND single_start_timestamp IS NULL)),
     CHECK ( (type = 'SINGLE' AND single_end_timestamp IS NOT NULL) OR
@@ -60,7 +62,8 @@ CREATE TABLE "event_realization"
     start_timestamp timestamp with time zone    not null,
     end_timestamp   timestamp with time zone    not null,
     status          varchar(20)                 not null,
-    CHECK ( "start_timestamp" < "end_timestamp" )
+    CHECK ( "start_timestamp" < "end_timestamp" ),
+    CHECK (status = 'DRAFT' OR status = 'ACCEPTED' OR status = 'INSTRUCTOR_ABSENT')
 );
 
 CREATE TABLE "event_lock"
@@ -82,5 +85,6 @@ CREATE TABLE "event_student_absence"
     event_description     varchar(255),
     event_start_timestamp timestamp with time zone                not null,
     event_end_timestamp   timestamp with time zone                not null,
-    unique (event_realization_id, student_id)
+    unique (event_realization_id, student_id),
+    CHECK ("event_start_timestamp" < "event_end_timestamp")
 );
