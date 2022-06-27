@@ -36,6 +36,9 @@ CREATE TABLE "event"
     cyclic_day_of_week     varchar(20),
     cyclic_start_boundary  date,
     cyclic_end_boundary    date,
+    cyclic_absence_event  bool,
+    cyclic_absence_event_name varchar(100),
+    cyclic_absence_event_description varchar(255),
     CHECK (price > 0),
     CHECK ( (type = 'SINGLE' AND single_start_timestamp IS NOT NULL) OR
             (type != 'SINGLE' AND single_start_timestamp IS NULL)),
@@ -50,7 +53,9 @@ CREATE TABLE "event"
            (type != 'CYCLIC' AND cyclic_start_boundary IS NULL)),
     CHECK ((type = 'CYCLIC' AND cyclic_end_boundary IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_end_boundary IS NULL)),
     CHECK ( (type = 'CYCLIC' AND cyclic_start_boundary < cyclic_end_boundary) OR type != 'CYCLIC'),
-    CHECK (status = 'DRAFT' OR status = 'FREE' OR status = 'BOOKED')
+    CHECK (status = 'DRAFT' OR status = 'FREE' OR status = 'BOOKED'),
+    CHECK ((cyclic_absence_event = true AND cyclic_absence_event IS NOT NULL) OR (cyclic_absence_event = false AND cyclic_absence_event IS NULL)),
+    CHECK ((cyclic_absence_event = false AND cyclic_absence_event_description IS NULL) OR cyclic_absence_event = true)
 );
 
 

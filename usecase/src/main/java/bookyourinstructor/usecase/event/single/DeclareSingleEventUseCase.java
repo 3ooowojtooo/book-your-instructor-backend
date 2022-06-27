@@ -31,7 +31,7 @@ public class DeclareSingleEventUseCase {
     }
 
     private static SingleEvent buildSingleEvent(final NewSingleEventData eventData) {
-        return SingleEvent.newSingleEvent(eventData.getInstructorId(), eventData.getName(), eventData.getDescription(),
+        return SingleEvent.newSingleEventDraft(eventData.getInstructorId(), eventData.getName(), eventData.getDescription(),
                 eventData.getLocation(), eventData.getPrice(), eventData.getStartDateTime(), eventData.getEndDateTime());
     }
 

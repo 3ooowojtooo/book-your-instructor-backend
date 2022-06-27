@@ -20,6 +20,9 @@ public interface EventStoreMapper {
     @Mapping(target = "cyclicDayOfWeek", ignore = true)
     @Mapping(target = "cyclicStartBoundary", ignore = true)
     @Mapping(target = "cyclicEndBoundary", ignore = true)
+    @Mapping(target = "cyclicAbsenceEvent", ignore = true)
+    @Mapping(target = "cyclicAbsenceEventName", ignore = true)
+    @Mapping(target = "cyclicAbsenceEventDescription", ignore = true)
     @Mapping(target = "realizations", ignore = true)
     @Mapping(target = "locks", ignore = true)
     EventEntity mapToEntity(SingleEvent singleEvent);
@@ -39,6 +42,9 @@ public interface EventStoreMapper {
     @Mapping(target = "cyclicStartBoundary", source = "startBoundary")
     @Mapping(target = "cyclicEndBoundary", source = "endBoundary")
     @Mapping(target = "locks", ignore = true)
+    @Mapping(target = "cyclicAbsenceEvent", source = "absenceEvent")
+    @Mapping(target = "cyclicAbsenceEventName", source = "absenceEventName")
+    @Mapping(target = "cyclicAbsenceEventDescription", source = "absenceEventDescription")
     EventEntity mapToEntity(CyclicEvent cyclicEvent);
 
     @Mapping(target = "startTime", source = "cyclicEventStart")
@@ -47,6 +53,9 @@ public interface EventStoreMapper {
     @Mapping(target = "startBoundary", source = "cyclicStartBoundary")
     @Mapping(target = "endBoundary", source = "cyclicEndBoundary")
     @Mapping(target = "instructorId", source = "instructor.id")
+    @Mapping(target = "absenceEvent", source = "cyclicAbsenceEvent")
+    @Mapping(target = "absenceEventName", source = "cyclicAbsenceEventName")
+    @Mapping(target = "absenceEventDescription", source = "cyclicAbsenceEventDescription")
     CyclicEvent mapToCyclicEvent(EventEntity eventEntity);
 
     default Event mapToEvent(EventEntity eventEntity) {

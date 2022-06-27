@@ -23,4 +23,7 @@ public class DeclareCyclicEventRequest {
     private LocalDate startBoundary;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate endBoundary;
+    private Boolean absenceEvent;
+    private String absenceEventName;
+    private String absenceEventDescription;
 }
