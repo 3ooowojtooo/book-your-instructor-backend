@@ -27,20 +27,20 @@ public class CyclicEvent extends Event {
     private final DayOfWeek dayOfWeek;
     private final LocalDate startBoundary;
     private final LocalDate endBoundary;
-    private final Boolean absenceEvent;
+    private final boolean absenceEvent;
     private final String absenceEventName;
     private final String absenceEventDescription;
 
     public static CyclicEvent newCyclicEvent(int instructorId, String name, String description, String location, BigDecimal price,
                                              LocalTime startTime, Duration duration, DayOfWeek dayOfWeek, LocalDate startBoundary,
-                                             LocalDate endBoundary, Boolean absenceEvent, String absenceEventName, String absenceEventDescription) {
+                                             LocalDate endBoundary, boolean absenceEvent, String absenceEventName, String absenceEventDescription) {
         return new CyclicEvent(null, null, EventType.CYCLIC, instructorId, name, description, location, EventStatus.DRAFT,
                 price, startTime, duration, dayOfWeek, startBoundary, endBoundary, absenceEvent, absenceEventName, absenceEventDescription);
     }
 
     public CyclicEvent(Integer id, Integer version, EventType type, Integer instructorId, String name, String description,
                        String location, EventStatus status, BigDecimal price, LocalTime startTime, Duration duration, DayOfWeek dayOfWeek,
-                       LocalDate startBoundary, LocalDate endBoundary, Boolean absenceEvent, String absenceEventName, String absenceEventDescription) {
+                       LocalDate startBoundary, LocalDate endBoundary, boolean absenceEvent, String absenceEventName, String absenceEventDescription) {
         super(id, version, type, instructorId, name, description, location, status, price);
         validateConstructorArgs(startTime, duration, dayOfWeek, startBoundary, endBoundary, absenceEvent, absenceEventName, absenceEventDescription);
         this.startTime = startTime;
@@ -54,7 +54,7 @@ public class CyclicEvent extends Event {
     }
 
     private static void validateConstructorArgs(LocalTime startTime, Duration duration, DayOfWeek dayOfWeek,
-                                                LocalDate startBoundary, LocalDate endBoundary, Boolean absenceEvent,
+                                                LocalDate startBoundary, LocalDate endBoundary, boolean absenceEvent,
                                                 String absenceEventName, String absenceEventDescription) {
         checkNotNull(startTime, "Cyclic event start time cannot be null");
         checkNotNull(duration, "Cyclic event end time cannot be null");
@@ -64,7 +64,6 @@ public class CyclicEvent extends Event {
         checkNotNull(startBoundary, "Cyclic event start boundary cannot be null");
         checkNotNull(endBoundary, "Cyclic event end boundary cannot be null");
         checkArgument(endBoundary.isAfter(startBoundary), "Cyclic event end boundary must be after start boundary");
-        checkNotNull(absenceEvent, "Cyclic event absence event flag cannot be null");
         if (absenceEvent) {
             checkArgument(isNotBlank(absenceEventName), "Cyclic event absence event name cannot be null");
         } else {

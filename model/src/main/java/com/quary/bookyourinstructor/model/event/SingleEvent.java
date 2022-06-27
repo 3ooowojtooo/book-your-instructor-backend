@@ -18,10 +18,16 @@ public final class SingleEvent extends Event {
     private final LocalDateTime startDateTime;
     private final LocalDateTime endDateTime;
 
-    public static SingleEvent newSingleEvent(int instructorId, String name, String description, String location, BigDecimal price,
-                                             LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public static SingleEvent newSingleEventDraft(int instructorId, String name, String description, String location, BigDecimal price,
+                                                  LocalDateTime startDateTime, LocalDateTime endDateTime) {
         return new SingleEvent(null, null, EventType.SINGLE, instructorId, name, description, location,
                 EventStatus.DRAFT, price, startDateTime, endDateTime);
+    }
+
+    public static SingleEvent newSingleEventFree(int instructorId, String name, String description, String location, BigDecimal price,
+                                                 LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return new SingleEvent(null, null, EventType.SINGLE, instructorId, name, description, location,
+                EventStatus.FREE, price, startDateTime, endDateTime);
     }
 
     public SingleEvent(Integer id, Integer version, EventType type, Integer instructorId, String name, String description,

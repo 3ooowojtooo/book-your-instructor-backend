@@ -76,7 +76,7 @@ public class EventEntity {
     @Column(name = "cyclic_end_boundary")
     private LocalDate cyclicEndBoundary;
 
-    @Column(name = "cyclic_absence_event", nullable = false)
+    @Column(name = "cyclic_absence_event")
     private Boolean cyclicAbsenceEvent;
 
     @Column(name = "cyclic_absence_event_name")

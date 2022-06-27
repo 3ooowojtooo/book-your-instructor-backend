@@ -15,6 +15,7 @@ import com.quary.bookyourinstructor.model.event.exception.EventChangedException;
 import lombok.RequiredArgsConstructor;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -48,6 +49,7 @@ public class StudentAbsenceReporter {
                     eventRealizationStore.setStudentIdForEventRealization(null, eventRealization.getId());
                 } else if (event.getType() == EventType.CYCLIC) {
                     eventStore.incrementVersion(event.getId());
+                    declareAbsenceEventIfNecessary((CyclicEvent) event, eventRealization);
                 }
                 return null;
             });
@@ -96,5 +98,20 @@ public class StudentAbsenceReporter {
     private static EventStudentAbsence buildAbsence(Event event, EventRealization eventRealization, Integer studentId) {
         return EventStudentAbsence.newAbsence(eventRealization.getId(), studentId, event.getName(), event.getDescription(),
                 event.getLocation(), eventRealization.getStart(), eventRealization.getEnd());
+    }
+
+    private void declareAbsenceEventIfNecessary(CyclicEvent event, EventRealization eventRealization) {
+        if (!event.isAbsenceEvent()) {
+            return;
+        }
+        SingleEvent absenceEvent = buildAbsenceEvent(event, eventRealization);
+        eventStore.saveSingleEvent(absenceEvent);
+    }
+
+    private SingleEvent buildAbsenceEvent(CyclicEvent event, EventRealization eventRealization) {
+        LocalDateTime start = timeUtils.toLocalDateTimeUTCZone(eventRealization.getStart());
+        LocalDateTime end = timeUtils.toLocalDateTimeUTCZone(eventRealization.getEnd());
+        return SingleEvent.newSingleEventFree(event.getInstructorId(), event.getAbsenceEventName(), event.getAbsenceEventDescription(),
+                event.getLocation(), event.getPrice(), start, end);
     }
 }
