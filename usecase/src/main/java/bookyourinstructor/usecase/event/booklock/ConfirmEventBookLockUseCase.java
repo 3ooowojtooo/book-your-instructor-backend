@@ -2,10 +2,13 @@ package bookyourinstructor.usecase.event.booklock;
 
 import bookyourinstructor.usecase.event.booklock.data.ConfirmEventBookLockData;
 import bookyourinstructor.usecase.event.booklock.exception.EventBookLockExpiredRuntimeException;
+import bookyourinstructor.usecase.event.common.exception.ConcurrentDataModificationRuntimeException;
 import bookyourinstructor.usecase.event.common.exception.EventChangedRuntimeException;
 import bookyourinstructor.usecase.event.common.store.EventLockStore;
 import bookyourinstructor.usecase.event.common.store.EventRealizationStore;
 import bookyourinstructor.usecase.event.common.store.EventStore;
+import bookyourinstructor.usecase.util.retry.RetryInstanceName;
+import bookyourinstructor.usecase.util.retry.RetryManager;
 import bookyourinstructor.usecase.util.time.TimeUtils;
 import bookyourinstructor.usecase.util.tx.TransactionFacade;
 import bookyourinstructor.usecase.util.tx.TransactionIsolation;
@@ -13,6 +16,7 @@ import bookyourinstructor.usecase.util.tx.TransactionPropagation;
 import com.quary.bookyourinstructor.model.event.Event;
 import com.quary.bookyourinstructor.model.event.EventLock;
 import com.quary.bookyourinstructor.model.event.EventStatus;
+import com.quary.bookyourinstructor.model.event.exception.ConcurrentDataModificationException;
 import com.quary.bookyourinstructor.model.event.exception.EventBookLockExpiredException;
 import com.quary.bookyourinstructor.model.event.exception.EventChangedException;
 import lombok.RequiredArgsConstructor;
@@ -27,30 +31,37 @@ public class ConfirmEventBookLockUseCase {
 
     private final TransactionFacade transactionFacade;
     private final TimeUtils timeUtils;
+    private final RetryManager retryManager;
     private final EventStore eventStore;
     private final EventLockStore eventLockStore;
     private final EventRealizationStore eventRealizationStore;
 
-    public void confirmEventBookLock(ConfirmEventBookLockData data) throws EventChangedException, EventBookLockExpiredException {
+    public void confirmEventBookLock(ConfirmEventBookLockData data) throws EventChangedException, EventBookLockExpiredException,
+            ConcurrentDataModificationException {
         final Instant now = timeUtils.nowInstant();
         try {
-            transactionFacade.executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.REPEATABLE_READ, () -> {
-                final EventLock eventLock = findEventLockOrThrow(data.getBookLockId());
-                validateEventLockOwner(eventLock, data.getStudentId());
-                final Event event = findEventWithLockForUpdateOrThrow(eventLock.getEventId());
-                validateEventVersion(event, eventLock.getEventVersion());
-                validateEventFree(event);
-                validateEventBookLockValidity(eventLock, now);
-                eventRealizationStore.setStudentIdForEventRealizations(data.getStudentId(), event.getId());
-                eventLockStore.deleteById(eventLock.getId());
-                eventStore.setStatusByIdAndIncrementVersion(event.getId(), EventStatus.BOOKED);
-                return null;
-            });
+            retryManager.runInLockRetry(RetryInstanceName.CONFIRM_BOOK_LOCK, () -> confirmEventBookLockInternal(data, now));
         } catch (EventChangedRuntimeException e) {
             throw new EventChangedException();
         } catch (EventBookLockExpiredRuntimeException e) {
             throw new EventBookLockExpiredException();
+        } catch (ConcurrentDataModificationRuntimeException e) {
+            throw new ConcurrentDataModificationException();
         }
+    }
+
+    private void confirmEventBookLockInternal(ConfirmEventBookLockData data, Instant now) {
+        transactionFacade.executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.REPEATABLE_READ, () -> {
+            final EventLock eventLock = findEventLockOrThrow(data.getBookLockId());
+            validateEventLockOwner(eventLock, data.getStudentId());
+            final Event event = findEventWithLockForUpdateOrThrow(eventLock.getEventId());
+            validateEventVersion(event, eventLock.getEventVersion());
+            validateEventFree(event);
+            validateEventBookLockValidity(eventLock, now);
+            eventRealizationStore.setStudentIdForEventRealizations(data.getStudentId(), event.getId());
+            eventLockStore.deleteById(eventLock.getId());
+            eventStore.setStatusByIdAndIncrementVersion(event.getId(), EventStatus.BOOKED);
+        });
     }
 
     private EventLock findEventLockOrThrow(Integer id) {
@@ -84,5 +95,4 @@ public class ConfirmEventBookLockUseCase {
             throw new EventBookLockExpiredRuntimeException();
         }
     }
-
 }

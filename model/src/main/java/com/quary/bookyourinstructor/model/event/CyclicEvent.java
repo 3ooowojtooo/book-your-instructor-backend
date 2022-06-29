@@ -31,10 +31,17 @@ public class CyclicEvent extends Event {
     private final String absenceEventName;
     private final String absenceEventDescription;
 
-    public static CyclicEvent newCyclicEvent(int instructorId, String name, String description, String location, BigDecimal price,
-                                             LocalTime startTime, Duration duration, DayOfWeek dayOfWeek, LocalDate startBoundary,
-                                             LocalDate endBoundary, boolean absenceEvent, String absenceEventName, String absenceEventDescription) {
+    public static CyclicEvent newCyclicEventDraft(int instructorId, String name, String description, String location, BigDecimal price,
+                                                  LocalTime startTime, Duration duration, DayOfWeek dayOfWeek, LocalDate startBoundary,
+                                                  LocalDate endBoundary, boolean absenceEvent, String absenceEventName, String absenceEventDescription) {
         return new CyclicEvent(null, null, EventType.CYCLIC, instructorId, name, description, location, EventStatus.DRAFT,
+                price, startTime, duration, dayOfWeek, startBoundary, endBoundary, absenceEvent, absenceEventName, absenceEventDescription);
+    }
+
+    public static CyclicEvent newCyclicEventFree(int instructorId, String name, String description, String location, BigDecimal price,
+                                                  LocalTime startTime, Duration duration, DayOfWeek dayOfWeek, LocalDate startBoundary,
+                                                  LocalDate endBoundary, boolean absenceEvent, String absenceEventName, String absenceEventDescription) {
+        return new CyclicEvent(null, null, EventType.CYCLIC, instructorId, name, description, location, EventStatus.FREE,
                 price, startTime, duration, dayOfWeek, startBoundary, endBoundary, absenceEvent, absenceEventName, absenceEventDescription);
     }
 

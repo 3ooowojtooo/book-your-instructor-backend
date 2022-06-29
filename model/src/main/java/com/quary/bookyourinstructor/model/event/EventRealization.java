@@ -27,6 +27,10 @@ public class EventRealization {
         return new EventRealization(null, eventId, null, start, end, EventRealizationStatus.DRAFT);
     }
 
+    public static EventRealization newAccepted(Integer eventId, Instant start, Instant end) {
+        return new EventRealization(null, eventId, null, start, end, EventRealizationStatus.ACCEPTED);
+    }
+
     public EventRealization(Integer id, Integer eventId, Integer studentId, Instant start, Instant end, EventRealizationStatus status) {
         validateConstructorArgs(eventId, start, end, status);
         this.id = id;

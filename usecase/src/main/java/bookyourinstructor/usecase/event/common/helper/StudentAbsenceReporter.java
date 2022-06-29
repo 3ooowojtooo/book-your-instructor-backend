@@ -1,16 +1,20 @@
 package bookyourinstructor.usecase.event.common.helper;
 
 import bookyourinstructor.usecase.event.common.data.ReportAbsenceData;
+import bookyourinstructor.usecase.event.common.exception.ConcurrentDataModificationRuntimeException;
 import bookyourinstructor.usecase.event.common.exception.EventChangedRuntimeException;
 import bookyourinstructor.usecase.event.common.port.UserData;
 import bookyourinstructor.usecase.event.common.store.EventRealizationStore;
 import bookyourinstructor.usecase.event.common.store.EventStore;
 import bookyourinstructor.usecase.event.common.store.EventStudentAbsenceStore;
+import bookyourinstructor.usecase.util.retry.RetryInstanceName;
+import bookyourinstructor.usecase.util.retry.RetryManager;
 import bookyourinstructor.usecase.util.time.TimeUtils;
 import bookyourinstructor.usecase.util.tx.TransactionFacade;
 import bookyourinstructor.usecase.util.tx.TransactionIsolation;
 import bookyourinstructor.usecase.util.tx.TransactionPropagation;
 import com.quary.bookyourinstructor.model.event.*;
+import com.quary.bookyourinstructor.model.event.exception.ConcurrentDataModificationException;
 import com.quary.bookyourinstructor.model.event.exception.EventChangedException;
 import lombok.RequiredArgsConstructor;
 
@@ -29,37 +33,43 @@ public class StudentAbsenceReporter {
     private final EventStudentAbsenceStore eventStudentAbsenceStore;
     private final TransactionFacade transactionFacade;
     private final TimeUtils timeUtils;
+    private final RetryManager retryManager;
 
-    public void reportAbsence(ReportAbsenceData data) throws EventChangedException {
+    public void reportAbsence(ReportAbsenceData data) throws EventChangedException, ConcurrentDataModificationException {
         Instant now = timeUtils.nowInstant();
         validateUserStudent(data.getUser());
         try {
-            transactionFacade.executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.REPEATABLE_READ, () -> {
-                EventRealization eventRealization = findEventRealizationWithLockForUpdateOrThrow(data.getEventRealizationId());
-                validateEventRealizationStatus(eventRealization);
-                validateEventRealizationNotStarted(eventRealization, now);
-                validateEventRealizationOwner(eventRealization, data.getUser().getId());
-                validateEventRealizationNotReportedAbsence(eventRealization, data.getUser().getId());
-                Event event = findEventWithLockForUpdateOrThrow(eventRealization.getEventId());
-                validateEventVersion(event, data.getEventVersion());
-                EventStudentAbsence absence = buildAbsence(event, eventRealization, data.getUser().getId());
-                eventStudentAbsenceStore.save(absence);
-                if (event.getType() == EventType.SINGLE) {
-                    eventStore.setStatusByIdAndIncrementVersion(event.getId(), EventStatus.FREE);
-                    eventRealizationStore.setStudentIdForEventRealization(null, eventRealization.getId());
-                } else if (event.getType() == EventType.CYCLIC) {
-                    eventStore.incrementVersion(event.getId());
-                    declareAbsenceEventIfNecessary((CyclicEvent) event, eventRealization);
-                }
-                return null;
-            });
+            retryManager.runInLockRetry(RetryInstanceName.REPORT_ABSENCE_STUDENT, () -> reportAbsenceInternal(data, now));
         } catch (EventChangedRuntimeException e) {
             throw new EventChangedException();
+        } catch (ConcurrentDataModificationRuntimeException e) {
+            throw new ConcurrentDataModificationException();
         }
     }
 
     private static void validateUserStudent(UserData user) {
         checkArgument(user.isStudent(), "User is not a student");
+    }
+
+    private void reportAbsenceInternal(ReportAbsenceData data, Instant now) {
+        transactionFacade.executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.REPEATABLE_READ, () -> {
+            EventRealization eventRealization = findEventRealizationWithLockForUpdateOrThrow(data.getEventRealizationId());
+            validateEventRealizationStatus(eventRealization);
+            validateEventRealizationNotStarted(eventRealization, now);
+            validateEventRealizationOwner(eventRealization, data.getUser().getId());
+            validateEventRealizationNotReportedAbsence(eventRealization, data.getUser().getId());
+            Event event = findEventWithLockForUpdateOrThrow(eventRealization.getEventId());
+            validateEventVersion(event, data.getEventVersion());
+            EventStudentAbsence absence = buildAbsence(event, eventRealization, data.getUser().getId());
+            eventStudentAbsenceStore.save(absence);
+            if (event.getType() == EventType.SINGLE) {
+                eventStore.setStatusByIdAndIncrementVersion(event.getId(), EventStatus.FREE);
+                eventRealizationStore.setStudentIdForEventRealization(null, eventRealization.getId());
+            } else if (event.getType() == EventType.CYCLIC) {
+                eventStore.incrementVersion(event.getId());
+                declareAbsenceEventIfNecessary((CyclicEvent) event, eventRealization);
+            }
+        });
     }
 
     private EventRealization findEventRealizationWithLockForUpdateOrThrow(final Integer eventRealizationId) {

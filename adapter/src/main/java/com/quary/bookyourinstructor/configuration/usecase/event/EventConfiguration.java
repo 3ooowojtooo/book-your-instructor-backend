@@ -8,14 +8,16 @@ import bookyourinstructor.usecase.event.common.DeleteDraftEventUseCase;
 import bookyourinstructor.usecase.event.common.ReportAbsenceUseCase;
 import bookyourinstructor.usecase.event.common.helper.InstructorAbsenceReporter;
 import bookyourinstructor.usecase.event.common.helper.StudentAbsenceReporter;
-import bookyourinstructor.usecase.event.common.store.EventStudentAbsenceStore;
-import bookyourinstructor.usecase.event.cyclic.DeclareCyclicEventUseCase;
-import bookyourinstructor.usecase.event.cyclic.UpdateCyclicEventRealizationUseCase;
-import bookyourinstructor.usecase.event.cyclic.helper.CyclicEventRealizationsFinder;
-import bookyourinstructor.usecase.event.single.DeclareSingleEventUseCase;
 import bookyourinstructor.usecase.event.common.store.EventLockStore;
 import bookyourinstructor.usecase.event.common.store.EventRealizationStore;
 import bookyourinstructor.usecase.event.common.store.EventStore;
+import bookyourinstructor.usecase.event.common.store.EventStudentAbsenceStore;
+import bookyourinstructor.usecase.event.cyclic.DeclareCyclicEventUseCase;
+import bookyourinstructor.usecase.event.cyclic.ResignCyclicEventUseCase;
+import bookyourinstructor.usecase.event.cyclic.UpdateCyclicEventRealizationUseCase;
+import bookyourinstructor.usecase.event.cyclic.helper.CyclicEventRealizationsFinder;
+import bookyourinstructor.usecase.event.single.DeclareSingleEventUseCase;
+import bookyourinstructor.usecase.util.retry.RetryManager;
 import bookyourinstructor.usecase.util.time.TimeUtils;
 import bookyourinstructor.usecase.util.tx.TransactionFacade;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,15 +43,17 @@ public class EventConfiguration {
     }
 
     @Bean
-    CreateEventBookLockUseCase createEventBookLockUseCase(TransactionFacade transactionFacade, TimeUtils timeUtils, EventLockStore eventLockStore,
-                                                          EventStore eventStore, @Value("${event.lock.validity-duration}") final Duration lockExpirationDuration) {
-        return new CreateEventBookLockUseCase(transactionFacade, timeUtils, eventLockStore, eventStore, lockExpirationDuration);
+    CreateEventBookLockUseCase createEventBookLockUseCase(TransactionFacade transactionFacade, TimeUtils timeUtils, RetryManager retryManager,
+                                                          EventLockStore eventLockStore, EventStore eventStore,
+                                                          @Value("${event.lock.validity-duration}") final Duration lockExpirationDuration) {
+        return new CreateEventBookLockUseCase(transactionFacade, timeUtils, retryManager, eventLockStore, eventStore, lockExpirationDuration);
     }
 
     @Bean
-    ConfirmEventBookLockUseCase confirmEventBookLockUseCase(TransactionFacade transactionFacade, TimeUtils timeUtils, EventStore eventStore,
-                                                            EventLockStore eventLockStore, EventRealizationStore eventRealizationStore) {
-        return new ConfirmEventBookLockUseCase(transactionFacade, timeUtils, eventStore, eventLockStore, eventRealizationStore);
+    ConfirmEventBookLockUseCase confirmEventBookLockUseCase(TransactionFacade transactionFacade, TimeUtils timeUtils, RetryManager retryManager,
+                                                            EventStore eventStore, EventLockStore eventLockStore,
+                                                            EventRealizationStore eventRealizationStore) {
+        return new ConfirmEventBookLockUseCase(transactionFacade, timeUtils, retryManager, eventStore, eventLockStore, eventRealizationStore);
     }
 
     @Bean
@@ -78,11 +82,17 @@ public class EventConfiguration {
     @Bean
     ReportAbsenceUseCase reportAbsenceUseCase(EventStore eventStore, EventRealizationStore eventRealizationStore,
                                               EventStudentAbsenceStore eventStudentAbsenceStore, TimeUtils timeUtils,
-                                              TransactionFacade transactionFacade) {
+                                              TransactionFacade transactionFacade, RetryManager retryManager) {
         InstructorAbsenceReporter instructorAbsenceReporter = new InstructorAbsenceReporter(eventStore, eventRealizationStore,
-                timeUtils, transactionFacade);
+                timeUtils, transactionFacade, retryManager);
         StudentAbsenceReporter studentAbsenceReporter = new StudentAbsenceReporter(eventStore, eventRealizationStore,
-                eventStudentAbsenceStore, transactionFacade, timeUtils);
+                eventStudentAbsenceStore, transactionFacade, timeUtils, retryManager);
         return new ReportAbsenceUseCase(instructorAbsenceReporter, studentAbsenceReporter);
+    }
+
+    @Bean
+    ResignCyclicEventUseCase resignCyclicEventUseCase(EventStore eventStore, EventRealizationStore eventRealizationStore,
+                                                      TimeUtils timeUtils, TransactionFacade transactionFacade, RetryManager retryManager) {
+        return new ResignCyclicEventUseCase(eventStore, eventRealizationStore, timeUtils, transactionFacade, retryManager);
     }
 }

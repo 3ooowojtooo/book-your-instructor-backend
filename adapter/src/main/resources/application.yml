@@ -9,6 +9,8 @@ external-login:
 event:
   lock:
     validity-duration: PT15M
+    retry-wait-millis: 500
+    retry-max-attempts: 5
 
 cors:
   allowed-origins: ${allowed.origins}
