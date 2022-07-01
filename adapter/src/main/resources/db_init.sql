@@ -53,7 +53,7 @@ CREATE TABLE "event"
            (type != 'CYCLIC' AND cyclic_start_boundary IS NULL)),
     CHECK ((type = 'CYCLIC' AND cyclic_end_boundary IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_end_boundary IS NULL)),
     CHECK ( (type = 'CYCLIC' AND cyclic_start_boundary < cyclic_end_boundary) OR type != 'CYCLIC'),
-    CHECK (status = 'DRAFT' OR status = 'FREE' OR status = 'BOOKED'),
+    CHECK (status = 'DRAFT' OR status = 'FREE' OR status = 'BOOKED' OR status = 'RESIGNED'),
     CHECK ((cyclic_absence_event = true AND cyclic_absence_event IS NOT NULL) OR (cyclic_absence_event = false AND cyclic_absence_event IS NULL)),
     CHECK ((cyclic_absence_event = false AND cyclic_absence_event_description IS NULL) OR cyclic_absence_event = true)
 );
@@ -68,7 +68,7 @@ CREATE TABLE "event_realization"
     end_timestamp   timestamp with time zone    not null,
     status          varchar(20)                 not null,
     CHECK ( "start_timestamp" < "end_timestamp" ),
-    CHECK (status = 'DRAFT' OR status = 'ACCEPTED' OR status = 'INSTRUCTOR_ABSENT')
+    CHECK (status = 'DRAFT' OR status = 'ACCEPTED' OR status = 'INSTRUCTOR_ABSENT' OR status = 'RESIGNED')
 );
 
 CREATE TABLE "event_lock"

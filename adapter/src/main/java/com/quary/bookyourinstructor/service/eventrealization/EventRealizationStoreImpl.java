@@ -10,6 +10,7 @@ import com.quary.bookyourinstructor.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -60,6 +61,14 @@ public class EventRealizationStoreImpl implements EventRealizationStore {
     @Override
     public List<EventRealization> findAllRealizations(Integer eventId) {
         return eventRealizationRepository.findAllByEventId(eventId)
+                .stream()
+                .map(mapper::mapToEventRealization)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<EventRealization> findAllByEventIdStartingAfterSortedAscWithLockForUpdate(Integer eventId, Instant now) {
+        return eventRealizationRepository.findAllByEventIdStartingAfterOrderByStartAscWithLockForUpdate(eventId, now)
                 .stream()
                 .map(mapper::mapToEventRealization)
                 .collect(Collectors.toList());

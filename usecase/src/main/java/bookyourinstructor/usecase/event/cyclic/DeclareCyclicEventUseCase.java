@@ -37,7 +37,7 @@ public class DeclareCyclicEventUseCase {
     }
 
     private static CyclicEvent buildCyclicEvent(final NewCyclicEventData eventData) {
-        return CyclicEvent.newCyclicEvent(eventData.getInstructorId(), eventData.getName(), eventData.getDescription(),
+        return CyclicEvent.newCyclicEventDraft(eventData.getInstructorId(), eventData.getName(), eventData.getDescription(),
                 eventData.getLocation(), eventData.getPrice(), eventData.getStartTime(), eventData.getDuration(), eventData.getDayOfWeek(),
                 eventData.getStartBoundary(), eventData.getEndBoundary(), eventData.getAbsenceEvent(), eventData.getAbsenceEventName(),
                 eventData.getAbsenceEventDescription());

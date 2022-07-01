@@ -13,8 +13,10 @@ import bookyourinstructor.usecase.event.common.data.AcceptEventData;
 import bookyourinstructor.usecase.event.common.data.DeleteDraftEventData;
 import bookyourinstructor.usecase.event.common.data.ReportAbsenceData;
 import bookyourinstructor.usecase.event.cyclic.DeclareCyclicEventUseCase;
+import bookyourinstructor.usecase.event.cyclic.ResignCyclicEventUseCase;
 import bookyourinstructor.usecase.event.cyclic.UpdateCyclicEventRealizationUseCase;
 import bookyourinstructor.usecase.event.cyclic.data.NewCyclicEventData;
+import bookyourinstructor.usecase.event.cyclic.data.ResignCyclicEventData;
 import bookyourinstructor.usecase.event.cyclic.data.UpdateCyclicEventRealizationData;
 import bookyourinstructor.usecase.event.cyclic.result.DeclareCyclicEventResult;
 import bookyourinstructor.usecase.event.single.DeclareSingleEventUseCase;
@@ -54,6 +56,7 @@ public class EventController {
     private final DeleteEventBookLockUseCase deleteEventBookLockUseCase;
     private final DeleteDraftEventUseCase deleteDraftEventUseCase;
     private final ReportAbsenceUseCase reportAbsenceUseCase;
+    private final ResignCyclicEventUseCase resignCyclicEventUseCase;
 
     @PostMapping(path = "/single", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @InstructorAllowed
@@ -104,7 +107,8 @@ public class EventController {
     @StudentAllowed
     public CreateEventBookLockResponse createEventBookLock(@PathVariable("id") final Integer eventId,
                                                            @PathVariable("version") final Integer eventVersion,
-                                                           @AuthenticationPrincipal final UserContext user) throws EventChangedException, EventBookingAlreadyLockedException {
+                                                           @AuthenticationPrincipal final UserContext user)
+            throws EventChangedException, EventBookingAlreadyLockedException, ConcurrentDataModificationException {
         final CreateEventBookLockData data = new CreateEventBookLockData(eventId, eventVersion, user.getId());
         final EventLock eventLock = createEventBookLockUseCase.createEventBookLock(data);
         return mapper.mapToCreateEventBookLockResponse(eventLock);
@@ -113,7 +117,8 @@ public class EventController {
     @PutMapping(path = "/book-lock/{id}/confirm")
     @StudentAllowed
     public void confirmBookLock(@PathVariable("id") final Integer bookLockId,
-                                @AuthenticationPrincipal final UserContext user) throws EventChangedException, EventBookLockExpiredException {
+                                @AuthenticationPrincipal final UserContext user) throws EventChangedException,
+            EventBookLockExpiredException, ConcurrentDataModificationException {
         ConfirmEventBookLockData data = new ConfirmEventBookLockData(bookLockId, user.getId());
         confirmEventBookLockUseCase.confirmEventBookLock(data);
     }
@@ -130,8 +135,18 @@ public class EventController {
     @InstructorAndStudentAllowed
     public void reportAbsence(@PathVariable("id") final Integer eventRealizationId,
                               @RequestBody final ReportAbsenceRequest request,
-                              @AuthenticationPrincipal final UserContext user) throws EventChangedException {
+                              @AuthenticationPrincipal final UserContext user) throws EventChangedException, ConcurrentDataModificationException {
         ReportAbsenceData data = new ReportAbsenceData(eventRealizationId, request.getEventVersion(), user);
         reportAbsenceUseCase.reportAbsence(data);
+    }
+
+    @PutMapping(path = "/cyclic/{id}/{version}/resign")
+    @StudentAllowed
+    public void resignCyclicEvent(@PathVariable("id") final Integer cyclicEventId,
+                                  @PathVariable("version") final Integer cyclicEventVersion,
+                                  @AuthenticationPrincipal final UserContext user) throws EventChangedException,
+            CyclicEventNoFutureRealizationsFoundException, ConcurrentDataModificationException {
+        ResignCyclicEventData data = new ResignCyclicEventData(cyclicEventId, cyclicEventVersion, user.getId());
+        resignCyclicEventUseCase.resignCyclicEvent(data);
     }
 }

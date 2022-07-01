@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,9 +33,12 @@ public interface EventRealizationRepository extends CrudRepository<EventRealizat
     @Query("select r from EventRealizationEntity r where r.event.id = ?1")
     List<EventRealizationEntity> findAllByEventId(final Integer eventId);
 
+    @Query(value = "select * from event_realization where event_id = ?1 and start_timestamp > ?2 order by start_timestamp for update nowait", nativeQuery = true)
+    List<EventRealizationEntity> findAllByEventIdStartingAfterOrderByStartAscWithLockForUpdate(final Integer eventId, final Instant startThreshold);
+
     @Modifying
     void deleteAllByEventId(Integer eventId);
 
-    @Query(value = "select * from event_realization where id = ?1 for update", nativeQuery = true)
+    @Query(value = "select * from event_realization where id = ?1 for update nowait", nativeQuery = true)
     Optional<EventRealizationEntity> findByIdWithLockForUpdate(Integer id);
 }

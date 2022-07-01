@@ -1,10 +1,13 @@
 package bookyourinstructor.usecase.event.common.helper;
 
 import bookyourinstructor.usecase.event.common.data.ReportAbsenceData;
+import bookyourinstructor.usecase.event.common.exception.ConcurrentDataModificationRuntimeException;
 import bookyourinstructor.usecase.event.common.exception.EventChangedRuntimeException;
 import bookyourinstructor.usecase.event.common.port.UserData;
 import bookyourinstructor.usecase.event.common.store.EventRealizationStore;
 import bookyourinstructor.usecase.event.common.store.EventStore;
+import bookyourinstructor.usecase.util.retry.RetryInstanceName;
+import bookyourinstructor.usecase.util.retry.RetryManager;
 import bookyourinstructor.usecase.util.time.TimeUtils;
 import bookyourinstructor.usecase.util.tx.TransactionFacade;
 import bookyourinstructor.usecase.util.tx.TransactionIsolation;
@@ -12,6 +15,7 @@ import bookyourinstructor.usecase.util.tx.TransactionPropagation;
 import com.quary.bookyourinstructor.model.event.Event;
 import com.quary.bookyourinstructor.model.event.EventRealization;
 import com.quary.bookyourinstructor.model.event.EventRealizationStatus;
+import com.quary.bookyourinstructor.model.event.exception.ConcurrentDataModificationException;
 import com.quary.bookyourinstructor.model.event.exception.EventChangedException;
 import lombok.RequiredArgsConstructor;
 
@@ -28,29 +32,35 @@ public class InstructorAbsenceReporter {
     private final EventRealizationStore eventRealizationStore;
     private final TimeUtils timeUtils;
     private final TransactionFacade transactionFacade;
+    private final RetryManager retryManager;
 
-    public void reportAbsence(ReportAbsenceData data) throws EventChangedException {
+    public void reportAbsence(ReportAbsenceData data) throws EventChangedException, ConcurrentDataModificationException {
         Instant now = timeUtils.nowInstant();
         validateUserInstructor(data.getUser());
         try {
-            transactionFacade.executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.REPEATABLE_READ, () -> {
-                EventRealization eventRealization = findEventRealizationWithLockForUpdateOrThrow(data.getEventRealizationId());
-                validateEventRealizationStatus(eventRealization);
-                validateEventRealizationNotStarted(eventRealization, now);
-                Event event = findEventWithLockForUpdateOrThrow(eventRealization.getEventId());
-                validateEventOwner(event, data.getUser().getId());
-                validateEventVersion(event, data.getEventVersion());
-                eventRealizationStore.setStatusForEventRealization(EventRealizationStatus.INSTRUCTOR_ABSENT, eventRealization.getId());
-                eventStore.incrementVersion(event.getId());
-                return null;
-            });
+            retryManager.runInLockRetry(RetryInstanceName.REPORT_ABSENCE_INSTRUCTOR, () -> reportAbsenceInternal(data, now));
         } catch (EventChangedRuntimeException e) {
             throw new EventChangedException();
+        } catch (ConcurrentDataModificationRuntimeException e) {
+            throw new ConcurrentDataModificationException();
         }
     }
 
     private static void validateUserInstructor(UserData user) {
         checkArgument(user.isInstructor(), "User is not an instructor");
+    }
+
+    private void reportAbsenceInternal(ReportAbsenceData data, Instant now) {
+        transactionFacade.executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.REPEATABLE_READ, () -> {
+            EventRealization eventRealization = findEventRealizationWithLockForUpdateOrThrow(data.getEventRealizationId());
+            validateEventRealizationStatus(eventRealization);
+            validateEventRealizationNotStarted(eventRealization, now);
+            Event event = findEventWithLockForUpdateOrThrow(eventRealization.getEventId());
+            validateEventOwner(event, data.getUser().getId());
+            validateEventVersion(event, data.getEventVersion());
+            eventRealizationStore.setStatusForEventRealization(EventRealizationStatus.INSTRUCTOR_ABSENT, eventRealization.getId());
+            eventStore.incrementVersion(event.getId());
+        });
     }
 
     private EventRealization findEventRealizationWithLockForUpdateOrThrow(final Integer eventRealizationId) {

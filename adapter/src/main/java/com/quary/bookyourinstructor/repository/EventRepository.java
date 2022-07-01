@@ -14,10 +14,10 @@ public interface EventRepository extends CrudRepository<EventEntity, Integer> {
 
     Optional<EventEntity> findByIdAndVersion(Integer id, Integer version);
 
-    @Query(value = "select * from event where id = ?1 for share", nativeQuery = true)
+    @Query(value = "select * from event where id = ?1 for share nowait", nativeQuery = true)
     Optional<EventEntity> findByIdAndLockForShare(Integer id);
 
-    @Query(value = "select * from event where id = ?1 for update", nativeQuery = true)
+    @Query(value = "select * from event where id = ?1 for update nowait", nativeQuery = true)
     Optional<EventEntity> findByIdAndLockForUpdate(Integer id);
 
     @Modifying

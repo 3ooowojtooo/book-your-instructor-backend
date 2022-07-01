@@ -38,6 +38,19 @@ public class TransactionFacadeImpl implements TransactionFacade {
         return executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.DEFAULT, action);
     }
 
+    @Override
+    public void executeInTransaction(TransactionPropagation transactionPropagation, TransactionIsolation isolation, Runnable action) throws ConstraintViolationException {
+        Supplier<Void> supplier = toSupplier(action);
+        executeInTransaction(transactionPropagation, isolation, supplier);
+    }
+
+    private static Supplier<Void> toSupplier(Runnable action) {
+        return () -> {
+            action.run();
+            return null;
+        };
+    }
+
     private static int mapToPropagationBehaviour(TransactionPropagation propagation) {
         switch (propagation) {
             case REQUIRED:
