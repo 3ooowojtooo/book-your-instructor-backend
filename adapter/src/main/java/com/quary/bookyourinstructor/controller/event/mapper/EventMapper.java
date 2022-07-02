@@ -2,15 +2,16 @@ package com.quary.bookyourinstructor.controller.event.mapper;
 
 import bookyourinstructor.usecase.event.cyclic.data.UpdateCyclicEventRealizationData;
 import bookyourinstructor.usecase.event.cyclic.result.DeclareCyclicEventResult;
+import bookyourinstructor.usecase.event.search.data.SearchEventsData;
+import bookyourinstructor.usecase.event.search.result.SearchEventsResult;
+import bookyourinstructor.usecase.event.search.result.SearchEventsResultItem;
 import bookyourinstructor.usecase.event.single.result.DeclareSingleEventResult;
 import com.quary.bookyourinstructor.configuration.mapper.DependencyInjectionMapperConfig;
 import com.quary.bookyourinstructor.controller.event.request.DeclareCyclicEventRequest;
 import com.quary.bookyourinstructor.controller.event.request.DeclareSingleEventRequest;
+import com.quary.bookyourinstructor.controller.event.request.SearchEventsRequest;
 import com.quary.bookyourinstructor.controller.event.request.UpdateCyclicEventRealizationRequest;
-import com.quary.bookyourinstructor.controller.event.response.CreateEventBookLockResponse;
-import com.quary.bookyourinstructor.controller.event.response.DeclareCyclicEventResponse;
-import com.quary.bookyourinstructor.controller.event.response.DeclareSingleEventResponse;
-import com.quary.bookyourinstructor.controller.event.response.EventRealizationTimeBoundaries;
+import com.quary.bookyourinstructor.controller.event.response.*;
 import com.quary.bookyourinstructor.model.event.EventLock;
 import com.quary.bookyourinstructor.model.event.EventRealization;
 import bookyourinstructor.usecase.event.cyclic.data.NewCyclicEventData;
@@ -44,4 +45,11 @@ public interface EventMapper {
     @Mapping(target = "end", source = "request.eventEnd")
     UpdateCyclicEventRealizationData mapToUpdateCyclicEventRealizationData(UpdateCyclicEventRealizationRequest request,
                                                                            Integer eventRealizationId, Integer instructorId);
+
+    SearchEventsData mapToSearchEventsData(SearchEventsRequest request);
+
+    SearchEventsResponse mapToSearchEventsResponse(SearchEventsResult result);
+
+    @Mapping(target = "cyclicEventDurationSeconds", expression = "java(resultItem.getCyclicEventDuration() == null ? null : resultItem.getCyclicEventDuration().toSeconds())")
+    SearchEventsResponseItem mapToSearchEventsResponseItem(SearchEventsResultItem resultItem);
 }
