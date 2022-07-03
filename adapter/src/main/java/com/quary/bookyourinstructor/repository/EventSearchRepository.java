@@ -45,7 +45,8 @@ public class EventSearchRepository {
         Optional<Predicate> eventTypePredicate = buildEventTypePredicate(cb, event, eventType);
 
         Predicate[] mergedPredicates = mergePredicates(eventFreePredicate, dateRangePredicate, textPredicate, eventTypePredicate);
-        cq.where(cb.or(mergedPredicates));
+        cq.where(cb.and(mergedPredicates));
+        cq.orderBy(buildOrder(cb, event, realization));
 
         TypedQuery<EventEntity> query = entityManager.createQuery(cq);
         List<EventEntity> result = query.getResultList();
@@ -72,45 +73,55 @@ public class EventSearchRepository {
         List<String> tokens = Arrays.stream(textFilter.getSearchText().split(" "))
                 .map(String::toLowerCase)
                 .map(String::trim)
+                .distinct()
                 .collect(Collectors.toList());
 
         if (tokens.isEmpty()) {
             return Optional.empty();
         }
 
-        List<Predicate> predicates = new ArrayList<>();
+        List<Predicate> categoryPredicates = new ArrayList<>();
 
         if (textFilter.isCategorySelected(TextSearchCategory.NAME)) {
-            for (String token : tokens) {
-                Predicate predicate = cb.like(cb.lower(event.get("name")), '%' + token + '%');
-                predicates.add(predicate);
-            }
+            Predicate[] namePredicates = tokens.stream()
+                    .map(token -> cb.like(cb.lower(event.get("name")), '%' + token + '%'))
+                    .collect(Collectors.toList())
+                    .toArray(new Predicate[]{});
+
+            categoryPredicates.add(cb.and(namePredicates));
         }
 
         if (textFilter.isCategorySelected(TextSearchCategory.DESCRIPTION)) {
-            for (String token : tokens) {
-                Predicate predicate = cb.like(cb.lower(event.get("description")), '%' + token + '%');
-                predicates.add(predicate);
-            }
+            Predicate[] descriptionPredicates = tokens.stream()
+                    .map(token -> cb.like(cb.lower(event.get("description")), '%' + token + '%'))
+                    .collect(Collectors.toList())
+                    .toArray(new Predicate[]{});
+
+            categoryPredicates.add(cb.and(descriptionPredicates));
         }
 
         if (textFilter.isCategorySelected(TextSearchCategory.LOCATION)) {
-            for (String token : tokens) {
-                Predicate predicate = cb.like(cb.lower(event.get("location")), '%' + token + '%');
-                predicates.add(predicate);
-            }
+            Predicate[] locationPredicates = tokens.stream()
+                    .map(token -> cb.like(cb.lower(event.get("location")), '%' + token + '%'))
+                    .collect(Collectors.toList())
+                    .toArray(new Predicate[]{});
+
+            categoryPredicates.add(cb.and(locationPredicates));
         }
 
         if (textFilter.isCategorySelected(TextSearchCategory.INSTRUCTOR_NAME)) {
-            for (String token : tokens) {
-                Predicate namePredicate = cb.like(cb.lower(instructor.get("name")), '%' + token + '%');
-                Predicate surnamePredicate = cb.like(cb.lower(instructor.get("surname")), '%' + token + '%');
-                predicates.add(namePredicate);
-                predicates.add(surnamePredicate);
-            }
+            Predicate[] instructorNamePredicates = tokens.stream()
+                    .map(token -> cb.or(
+                            cb.like(cb.lower(instructor.get("name")), '%' + token + '%'),
+                            cb.like(cb.lower(instructor.get("surname")), '%' + token + '%')
+                    ))
+                    .collect(Collectors.toList())
+                    .toArray(new Predicate[]{});
+
+            categoryPredicates.add(cb.and(instructorNamePredicates));
         }
 
-        return Optional.of(cb.or(predicates.toArray(new Predicate[]{})));
+        return Optional.of(cb.or(categoryPredicates.toArray(new Predicate[]{})));
     }
 
     private Optional<Predicate> buildEventTypePredicate(CriteriaBuilder cb, Root<EventEntity> event, EventTypeFilter eventTypeFilter) {
@@ -131,6 +142,13 @@ public class EventSearchRepository {
         return predicates.toArray(new Predicate[]{});
     }
 
+    private List<Order> buildOrder(CriteriaBuilder cb, Root<EventEntity> event, ListJoin<EventEntity, EventRealizationEntity> realization) {
+        return List.of(
+                cb.asc(realization.get("start")),
+                cb.asc(event.get("id"))
+        );
+    }
+
     private List<SearchEventsResultItem> toResultItems(List<EventEntity> events) {
         return events.stream()
                 .map(this::mapToResultItem)
@@ -139,8 +157,9 @@ public class EventSearchRepository {
 
     private SearchEventsResultItem mapToResultItem(EventEntity event) {
         UserEntity instructor = event.getInstructor();
+        String instructorName = instructor.getName() + " " + instructor.getSurname();
         return new SearchEventsResultItem(event.getId(), event.getVersion(), event.getName(),
-                event.getDescription(), event.getLocation(), instructor.getName(), event.getType(),
+                event.getDescription(), event.getLocation(), instructorName, event.getType(),
                 event.getSingleEventStart(), event.getSingleEventEnd(), event.getCyclicDayOfWeek(),
                 event.getCyclicEventStart(), event.getCyclicEventDuration());
     }
