@@ -1,15 +1,22 @@
 package com.quary.bookyourinstructor.service.event;
 
 import bookyourinstructor.usecase.event.common.store.EventStore;
+import bookyourinstructor.usecase.event.search.data.DateRangeFilter;
+import bookyourinstructor.usecase.event.search.data.EventTypeFilter;
+import bookyourinstructor.usecase.event.search.data.TextSearchFilter;
+import bookyourinstructor.usecase.event.search.result.SearchEventsResultItem;
 import com.quary.bookyourinstructor.entity.EventEntity;
 import com.quary.bookyourinstructor.model.event.CyclicEvent;
 import com.quary.bookyourinstructor.model.event.Event;
 import com.quary.bookyourinstructor.model.event.EventStatus;
 import com.quary.bookyourinstructor.model.event.SingleEvent;
 import com.quary.bookyourinstructor.repository.EventRepository;
+import com.quary.bookyourinstructor.repository.EventSearchRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.provider.HibernateUtils;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -17,6 +24,7 @@ import java.util.Optional;
 public class EventStoreImpl implements EventStore {
 
     private final EventRepository eventRepository;
+    private final EventSearchRepository eventSearchRepository;
     private final EventStoreMapper mapper;
 
     @Override
@@ -64,5 +72,10 @@ public class EventStoreImpl implements EventStore {
     @Override
     public void incrementVersion(Integer id) {
         eventRepository.incrementVersion(id);
+    }
+
+    @Override
+    public List<SearchEventsResultItem> searchEvents(DateRangeFilter dateRange, TextSearchFilter text, EventTypeFilter eventType) {
+        return eventSearchRepository.searchEvents(dateRange, text, eventType);
     }
 }

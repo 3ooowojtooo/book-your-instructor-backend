@@ -14,7 +14,4 @@ public class EventTypeFilter {
         return eventType == null;
     }
 
-    public boolean eventTypeSelected(EventType eventType) {
-        return allEventTypesSelected() || this.eventType == eventType;
-    }
 }

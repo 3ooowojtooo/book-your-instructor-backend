@@ -2,10 +2,13 @@ package com.quary.bookyourinstructor.controller.event.mapper;
 
 import bookyourinstructor.usecase.event.cyclic.data.UpdateCyclicEventRealizationData;
 import bookyourinstructor.usecase.event.cyclic.result.DeclareCyclicEventResult;
+import bookyourinstructor.usecase.event.search.data.DateRangeFilter;
 import bookyourinstructor.usecase.event.search.data.SearchEventsData;
 import bookyourinstructor.usecase.event.search.result.SearchEventsResult;
 import bookyourinstructor.usecase.event.search.result.SearchEventsResultItem;
 import bookyourinstructor.usecase.event.single.result.DeclareSingleEventResult;
+import bookyourinstructor.usecase.util.time.TimeUtils;
+import bookyourinstructor.usecase.util.time.impl.TimeUtilsImpl;
 import com.quary.bookyourinstructor.configuration.mapper.DependencyInjectionMapperConfig;
 import com.quary.bookyourinstructor.controller.event.request.DeclareCyclicEventRequest;
 import com.quary.bookyourinstructor.controller.event.request.DeclareSingleEventRequest;
@@ -23,6 +26,8 @@ import java.util.List;
 
 @Mapper(config = DependencyInjectionMapperConfig.class)
 public interface EventMapper {
+
+    TimeUtils timeUtils = TimeUtilsImpl.INSTANCE;
 
     NewSingleEventData mapToNewSingleEventData(DeclareSingleEventRequest request, Integer instructorId);
 
@@ -47,6 +52,15 @@ public interface EventMapper {
                                                                            Integer eventRealizationId, Integer instructorId);
 
     SearchEventsData mapToSearchEventsData(SearchEventsRequest request);
+
+    default DateRangeFilter mapToDateRangeFilter(SearchEventsRequest.DateRangeFilter filter) {
+        if (filter == null) return null;
+
+        return new DateRangeFilter(
+                timeUtils.toInstantFromUTCZone(filter.getFrom()),
+                timeUtils.toInstantFromUTCZone(filter.getTo())
+        );
+    }
 
     SearchEventsResponse mapToSearchEventsResponse(SearchEventsResult result);
 

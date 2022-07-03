@@ -2,7 +2,6 @@ package bookyourinstructor.usecase.event.search.data;
 
 import com.quary.bookyourinstructor.model.filter.search.TextSearchCategory;
 import lombok.Getter;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -30,7 +29,7 @@ public class TextSearchFilter {
         return selectedCategories == null || selectedCategories.isEmpty() || selectedCategories.containsAll(List.of(TextSearchCategory.values()));
     }
 
-    public boolean categorySelected(TextSearchCategory category) {
+    public boolean isCategorySelected(TextSearchCategory category) {
         return areAllCategoriesSelected() || selectedCategories.contains(category);
     }
 }
