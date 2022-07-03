@@ -19,6 +19,9 @@ import bookyourinstructor.usecase.event.cyclic.data.NewCyclicEventData;
 import bookyourinstructor.usecase.event.cyclic.data.ResignCyclicEventData;
 import bookyourinstructor.usecase.event.cyclic.data.UpdateCyclicEventRealizationData;
 import bookyourinstructor.usecase.event.cyclic.result.DeclareCyclicEventResult;
+import bookyourinstructor.usecase.event.search.SearchEventsUseCase;
+import bookyourinstructor.usecase.event.search.data.SearchEventsData;
+import bookyourinstructor.usecase.event.search.result.SearchEventsResult;
 import bookyourinstructor.usecase.event.single.DeclareSingleEventUseCase;
 import bookyourinstructor.usecase.event.single.data.NewSingleEventData;
 import bookyourinstructor.usecase.event.single.result.DeclareSingleEventResult;
@@ -27,13 +30,11 @@ import com.quary.bookyourinstructor.configuration.security.annotation.Instructor
 import com.quary.bookyourinstructor.configuration.security.annotation.StudentAllowed;
 import com.quary.bookyourinstructor.configuration.security.model.UserContext;
 import com.quary.bookyourinstructor.controller.event.mapper.EventMapper;
-import com.quary.bookyourinstructor.controller.event.request.DeclareCyclicEventRequest;
-import com.quary.bookyourinstructor.controller.event.request.DeclareSingleEventRequest;
-import com.quary.bookyourinstructor.controller.event.request.ReportAbsenceRequest;
-import com.quary.bookyourinstructor.controller.event.request.UpdateCyclicEventRealizationRequest;
+import com.quary.bookyourinstructor.controller.event.request.*;
 import com.quary.bookyourinstructor.controller.event.response.CreateEventBookLockResponse;
 import com.quary.bookyourinstructor.controller.event.response.DeclareCyclicEventResponse;
 import com.quary.bookyourinstructor.controller.event.response.DeclareSingleEventResponse;
+import com.quary.bookyourinstructor.controller.event.response.SearchEventsResponse;
 import com.quary.bookyourinstructor.model.event.EventLock;
 import com.quary.bookyourinstructor.model.event.exception.*;
 import lombok.RequiredArgsConstructor;
@@ -57,6 +58,7 @@ public class EventController {
     private final DeleteDraftEventUseCase deleteDraftEventUseCase;
     private final ReportAbsenceUseCase reportAbsenceUseCase;
     private final ResignCyclicEventUseCase resignCyclicEventUseCase;
+    private final SearchEventsUseCase searchEventsUseCase;
 
     @PostMapping(path = "/single", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @InstructorAllowed
@@ -148,5 +150,13 @@ public class EventController {
             CyclicEventNoFutureRealizationsFoundException, ConcurrentDataModificationException {
         ResignCyclicEventData data = new ResignCyclicEventData(cyclicEventId, cyclicEventVersion, user.getId());
         resignCyclicEventUseCase.resignCyclicEvent(data);
+    }
+
+    @PostMapping(path = "/search", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @StudentAllowed
+    public SearchEventsResponse searchEvents(@RequestBody final SearchEventsRequest request) {
+        SearchEventsData data = mapper.mapToSearchEventsData(request);
+        SearchEventsResult result = searchEventsUseCase.searchEvents(data);
+        return mapper.mapToSearchEventsResponse(result);
     }
 }

@@ -16,6 +16,7 @@ import bookyourinstructor.usecase.event.cyclic.DeclareCyclicEventUseCase;
 import bookyourinstructor.usecase.event.cyclic.ResignCyclicEventUseCase;
 import bookyourinstructor.usecase.event.cyclic.UpdateCyclicEventRealizationUseCase;
 import bookyourinstructor.usecase.event.cyclic.helper.CyclicEventRealizationsFinder;
+import bookyourinstructor.usecase.event.search.SearchEventsUseCase;
 import bookyourinstructor.usecase.event.single.DeclareSingleEventUseCase;
 import bookyourinstructor.usecase.util.retry.RetryManager;
 import bookyourinstructor.usecase.util.time.TimeUtils;
@@ -94,5 +95,10 @@ public class EventConfiguration {
     ResignCyclicEventUseCase resignCyclicEventUseCase(EventStore eventStore, EventRealizationStore eventRealizationStore,
                                                       TimeUtils timeUtils, TransactionFacade transactionFacade, RetryManager retryManager) {
         return new ResignCyclicEventUseCase(eventStore, eventRealizationStore, timeUtils, transactionFacade, retryManager);
+    }
+
+    @Bean
+    SearchEventsUseCase searchEventsUseCase(EventStore eventStore) {
+        return new SearchEventsUseCase(eventStore);
     }
 }
