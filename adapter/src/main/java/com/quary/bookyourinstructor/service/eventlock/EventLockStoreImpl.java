@@ -11,6 +11,7 @@ import com.quary.bookyourinstructor.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.Optional;
 
 @Component
@@ -42,5 +43,15 @@ public class EventLockStoreImpl implements EventLockStore {
     @Override
     public void deleteById(Integer id) {
         eventLockRepository.deleteById(id);
+    }
+
+    @Override
+    public void deleteByEventIdAndPastExpirationTime(Integer eventId, Instant now) {
+        eventLockRepository.deleteByEventIdAndExpirationTimeLessThanEqual(eventId, now);
+    }
+
+    @Override
+    public boolean existsByEventIdAndFutureExpirationTime(Integer eventId, Instant now) {
+        return eventLockRepository.existsByEventIdAndExpirationTimeGreaterThan(eventId, now);
     }
 }

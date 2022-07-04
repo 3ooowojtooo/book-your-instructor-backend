@@ -1,5 +1,6 @@
 package com.quary.bookyourinstructor.controller.event.mapper;
 
+import bookyourinstructor.usecase.event.common.result.GetEventDetailsAsStudentResult;
 import bookyourinstructor.usecase.event.cyclic.data.UpdateCyclicEventRealizationData;
 import bookyourinstructor.usecase.event.cyclic.result.DeclareCyclicEventResult;
 import bookyourinstructor.usecase.event.search.data.DateRangeFilter;
@@ -66,4 +67,7 @@ public interface EventMapper {
 
     @Mapping(target = "cyclicEventDurationSeconds", expression = "java(resultItem.getCyclicEventDuration() == null ? null : resultItem.getCyclicEventDuration().toSeconds())")
     SearchEventsResponseItem mapToSearchEventsResponseItem(SearchEventsResultItem resultItem);
+
+    @Mapping(target = "cyclicEventDurationSeconds", expression = "java(result.getCyclicEventDuration() == null ? null : result.getCyclicEventDuration().toSeconds())")
+    GetEventDetailsAsStudentResponse mapToGetEventDetailsAsStudentResponse(GetEventDetailsAsStudentResult result);
 }
