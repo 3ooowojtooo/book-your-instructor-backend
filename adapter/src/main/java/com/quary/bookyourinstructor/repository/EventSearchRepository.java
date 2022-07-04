@@ -7,6 +7,7 @@ import bookyourinstructor.usecase.event.search.result.SearchEventsResultItem;
 import com.quary.bookyourinstructor.entity.EventEntity;
 import com.quary.bookyourinstructor.entity.EventRealizationEntity;
 import com.quary.bookyourinstructor.entity.UserEntity;
+import com.quary.bookyourinstructor.model.event.EventRealizationStatus;
 import com.quary.bookyourinstructor.model.event.EventStatus;
 import com.quary.bookyourinstructor.model.filter.search.TextSearchCategory;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +40,7 @@ public class EventSearchRepository {
         ListJoin<EventEntity, EventRealizationEntity> realization = event.join(eventModel.getList("realizations", EventRealizationEntity.class));
         Join<EventEntity, UserEntity> instructor = event.join(eventModel.getSingularAttribute("instructor", UserEntity.class));
 
-        Predicate eventFreePredicate = buildFreeEventsPredicate(cb, event);
+        Predicate eventFreePredicate = buildAvailableEventsPredicate(cb, event, realization);
         Optional<Predicate> dateRangePredicate = buildDateRangePredicate(cb, realization, dateRange);
         Optional<Predicate> textPredicate = buildTextPredicate(cb, event, instructor, text);
         Optional<Predicate> eventTypePredicate = buildEventTypePredicate(cb, event, eventType);
@@ -54,8 +55,11 @@ public class EventSearchRepository {
         return toResultItems(result);
     }
 
-    private Predicate buildFreeEventsPredicate(CriteriaBuilder cb, Root<EventEntity> event) {
-        return cb.equal(event.get("status"), EventStatus.FREE);
+    private Predicate buildAvailableEventsPredicate(CriteriaBuilder cb, Root<EventEntity> event, ListJoin<EventEntity, EventRealizationEntity> realization) {
+        return cb.and(
+                cb.equal(event.get("status"), EventStatus.FREE),
+                cb.equal(realization.get("status"), EventRealizationStatus.ACCEPTED)
+        );
     }
 
     private Optional<Predicate> buildDateRangePredicate(CriteriaBuilder cb, ListJoin<EventEntity, EventRealizationEntity> realization,

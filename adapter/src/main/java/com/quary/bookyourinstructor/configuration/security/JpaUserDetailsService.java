@@ -54,4 +54,10 @@ public class JpaUserDetailsService implements UserDetailsService, UserStore {
         return userRepository.findByEmail(email)
                 .map(mapper::mapToModel);
     }
+
+    @Override
+    public Optional<User> findById(Integer id) {
+        return userRepository.findById(id)
+                .map(mapper::mapToModel);
+    }
 }

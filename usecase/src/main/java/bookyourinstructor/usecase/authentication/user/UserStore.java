@@ -15,4 +15,6 @@ public interface UserStore {
     void registerUser(User user) throws UserWithEmailAlreadyExists;
 
     Optional<User> getByEmail(String email);
+
+    Optional<User> findById(Integer id);
 }

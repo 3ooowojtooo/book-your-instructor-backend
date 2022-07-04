@@ -8,10 +8,13 @@ import bookyourinstructor.usecase.event.booklock.data.CreateEventBookLockData;
 import bookyourinstructor.usecase.event.booklock.data.DeleteEventBookLockData;
 import bookyourinstructor.usecase.event.common.AcceptEventUseCase;
 import bookyourinstructor.usecase.event.common.DeleteDraftEventUseCase;
+import bookyourinstructor.usecase.event.common.GetEventDetailsAsStudentUseCase;
 import bookyourinstructor.usecase.event.common.ReportAbsenceUseCase;
 import bookyourinstructor.usecase.event.common.data.AcceptEventData;
 import bookyourinstructor.usecase.event.common.data.DeleteDraftEventData;
+import bookyourinstructor.usecase.event.common.data.GetEventDetailsAsStudentData;
 import bookyourinstructor.usecase.event.common.data.ReportAbsenceData;
+import bookyourinstructor.usecase.event.common.result.GetEventDetailsAsStudentResult;
 import bookyourinstructor.usecase.event.cyclic.DeclareCyclicEventUseCase;
 import bookyourinstructor.usecase.event.cyclic.ResignCyclicEventUseCase;
 import bookyourinstructor.usecase.event.cyclic.UpdateCyclicEventRealizationUseCase;
@@ -31,10 +34,7 @@ import com.quary.bookyourinstructor.configuration.security.annotation.StudentAll
 import com.quary.bookyourinstructor.configuration.security.model.UserContext;
 import com.quary.bookyourinstructor.controller.event.mapper.EventMapper;
 import com.quary.bookyourinstructor.controller.event.request.*;
-import com.quary.bookyourinstructor.controller.event.response.CreateEventBookLockResponse;
-import com.quary.bookyourinstructor.controller.event.response.DeclareCyclicEventResponse;
-import com.quary.bookyourinstructor.controller.event.response.DeclareSingleEventResponse;
-import com.quary.bookyourinstructor.controller.event.response.SearchEventsResponse;
+import com.quary.bookyourinstructor.controller.event.response.*;
 import com.quary.bookyourinstructor.model.event.EventLock;
 import com.quary.bookyourinstructor.model.event.exception.*;
 import lombok.RequiredArgsConstructor;
@@ -59,6 +59,7 @@ public class EventController {
     private final ReportAbsenceUseCase reportAbsenceUseCase;
     private final ResignCyclicEventUseCase resignCyclicEventUseCase;
     private final SearchEventsUseCase searchEventsUseCase;
+    private final GetEventDetailsAsStudentUseCase getEventDetailsAsStudentUseCase;
 
     @PostMapping(path = "/single", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @InstructorAllowed
@@ -158,5 +159,14 @@ public class EventController {
         SearchEventsData data = mapper.mapToSearchEventsData(request);
         SearchEventsResult result = searchEventsUseCase.searchEvents(data);
         return mapper.mapToSearchEventsResponse(result);
+    }
+
+    @GetMapping(path = "/{id}/details/student", produces = MediaType.APPLICATION_JSON_VALUE)
+    @StudentAllowed
+    public GetEventDetailsAsStudentResponse getDetailsAsStudent(@PathVariable("id") final Integer eventId,
+                                                                @AuthenticationPrincipal final UserContext user) {
+        final GetEventDetailsAsStudentData data = new GetEventDetailsAsStudentData(eventId, user.getId());
+        final GetEventDetailsAsStudentResult result = getEventDetailsAsStudentUseCase.getDetails(data);
+        return mapper.mapToGetEventDetailsAsStudentResponse(result);
     }
 }

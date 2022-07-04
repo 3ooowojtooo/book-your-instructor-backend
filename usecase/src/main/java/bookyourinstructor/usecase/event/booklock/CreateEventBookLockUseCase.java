@@ -39,8 +39,7 @@ public class CreateEventBookLockUseCase {
             EventChangedException, ConcurrentDataModificationException {
         try {
             final Instant now = timeUtils.nowInstant();
-            final Instant expirationTime = now.plus(lockExpirationDuration);
-            return retryManager.runInLockRetry(RetryInstanceName.CREATE_BOOK_LOCK, () -> createEventBookLockInternal(data, expirationTime));
+            return retryManager.runInLockRetry(RetryInstanceName.CREATE_BOOK_LOCK, () -> createEventBookLockInternal(data, now));
         } catch (EventChangedRuntimeException e) {
             throw new EventChangedException();
         } catch (ConstraintViolationException ex) {
@@ -50,8 +49,10 @@ public class CreateEventBookLockUseCase {
         }
     }
 
-    private EventLock createEventBookLockInternal(CreateEventBookLockData data, Instant lockExpirationTime) {
+    private EventLock createEventBookLockInternal(CreateEventBookLockData data, Instant now) {
+        final Instant lockExpirationTime = now.plus(lockExpirationDuration);
         return transactionFacade.executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.REPEATABLE_READ, () -> {
+            eventLockStore.deleteByEventIdAndPastExpirationTime(data.getEventId(), now);
             final Event event = findEventWithLockForShareOrThrow(data.getEventId());
             validateEventVersion(event, data.getEventVersion());
             validateEventFree(event);

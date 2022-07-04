@@ -1,10 +1,12 @@
 package com.quary.bookyourinstructor.configuration.usecase.event;
 
+import bookyourinstructor.usecase.authentication.user.UserStore;
 import bookyourinstructor.usecase.event.booklock.ConfirmEventBookLockUseCase;
 import bookyourinstructor.usecase.event.booklock.CreateEventBookLockUseCase;
 import bookyourinstructor.usecase.event.booklock.DeleteEventBookLockUseCase;
 import bookyourinstructor.usecase.event.common.AcceptEventUseCase;
 import bookyourinstructor.usecase.event.common.DeleteDraftEventUseCase;
+import bookyourinstructor.usecase.event.common.GetEventDetailsAsStudentUseCase;
 import bookyourinstructor.usecase.event.common.ReportAbsenceUseCase;
 import bookyourinstructor.usecase.event.common.helper.InstructorAbsenceReporter;
 import bookyourinstructor.usecase.event.common.helper.StudentAbsenceReporter;
@@ -100,5 +102,15 @@ public class EventConfiguration {
     @Bean
     SearchEventsUseCase searchEventsUseCase(EventStore eventStore) {
         return new SearchEventsUseCase(eventStore);
+    }
+
+    @Bean
+    GetEventDetailsAsStudentUseCase getEventDetailsAsStudentUseCase(EventStore eventStore, UserStore userStore,
+                                                                    EventRealizationStore eventRealizationStore,
+                                                                    EventLockStore eventLockStore,
+                                                                    TransactionFacade transactionFacade,
+                                                                    TimeUtils timeUtils) {
+        return new GetEventDetailsAsStudentUseCase(eventStore, userStore, eventRealizationStore, eventLockStore,
+                transactionFacade, timeUtils);
     }
 }
