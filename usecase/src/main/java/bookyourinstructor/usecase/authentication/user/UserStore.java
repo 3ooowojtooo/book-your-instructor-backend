@@ -10,11 +10,11 @@ public interface UserStore {
 
     boolean userExists(String email);
 
-    boolean userExists(ExternalIdentity externalIdentity);
-
     void registerUser(User user) throws UserWithEmailAlreadyExists;
 
     Optional<User> getByEmail(String email);
 
     Optional<User> findById(Integer id);
+
+    Optional<User> getByExternalIdentity(ExternalIdentity externalIdentity);
 }

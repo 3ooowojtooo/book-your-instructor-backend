@@ -36,11 +36,6 @@ public class JpaUserDetailsService implements UserDetailsService, UserStore {
     }
 
     @Override
-    public boolean userExists(ExternalIdentity externalIdentity) {
-        return userRepository.existsByExternalIdAndExternalIdProvider(externalIdentity.getId(), externalIdentity.getProvider());
-    }
-
-    @Override
     public void registerUser(User user) throws UserWithEmailAlreadyExists {
         if (userExists(user.getEmail())) {
             throw new UserWithEmailAlreadyExists(user.getEmail());
@@ -58,6 +53,12 @@ public class JpaUserDetailsService implements UserDetailsService, UserStore {
     @Override
     public Optional<User> findById(Integer id) {
         return userRepository.findById(id)
+                .map(mapper::mapToModel);
+    }
+
+    @Override
+    public Optional<User> getByExternalIdentity(ExternalIdentity externalIdentity) {
+        return userRepository.findByExternalIdAndExternalIdProvider(externalIdentity.getId(), externalIdentity.getProvider())
                 .map(mapper::mapToModel);
     }
 }

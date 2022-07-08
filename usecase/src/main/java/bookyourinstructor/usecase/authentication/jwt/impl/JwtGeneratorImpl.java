@@ -2,31 +2,37 @@ package bookyourinstructor.usecase.authentication.jwt.impl;
 
 import bookyourinstructor.usecase.authentication.jwt.JwtGenerator;
 import bookyourinstructor.usecase.util.time.TimeUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.quary.bookyourinstructor.model.user.User;
+import com.quary.bookyourinstructor.model.user.UserType;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.impl.DefaultClaims;
 import lombok.RequiredArgsConstructor;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.Date;
 import java.util.HashMap;
 
 @RequiredArgsConstructor
 public class JwtGeneratorImpl implements JwtGenerator {
 
+    private static final String ROLE_CLAIM_KEY = "role";
+
     private final String jwtSecret;
     private final TimeUtils timeUtils;
 
     @Override
-    public String generateJwt(String subject, Duration validityDuration) {
+    public String generateJwt(String subject, UserType userType, Duration validityDuration) {
         final Instant now = timeUtils.nowInstant();
         final Date issuedDate = computeIssuedDate(now);
         final Date expirationDate = computeExpirationDate(now, validityDuration);
+        final Claims claims = createClaims(userType);
         return Jwts.builder()
-                .setClaims(new HashMap<>())
+                .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(issuedDate)
                 .setExpiration(expirationDate)
@@ -45,5 +51,11 @@ public class JwtGeneratorImpl implements JwtGenerator {
 
     private static Date instantToDate(Instant instant) {
         return new Date(instant.toEpochMilli());
+    }
+
+    private Claims createClaims(UserType userType) {
+        final Claims claims = new DefaultClaims();
+        claims.put(ROLE_CLAIM_KEY, userType.name());
+        return claims;
     }
 }

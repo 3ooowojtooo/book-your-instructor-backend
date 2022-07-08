@@ -19,9 +19,10 @@ public class AuthenticateConfiguration {
 
     @Bean
     public CredentialsAuthenticateUseCase credentialsAuthenticateUseCase(final CredentialsAuthenticationStore credentialsAuthenticationStore,
+                                                                         final UserStore userStore,
                                                                          final JwtGenerator jwtGenerator,
                                                                          @Value("${jwt.validity-duration}") final Duration tokenValidity) {
-        return new CredentialsAuthenticateUseCase(credentialsAuthenticationStore, jwtGenerator, tokenValidity);
+        return new CredentialsAuthenticateUseCase(credentialsAuthenticationStore, userStore, jwtGenerator, tokenValidity);
     }
 
     @Bean

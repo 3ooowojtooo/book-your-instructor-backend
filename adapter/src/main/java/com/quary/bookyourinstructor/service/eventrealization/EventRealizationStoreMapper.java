@@ -14,8 +14,9 @@ public interface EventRealizationStoreMapper {
     @Mapping(target = "start", source = "eventRealization.start")
     @Mapping(target = "end", source = "eventRealization.end")
     @Mapping(target = "event", source = "eventEntity")
-    @Mapping(target = "student", ignore = true)
     @Mapping(target = "status", source = "eventRealization.status")
+    @Mapping(target = "student", ignore = true)
+    @Mapping(target = "studentAbsences", ignore = true)
     EventRealizationEntity mapToNewEntity(EventRealization eventRealization, EventEntity eventEntity);
 
     @Mapping(target = "eventId", source = "event.id")
