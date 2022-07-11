@@ -42,7 +42,7 @@ public class EventConfiguration {
     DeclareCyclicEventUseCase declareCyclicEventUseCase(EventStore eventStore, EventRealizationStore eventRealizationStore,
                                                         TimeUtils timeUtils, TransactionFacade transactionFacade) {
         final CyclicEventRealizationsFinder realizationsFinder = new CyclicEventRealizationsFinder(timeUtils);
-        return new DeclareCyclicEventUseCase(eventStore, eventRealizationStore, transactionFacade, realizationsFinder);
+        return new DeclareCyclicEventUseCase(eventStore, eventRealizationStore, transactionFacade, realizationsFinder, timeUtils);
     }
 
     @Bean
@@ -100,8 +100,8 @@ public class EventConfiguration {
     }
 
     @Bean
-    SearchEventsUseCase searchEventsUseCase(EventStore eventStore) {
-        return new SearchEventsUseCase(eventStore);
+    SearchEventsUseCase searchEventsUseCase(EventStore eventStore, TimeUtils timeUtils) {
+        return new SearchEventsUseCase(eventStore, timeUtils);
     }
 
     @Bean

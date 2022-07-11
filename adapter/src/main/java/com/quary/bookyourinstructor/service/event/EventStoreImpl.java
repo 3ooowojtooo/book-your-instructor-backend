@@ -13,9 +13,10 @@ import com.quary.bookyourinstructor.model.event.SingleEvent;
 import com.quary.bookyourinstructor.repository.EventRepository;
 import com.quary.bookyourinstructor.repository.EventSearchRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.provider.HibernateUtils;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +40,11 @@ public class EventStoreImpl implements EventStore {
         EventEntity eventEntity = mapper.mapToEntity(event);
         EventEntity savedEntity = eventRepository.save(eventEntity);
         return mapper.mapToCyclicEvent(savedEntity);
+    }
+
+    @Override
+    public void updateCyclicEventBoundaries(Integer eventId, LocalDate startBoundary, LocalDate endBoundary) {
+        eventRepository.updateCyclicEventBoundaries(eventId, startBoundary, endBoundary);
     }
 
     @Override
@@ -75,7 +81,7 @@ public class EventStoreImpl implements EventStore {
     }
 
     @Override
-    public List<SearchEventsResultItem> searchEvents(DateRangeFilter dateRange, TextSearchFilter text, EventTypeFilter eventType) {
-        return eventSearchRepository.searchEvents(dateRange, text, eventType);
+    public List<SearchEventsResultItem> searchEvents(DateRangeFilter dateRange, TextSearchFilter text, EventTypeFilter eventType, Instant now) {
+        return eventSearchRepository.searchEvents(dateRange, text, eventType, now);
     }
 }

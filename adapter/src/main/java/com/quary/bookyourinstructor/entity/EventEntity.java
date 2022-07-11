@@ -54,6 +54,9 @@ public class EventEntity {
     @Column(name = "price", nullable = false)
     private BigDecimal price;
 
+    @Column(name = "creation_timestamp", nullable = false)
+    private Instant createdAt;
+
     @Column(name = "single_start_timestamp")
     private LocalDateTime singleEventStart;
 

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Repository
@@ -27,4 +28,8 @@ public interface EventRepository extends CrudRepository<EventEntity, Integer> {
     @Modifying
     @Query(value = "update EventEntity e set e.version = e.version + 1 where e.id = ?1")
     void incrementVersion(Integer id);
+
+    @Modifying
+    @Query(value = "update EventEntity e set e.cyclicStartBoundary = ?2, e.cyclicEndBoundary = ?3 where e.id = ?1")
+    void updateCyclicEventBoundaries(Integer eventId, LocalDate startBoundary, LocalDate endBoundary);
 }

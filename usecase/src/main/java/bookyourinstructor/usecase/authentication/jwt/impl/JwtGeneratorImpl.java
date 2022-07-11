@@ -2,9 +2,6 @@ package bookyourinstructor.usecase.authentication.jwt.impl;
 
 import bookyourinstructor.usecase.authentication.jwt.JwtGenerator;
 import bookyourinstructor.usecase.util.time.TimeUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.quary.bookyourinstructor.model.user.User;
 import com.quary.bookyourinstructor.model.user.UserType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -15,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
-import java.util.HashMap;
 
 @RequiredArgsConstructor
 public class JwtGeneratorImpl implements JwtGenerator {

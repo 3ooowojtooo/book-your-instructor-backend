@@ -9,6 +9,8 @@ import com.quary.bookyourinstructor.model.event.Event;
 import com.quary.bookyourinstructor.model.event.EventStatus;
 import com.quary.bookyourinstructor.model.event.SingleEvent;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +19,8 @@ public interface EventStore {
     SingleEvent saveSingleEvent(SingleEvent event);
 
     CyclicEvent saveCyclicEvent(CyclicEvent event);
+
+    void updateCyclicEventBoundaries(Integer eventId, LocalDate startBoundary, LocalDate endBoundary);
 
     Optional<Event> findByIdWithLockForShare(Integer id);
 
@@ -30,5 +34,5 @@ public interface EventStore {
 
     void deleteById(Integer id);
 
-    List<SearchEventsResultItem> searchEvents(DateRangeFilter dateRange, TextSearchFilter text, EventTypeFilter eventType);
+    List<SearchEventsResultItem> searchEvents(DateRangeFilter dateRange, TextSearchFilter text, EventTypeFilter eventType, Instant now);
 }

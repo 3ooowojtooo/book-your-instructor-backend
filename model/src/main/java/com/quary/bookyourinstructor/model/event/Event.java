@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -24,10 +25,11 @@ public abstract class Event {
     private final String location;
     private final EventStatus status;
     private final BigDecimal price;
+    private final Instant createdAt;
 
     protected Event(Integer id, Integer version, EventType type, Integer instructorId, String name, String description,
-                    String location, EventStatus status, BigDecimal price) {
-        validateConstructorArgs(type, instructorId, name, location, status, price);
+                    String location, EventStatus status, BigDecimal price, Instant createdAt) {
+        validateConstructorArgs(type, instructorId, name, location, status, price, createdAt);
         this.id = id;
         this.version = version;
         this.type = type;
@@ -37,10 +39,11 @@ public abstract class Event {
         this.location = location;
         this.status = status;
         this.price = price;
+        this.createdAt = createdAt;
     }
 
     private static void validateConstructorArgs(EventType type, Integer instructorId, String name, String location,
-                                                EventStatus eventStatus, BigDecimal price) {
+                                                EventStatus eventStatus, BigDecimal price, Instant creationTime) {
         checkNotNull(type, "Event type cannot be null");
         checkNotNull(instructorId, "Event instructor id cannot be null");
         checkArgument(isNotBlank(name), "Event name cannot be blank");
@@ -48,5 +51,6 @@ public abstract class Event {
         checkNotNull(eventStatus, "Event status cannot be null");
         checkNotNull(price, "Event price cannot be null");
         checkArgument(price.compareTo(BigDecimal.ZERO) > 0, "Event price must be greater than 0");
+        checkNotNull(creationTime, "Event creation date time cannot be null");
     }
 }

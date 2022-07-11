@@ -20,24 +20,25 @@ CREATE TABLE "user"
 
 CREATE TABLE "event"
 (
-    id                     int primary key,
-    version                int          not null,
-    type                   varchar(20)  not null,
-    instructor_id          int references "user" (id),
-    name                   varchar(100) not null,
-    description            varchar(255),
-    location               varchar(255) not null,
-    status                 varchar(20)  not null,
-    price                  decimal      not null,
-    single_start_timestamp timestamp without time zone,
-    single_end_timestamp   timestamp without time zone,
-    cyclic_start_time      time,
-    cyclic_duration        bigint,
-    cyclic_day_of_week     varchar(20),
-    cyclic_start_boundary  date,
-    cyclic_end_boundary    date,
-    cyclic_absence_event  bool,
-    cyclic_absence_event_name varchar(100),
+    id                               int primary key,
+    version                          int                      not null,
+    type                             varchar(20)              not null,
+    instructor_id                    int references "user" (id),
+    name                             varchar(100)             not null,
+    description                      varchar(255),
+    location                         varchar(255)             not null,
+    status                           varchar(20)              not null,
+    price                            decimal                  not null,
+    creation_timestamp               timestamp with time zone not null,
+    single_start_timestamp           timestamp without time zone,
+    single_end_timestamp             timestamp without time zone,
+    cyclic_start_time                time,
+    cyclic_duration                  bigint,
+    cyclic_day_of_week               varchar(20),
+    cyclic_start_boundary            date,
+    cyclic_end_boundary              date,
+    cyclic_absence_event             bool,
+    cyclic_absence_event_name        varchar(100),
     cyclic_absence_event_description varchar(255),
     CHECK (price > 0),
     CHECK ( (type = 'SINGLE' AND single_start_timestamp IS NOT NULL) OR
@@ -45,7 +46,7 @@ CREATE TABLE "event"
     CHECK ( (type = 'SINGLE' AND single_end_timestamp IS NOT NULL) OR
             (type != 'SINGLE' AND single_end_timestamp IS NULL)),
     CHECK ( (type = 'SINGLE' AND single_start_timestamp < single_end_timestamp) OR type != 'SINGLE'
-) ,
+        ),
     CHECK ((type = 'CYCLIC' AND cyclic_start_time IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_start_time IS NULL)),
     CHECK ((type = 'CYCLIC' AND cyclic_duration IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_duration IS NULL)),
     CHECK ((type = 'CYCLIC' AND cyclic_day_of_week IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_day_of_week IS NULL)),
@@ -54,7 +55,8 @@ CREATE TABLE "event"
     CHECK ((type = 'CYCLIC' AND cyclic_end_boundary IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_end_boundary IS NULL)),
     CHECK ( (type = 'CYCLIC' AND cyclic_start_boundary < cyclic_end_boundary) OR type != 'CYCLIC'),
     CHECK (status = 'DRAFT' OR status = 'FREE' OR status = 'BOOKED' OR status = 'RESIGNED'),
-    CHECK ((cyclic_absence_event = true AND cyclic_absence_event IS NOT NULL) OR (cyclic_absence_event = false AND cyclic_absence_event IS NULL)),
+    CHECK ((cyclic_absence_event = true AND cyclic_absence_event IS NOT NULL) OR
+           (cyclic_absence_event = false AND cyclic_absence_event IS NULL)),
     CHECK ((cyclic_absence_event = false AND cyclic_absence_event_description IS NULL) OR cyclic_absence_event = true)
 );
 

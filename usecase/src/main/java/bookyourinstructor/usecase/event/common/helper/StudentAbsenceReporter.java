@@ -122,6 +122,6 @@ public class StudentAbsenceReporter {
         LocalDateTime start = timeUtils.toLocalDateTimeUTCZone(eventRealization.getStart());
         LocalDateTime end = timeUtils.toLocalDateTimeUTCZone(eventRealization.getEnd());
         return SingleEvent.newSingleEventFree(event.getInstructorId(), event.getAbsenceEventName(), event.getAbsenceEventDescription(),
-                event.getLocation(), event.getPrice(), start, end);
+                event.getLocation(), event.getPrice(), event.getCreatedAt(), start, end);
     }
 }

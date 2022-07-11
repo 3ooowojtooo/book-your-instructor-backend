@@ -27,6 +27,8 @@ public interface EventRealizationStore {
 
     List<EventRealization> findAllRealizations(final Integer eventId);
 
+    List<EventRealization> findAllFutureRealizations(final Integer eventId, final Instant now);
+
     List<EventRealization> findAllByEventIdStartingAfterSortedAscWithLockForUpdate(final Integer eventId, final Instant now);
 
     void deleteRealizationsByEventId(final Integer eventId);

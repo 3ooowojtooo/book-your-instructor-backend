@@ -32,7 +32,7 @@ public class GetEventDetailsAsStudentUseCase {
         return transactionFacade.executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.READ_COMMITTED, () -> {
             Event event = findEventOrThrow(data.getEventId());
             User instructor = findInstructorOrThrow(event.getInstructorId());
-            List<EventRealization> realizations = eventRealizationStore.findAllRealizations(data.getEventId());
+            List<EventRealization> realizations = eventRealizationStore.findAllFutureRealizations(data.getEventId(), now);
             boolean eventLocked = eventLockStore.existsByEventIdAndFutureExpirationTime(data.getEventId(), now);
             return buildResult(event, instructor, realizations, eventLocked);
         });
@@ -55,6 +55,8 @@ public class GetEventDetailsAsStudentUseCase {
         DayOfWeek cyclicEventDayOfWeek = null;
         LocalTime cyclicEventStartTime = null;
         Duration cyclicEventDuration = null;
+        LocalDate cyclicEventStartBoundary = null;
+        LocalDate cyclicEventEndBoundary = null;
 
         if (event.getType() == EventType.SINGLE) {
             SingleEvent singleEvent = (SingleEvent) event;
@@ -65,12 +67,15 @@ public class GetEventDetailsAsStudentUseCase {
             cyclicEventDayOfWeek = cyclicEvent.getDayOfWeek();
             cyclicEventStartTime = cyclicEvent.getStartTime();
             cyclicEventDuration = cyclicEvent.getDuration();
+            cyclicEventStartBoundary = cyclicEvent.getStartBoundary();
+            cyclicEventEndBoundary = cyclicEvent.getEndBoundary();
         }
 
         String instructorName = instructor.getName() + " " + instructor.getSurname();
         return new GetEventDetailsAsStudentResult(event.getId(), event.getVersion(), event.getName(), event.getDescription(),
-                event.getLocation(), instructorName, event.getType(), singleEventStart, singleEventEnd, cyclicEventDayOfWeek,
-                cyclicEventStartTime, cyclicEventDuration, eventLocked, realizations);
+                event.getLocation(), instructorName, event.getType(), realizations.size(), event.getPrice(), event.getCreatedAt(),
+                singleEventStart, singleEventEnd, cyclicEventDayOfWeek,
+                cyclicEventStartTime, cyclicEventDuration, cyclicEventStartBoundary, cyclicEventEndBoundary, eventLocked, realizations);
     }
 
 }

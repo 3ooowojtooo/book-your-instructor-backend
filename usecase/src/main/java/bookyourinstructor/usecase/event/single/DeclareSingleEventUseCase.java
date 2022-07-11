@@ -1,9 +1,9 @@
 package bookyourinstructor.usecase.event.single;
 
-import bookyourinstructor.usecase.event.single.data.NewSingleEventData;
-import bookyourinstructor.usecase.event.single.result.DeclareSingleEventResult;
 import bookyourinstructor.usecase.event.common.store.EventRealizationStore;
 import bookyourinstructor.usecase.event.common.store.EventStore;
+import bookyourinstructor.usecase.event.single.data.NewSingleEventData;
+import bookyourinstructor.usecase.event.single.result.DeclareSingleEventResult;
 import bookyourinstructor.usecase.util.time.TimeUtils;
 import bookyourinstructor.usecase.util.tx.TransactionFacade;
 import com.quary.bookyourinstructor.model.event.EventRealization;
@@ -21,8 +21,9 @@ public class DeclareSingleEventUseCase {
     private final TransactionFacade transactionFacade;
 
     public DeclareSingleEventResult declareNewSingleEvent(final NewSingleEventData eventData) {
+        final Instant now = timeUtils.nowInstant();
         return transactionFacade.executeInTransaction(() -> {
-            SingleEvent event = buildSingleEvent(eventData);
+            SingleEvent event = buildSingleEvent(eventData, now);
             SingleEvent savedEvent = eventStore.saveSingleEvent(event);
             EventRealization eventRealization = buildEventRealization(savedEvent);
             EventRealization savedEventRealization = eventRealizationStore.saveEventRealization(eventRealization);
@@ -30,9 +31,9 @@ public class DeclareSingleEventUseCase {
         });
     }
 
-    private static SingleEvent buildSingleEvent(final NewSingleEventData eventData) {
+    private static SingleEvent buildSingleEvent(final NewSingleEventData eventData, final Instant now) {
         return SingleEvent.newSingleEventDraft(eventData.getInstructorId(), eventData.getName(), eventData.getDescription(),
-                eventData.getLocation(), eventData.getPrice(), eventData.getStartDateTime(), eventData.getEndDateTime());
+                eventData.getLocation(), eventData.getPrice(), now, eventData.getStartDateTime(), eventData.getEndDateTime());
     }
 
     private EventRealization buildEventRealization(final SingleEvent event) {

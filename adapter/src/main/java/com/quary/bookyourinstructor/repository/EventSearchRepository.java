@@ -10,6 +10,7 @@ import com.quary.bookyourinstructor.entity.UserEntity;
 import com.quary.bookyourinstructor.model.event.EventRealizationStatus;
 import com.quary.bookyourinstructor.model.event.EventStatus;
 import com.quary.bookyourinstructor.model.filter.search.TextSearchCategory;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -18,6 +19,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,9 +32,9 @@ public class EventSearchRepository {
 
     private final EntityManager entityManager;
 
-    public List<SearchEventsResultItem> searchEvents(DateRangeFilter dateRange, TextSearchFilter text, EventTypeFilter eventType) {
+    public List<SearchEventsResultItem> searchEvents(DateRangeFilter dateRange, TextSearchFilter text, EventTypeFilter eventType, Instant now) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<EventEntity> cq = cb.createQuery(EventEntity.class);
+        CriteriaQuery<SearchQueryResult> cq = cb.createQuery(SearchQueryResult.class);
         Metamodel metamodel = entityManager.getMetamodel();
         EntityType<EventEntity> eventModel = metamodel.entity(EventEntity.class);
 
@@ -40,25 +42,29 @@ public class EventSearchRepository {
         ListJoin<EventEntity, EventRealizationEntity> realization = event.join(eventModel.getList("realizations", EventRealizationEntity.class));
         Join<EventEntity, UserEntity> instructor = event.join(eventModel.getSingularAttribute("instructor", UserEntity.class));
 
-        Predicate eventFreePredicate = buildAvailableEventsPredicate(cb, event, realization);
+        Predicate eventFreePredicate = buildAvailableEventsPredicate(cb, event, realization, now);
         Optional<Predicate> dateRangePredicate = buildDateRangePredicate(cb, realization, dateRange);
         Optional<Predicate> textPredicate = buildTextPredicate(cb, event, instructor, text);
         Optional<Predicate> eventTypePredicate = buildEventTypePredicate(cb, event, eventType);
-
         Predicate[] mergedPredicates = mergePredicates(eventFreePredicate, dateRangePredicate, textPredicate, eventTypePredicate);
+
+        cq.multiselect(event, cb.min(realization.get("start")));
         cq.where(cb.and(mergedPredicates));
+        cq.groupBy(event.get("id"));
         cq.orderBy(buildOrder(cb, event, realization));
 
-        TypedQuery<EventEntity> query = entityManager.createQuery(cq);
-        List<EventEntity> result = query.getResultList();
+        TypedQuery<SearchQueryResult> query = entityManager.createQuery(cq);
+        List<SearchQueryResult> result = query.getResultList();
 
-        return toResultItems(result);
+        return toResultItems(result, now);
     }
 
-    private Predicate buildAvailableEventsPredicate(CriteriaBuilder cb, Root<EventEntity> event, ListJoin<EventEntity, EventRealizationEntity> realization) {
+    private Predicate buildAvailableEventsPredicate(CriteriaBuilder cb, Root<EventEntity> event, ListJoin<EventEntity,
+            EventRealizationEntity> realization, Instant now) {
         return cb.and(
                 cb.equal(event.get("status"), EventStatus.FREE),
-                cb.equal(realization.get("status"), EventRealizationStatus.ACCEPTED)
+                cb.equal(realization.get("status"), EventRealizationStatus.ACCEPTED),
+                cb.greaterThan(realization.get("start"), now)
         );
     }
 
@@ -74,58 +80,73 @@ public class EventSearchRepository {
             return Optional.empty();
         }
 
-        List<String> tokens = Arrays.stream(textFilter.getSearchText().split(" "))
-                .map(String::toLowerCase)
-                .map(String::trim)
-                .distinct()
+        List<String> tokens = textFilter.getSearchTokens();
+
+        List<Predicate> resultPredicates = tokens.stream()
+                .map(token -> buildTokenPredicate(cb, event, instructor, textFilter, token))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .collect(Collectors.toList());
 
-        if (tokens.isEmpty()) {
+        if (resultPredicates.isEmpty()) {
             return Optional.empty();
         }
 
-        List<Predicate> categoryPredicates = new ArrayList<>();
+        Predicate[] resultPredicatesArray = resultPredicates.toArray(new Predicate[]{});
+        return Optional.of(cb.and(resultPredicatesArray));
+    }
 
-        if (textFilter.isCategorySelected(TextSearchCategory.NAME)) {
-            Predicate[] namePredicates = tokens.stream()
-                    .map(token -> cb.like(cb.lower(event.get("name")), '%' + token + '%'))
-                    .collect(Collectors.toList())
-                    .toArray(new Predicate[]{});
+    private Optional<Predicate> buildTokenPredicate(CriteriaBuilder cb, Root<EventEntity> event,
+                                                    Join<EventEntity, UserEntity> instructor,
+                                                    TextSearchFilter textSearchFilter,
+                                                    String token) {
+        List<Predicate> tokenPredicates = new ArrayList<>();
 
-            categoryPredicates.add(cb.and(namePredicates));
+        if (textSearchFilter.isCategorySelected(TextSearchCategory.NAME)) {
+            Predicate namePredicate = buildNameTokenPredicate(cb, event, token);
+            tokenPredicates.add(namePredicate);
         }
 
-        if (textFilter.isCategorySelected(TextSearchCategory.DESCRIPTION)) {
-            Predicate[] descriptionPredicates = tokens.stream()
-                    .map(token -> cb.like(cb.lower(event.get("description")), '%' + token + '%'))
-                    .collect(Collectors.toList())
-                    .toArray(new Predicate[]{});
-
-            categoryPredicates.add(cb.and(descriptionPredicates));
+        if (textSearchFilter.isCategorySelected(TextSearchCategory.DESCRIPTION)) {
+            Predicate descriptionPredicate = buildDescriptionPredicate(cb, event, token);
+            tokenPredicates.add(descriptionPredicate);
         }
 
-        if (textFilter.isCategorySelected(TextSearchCategory.LOCATION)) {
-            Predicate[] locationPredicates = tokens.stream()
-                    .map(token -> cb.like(cb.lower(event.get("location")), '%' + token + '%'))
-                    .collect(Collectors.toList())
-                    .toArray(new Predicate[]{});
-
-            categoryPredicates.add(cb.and(locationPredicates));
+        if (textSearchFilter.isCategorySelected(TextSearchCategory.LOCATION)) {
+            Predicate locationPredicate = buildLocationPredicate(cb, event, token);
+            tokenPredicates.add(locationPredicate);
         }
 
-        if (textFilter.isCategorySelected(TextSearchCategory.INSTRUCTOR_NAME)) {
-            Predicate[] instructorNamePredicates = tokens.stream()
-                    .map(token -> cb.or(
-                            cb.like(cb.lower(instructor.get("name")), '%' + token + '%'),
-                            cb.like(cb.lower(instructor.get("surname")), '%' + token + '%')
-                    ))
-                    .collect(Collectors.toList())
-                    .toArray(new Predicate[]{});
-
-            categoryPredicates.add(cb.and(instructorNamePredicates));
+        if (textSearchFilter.isCategorySelected(TextSearchCategory.INSTRUCTOR_NAME)) {
+            Predicate instructorNamePredicate = buildInstructorNamePredicate(cb, instructor, token);
+            tokenPredicates.add(instructorNamePredicate);
         }
 
-        return Optional.of(cb.or(categoryPredicates.toArray(new Predicate[]{})));
+        if (tokenPredicates.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Predicate[] tokenPredicatesArray = tokenPredicates.toArray(new Predicate[]{});
+        return Optional.of(cb.or(tokenPredicatesArray));
+    }
+
+    private Predicate buildNameTokenPredicate(CriteriaBuilder cb, Root<EventEntity> event, String token) {
+        return cb.like(cb.lower(event.get("name")), '%' + token + '%');
+    }
+
+    private Predicate buildDescriptionPredicate(CriteriaBuilder cb, Root<EventEntity> event, String token) {
+        return cb.like(cb.lower(event.get("description")), '%' + token + '%');
+    }
+
+    private Predicate buildLocationPredicate(CriteriaBuilder cb, Root<EventEntity> event, String token) {
+        return cb.like(cb.lower(event.get("location")), '%' + token + '%');
+    }
+
+    private Predicate buildInstructorNamePredicate(CriteriaBuilder cb, Join<EventEntity, UserEntity> instructor, String token) {
+        return cb.or(
+                cb.like(cb.lower(instructor.get("name")), '%' + token + '%'),
+                cb.like(cb.lower(instructor.get("surname")), '%' + token + '%')
+        );
     }
 
     private Optional<Predicate> buildEventTypePredicate(CriteriaBuilder cb, Root<EventEntity> event, EventTypeFilter eventTypeFilter) {
@@ -148,23 +169,40 @@ public class EventSearchRepository {
 
     private List<Order> buildOrder(CriteriaBuilder cb, Root<EventEntity> event, ListJoin<EventEntity, EventRealizationEntity> realization) {
         return List.of(
-                cb.asc(realization.get("start")),
+                cb.asc(cb.min(realization.get("start"))),
                 cb.asc(event.get("id"))
         );
     }
 
-    private List<SearchEventsResultItem> toResultItems(List<EventEntity> events) {
-        return events.stream()
-                .map(this::mapToResultItem)
+    private List<SearchEventsResultItem> toResultItems(List<SearchQueryResult> results, Instant now) {
+        return results.stream()
+                .map(SearchQueryResult::getEvent)
+                .map(event -> mapToResultItem(event, now))
                 .collect(Collectors.toList());
     }
 
-    private SearchEventsResultItem mapToResultItem(EventEntity event) {
+    private SearchEventsResultItem mapToResultItem(EventEntity event, Instant now) {
         UserEntity instructor = event.getInstructor();
         String instructorName = instructor.getName() + " " + instructor.getSurname();
+        long futureRealizations = computeNotStartedRealizationsAmount(event, now);
         return new SearchEventsResultItem(event.getId(), event.getVersion(), event.getName(),
-                event.getDescription(), event.getLocation(), instructorName, event.getType(),
-                event.getSingleEventStart(), event.getSingleEventEnd(), event.getCyclicDayOfWeek(),
-                event.getCyclicEventStart(), event.getCyclicEventDuration());
+                event.getDescription(), event.getLocation(), instructorName, event.getType(), futureRealizations,
+                event.getPrice(), event.getCreatedAt(), event.getSingleEventStart(), event.getSingleEventEnd(), event.getCyclicDayOfWeek(),
+                event.getCyclicEventStart(), event.getCyclicEventDuration(),
+                event.getCyclicStartBoundary(), event.getCyclicEndBoundary());
+    }
+
+    private long computeNotStartedRealizationsAmount(EventEntity event, Instant now) {
+        return event.getRealizations().stream()
+                .map(EventRealizationEntity::getStart)
+                .filter(realizationStart -> realizationStart.isAfter(now))
+                .count();
+    }
+
+    @RequiredArgsConstructor
+    private static class SearchQueryResult {
+        @Getter
+        private final EventEntity event;
+        private final Instant minimumRealizationStart;
     }
 }
