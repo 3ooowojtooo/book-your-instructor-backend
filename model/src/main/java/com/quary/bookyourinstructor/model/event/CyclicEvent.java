@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.math.BigDecimal;
-import java.time.DayOfWeek;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -31,24 +28,24 @@ public class CyclicEvent extends Event {
     private final String absenceEventName;
     private final String absenceEventDescription;
 
-    public static CyclicEvent newCyclicEventDraft(int instructorId, String name, String description, String location, BigDecimal price,
+    public static CyclicEvent newCyclicEventDraft(int instructorId, String name, String description, String location, BigDecimal price, Instant createdAt,
                                                   LocalTime startTime, Duration duration, DayOfWeek dayOfWeek, LocalDate startBoundary,
                                                   LocalDate endBoundary, boolean absenceEvent, String absenceEventName, String absenceEventDescription) {
         return new CyclicEvent(null, null, EventType.CYCLIC, instructorId, name, description, location, EventStatus.DRAFT,
-                price, startTime, duration, dayOfWeek, startBoundary, endBoundary, absenceEvent, absenceEventName, absenceEventDescription);
+                price, createdAt, startTime, duration, dayOfWeek, startBoundary, endBoundary, absenceEvent, absenceEventName, absenceEventDescription);
     }
 
-    public static CyclicEvent newCyclicEventFree(int instructorId, String name, String description, String location, BigDecimal price,
-                                                  LocalTime startTime, Duration duration, DayOfWeek dayOfWeek, LocalDate startBoundary,
-                                                  LocalDate endBoundary, boolean absenceEvent, String absenceEventName, String absenceEventDescription) {
+    public static CyclicEvent newCyclicEventFree(int instructorId, String name, String description, String location, BigDecimal price, Instant createdAt,
+                                                 LocalTime startTime, Duration duration, DayOfWeek dayOfWeek, LocalDate startBoundary,
+                                                 LocalDate endBoundary, boolean absenceEvent, String absenceEventName, String absenceEventDescription) {
         return new CyclicEvent(null, null, EventType.CYCLIC, instructorId, name, description, location, EventStatus.FREE,
-                price, startTime, duration, dayOfWeek, startBoundary, endBoundary, absenceEvent, absenceEventName, absenceEventDescription);
+                price, createdAt, startTime, duration, dayOfWeek, startBoundary, endBoundary, absenceEvent, absenceEventName, absenceEventDescription);
     }
 
     public CyclicEvent(Integer id, Integer version, EventType type, Integer instructorId, String name, String description,
-                       String location, EventStatus status, BigDecimal price, LocalTime startTime, Duration duration, DayOfWeek dayOfWeek,
+                       String location, EventStatus status, BigDecimal price, Instant createdAt, LocalTime startTime, Duration duration, DayOfWeek dayOfWeek,
                        LocalDate startBoundary, LocalDate endBoundary, boolean absenceEvent, String absenceEventName, String absenceEventDescription) {
-        super(id, version, type, instructorId, name, description, location, status, price);
+        super(id, version, type, instructorId, name, description, location, status, price, createdAt);
         validateConstructorArgs(startTime, duration, dayOfWeek, startBoundary, endBoundary, absenceEvent, absenceEventName, absenceEventDescription);
         this.startTime = startTime;
         this.duration = duration;

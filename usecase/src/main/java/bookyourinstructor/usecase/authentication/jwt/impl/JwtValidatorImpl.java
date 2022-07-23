@@ -8,7 +8,6 @@ import com.quary.bookyourinstructor.model.authentication.exception.InvalidJwtExc
 import lombok.RequiredArgsConstructor;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 import static java.util.Objects.nonNull;
 

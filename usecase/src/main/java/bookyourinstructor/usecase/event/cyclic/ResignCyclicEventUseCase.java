@@ -100,7 +100,7 @@ public class ResignCyclicEventUseCase {
         LocalDate startBoundary = timeUtils.toLocalDateTimeUTCZone(firstRealization.getStart()).toLocalDate().minusDays(1);
         LocalDate endBoundary = timeUtils.toLocalDateTimeUTCZone(lastRealization.getEnd()).toLocalDate().plusDays(1);
         return CyclicEvent.newCyclicEventFree(cyclicEvent.getInstructorId(), cyclicEvent.getName(), cyclicEvent.getDescription(),
-                cyclicEvent.getLocation(), cyclicEvent.getPrice(), cyclicEvent.getStartTime(), cyclicEvent.getDuration(),
+                cyclicEvent.getLocation(), cyclicEvent.getPrice(), cyclicEvent.getCreatedAt(), cyclicEvent.getStartTime(), cyclicEvent.getDuration(),
                 cyclicEvent.getDayOfWeek(), startBoundary, endBoundary, cyclicEvent.isAbsenceEvent(), cyclicEvent.getAbsenceEventName(),
                 cyclicEvent.getAbsenceEventDescription());
     }

@@ -18,7 +18,7 @@ public class RetryManagerImpl implements RetryManager {
     private final RetryRegistry retryRegistry;
 
     @Override
-    public <T> T runInLockRetry(RetryInstanceName retryName, Supplier<T> action) throws ConcurrentDataModificationRuntimeException{
+    public <T> T runInLockRetry(RetryInstanceName retryName, Supplier<T> action) throws ConcurrentDataModificationRuntimeException {
         try {
             Retry retry = getRetry(retryName);
             return retry.executeSupplier(action);

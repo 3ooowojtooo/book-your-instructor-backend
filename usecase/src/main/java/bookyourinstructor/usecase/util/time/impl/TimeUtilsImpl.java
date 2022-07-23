@@ -2,16 +2,13 @@ package bookyourinstructor.usecase.util.time.impl;
 
 import bookyourinstructor.usecase.util.time.TimeUtils;
 
-import java.sql.Time;
 import java.time.*;
-import java.time.temporal.TemporalAdjuster;
-import java.util.Date;
 
 public enum TimeUtilsImpl implements TimeUtils {
     INSTANCE;
 
     private static final Clock CLOCK = Clock.systemDefaultZone();
-    private static final ZoneId ZONE_ID = ZoneId.systemDefault();
+    private static final ZoneId SYSTEM_ZONE_ID = ZoneId.systemDefault();
 
     @Override
     public Instant nowInstant() {
@@ -25,7 +22,7 @@ public enum TimeUtilsImpl implements TimeUtils {
 
     @Override
     public LocalDateTime toLocalDateTimeSystemZone(Instant instant) {
-        return LocalDateTime.ofInstant(instant, ZONE_ID);
+        return LocalDateTime.ofInstant(instant, SYSTEM_ZONE_ID);
     }
 
     @Override
@@ -33,6 +30,10 @@ public enum TimeUtilsImpl implements TimeUtils {
         return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
     }
 
+    @Override
+    public LocalDate toLocalDateUTCZone(Instant instant) {
+        return LocalDate.ofInstant(instant, ZoneOffset.UTC);
+    }
 
     @Override
     public Instant toInstantFromSystemZone(LocalDateTime localDateTime) {
@@ -55,6 +56,6 @@ public enum TimeUtilsImpl implements TimeUtils {
 
     private ZoneOffset createZoneOffset() {
         Instant now = nowInstant();
-        return ZONE_ID.getRules().getOffset(now);
+        return SYSTEM_ZONE_ID.getRules().getOffset(now);
     }
 }

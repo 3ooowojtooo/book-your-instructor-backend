@@ -1,11 +1,9 @@
 package com.quary.bookyourinstructor.service.eventstudentabsence;
 
 import bookyourinstructor.usecase.event.common.store.EventStudentAbsenceStore;
-import com.quary.bookyourinstructor.entity.EventEntity;
 import com.quary.bookyourinstructor.entity.EventRealizationEntity;
 import com.quary.bookyourinstructor.entity.EventStudentAbsenceEntity;
 import com.quary.bookyourinstructor.entity.UserEntity;
-import com.quary.bookyourinstructor.model.event.EventRealization;
 import com.quary.bookyourinstructor.model.event.EventStudentAbsence;
 import com.quary.bookyourinstructor.repository.EventRealizationRepository;
 import com.quary.bookyourinstructor.repository.EventStudentAbsenceRepository;

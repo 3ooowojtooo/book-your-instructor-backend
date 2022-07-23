@@ -15,7 +15,7 @@ public class DeclareCyclicEventRequest {
     private String description;
     private String location;
     private BigDecimal price;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime startTime;
     private Integer durationSeconds;
     private DayOfWeek dayOfWeek;
