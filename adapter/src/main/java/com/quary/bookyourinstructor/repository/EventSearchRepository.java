@@ -194,8 +194,7 @@ public class EventSearchRepository {
 
     private long computeNotStartedRealizationsAmount(EventEntity event, Instant now) {
         return event.getRealizations().stream()
-                .map(EventRealizationEntity::getStart)
-                .filter(realizationStart -> realizationStart.isAfter(now))
+                .filter(realization -> realization.getStart().isAfter(now) && realization.getStatus() == EventRealizationStatus.ACCEPTED)
                 .count();
     }
 
