@@ -47,8 +47,6 @@ public interface EventMapper {
 
     DeclareCyclicEventResponse mapToDeclareCyclicEventResponse(DeclareCyclicEventResult result);
 
-    CreateEventBookLockResponse mapToCreateEventBookLockResponse(EventLock eventLock);
-
     @Mapping(target = "start", source = "request.eventStart")
     @Mapping(target = "end", source = "request.eventEnd")
     UpdateCyclicEventRealizationData mapToUpdateCyclicEventRealizationData(UpdateCyclicEventRealizationRequest request,

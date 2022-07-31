@@ -8,7 +8,7 @@ external-login:
 
 event:
   lock:
-    validity-duration: PT15M
+    validity-duration: PT1M
     retry-wait-millis: 500
     retry-max-attempts: 5
 
