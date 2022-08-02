@@ -67,8 +67,8 @@ public class EventRealizationStoreImpl implements EventRealizationStore {
     }
 
     @Override
-    public List<EventRealization> findAllFutureRealizations(Integer eventId, Instant now) {
-        return eventRealizationRepository.findAllByEventIdStartingAfter(eventId, now)
+    public List<EventRealization> findAllFutureRealizationsWithStatus(Integer eventId, Instant now, EventRealizationStatus status) {
+        return eventRealizationRepository.findAllByEventIdStartingAfterAndWithStatus(eventId, now, status)
                 .stream()
                 .map(mapper::mapToEventRealization)
                 .collect(Collectors.toList());

@@ -106,34 +106,6 @@ public class EventController {
         acceptEventUseCase.acceptEvent(data);
     }
 
-    @PostMapping(path = "/{id}/{version}/book-lock", produces = MediaType.APPLICATION_JSON_VALUE)
-    @StudentAllowed
-    public CreateEventBookLockResponse createEventBookLock(@PathVariable("id") final Integer eventId,
-                                                           @PathVariable("version") final Integer eventVersion,
-                                                           @AuthenticationPrincipal final UserContext user)
-            throws EventChangedException, EventBookingAlreadyLockedException, ConcurrentDataModificationException {
-        final CreateEventBookLockData data = new CreateEventBookLockData(eventId, eventVersion, user.getId());
-        final EventLock eventLock = createEventBookLockUseCase.createEventBookLock(data);
-        return mapper.mapToCreateEventBookLockResponse(eventLock);
-    }
-
-    @PutMapping(path = "/book-lock/{id}/confirm")
-    @StudentAllowed
-    public void confirmBookLock(@PathVariable("id") final Integer bookLockId,
-                                @AuthenticationPrincipal final UserContext user) throws EventChangedException,
-            EventBookLockExpiredException, ConcurrentDataModificationException {
-        ConfirmEventBookLockData data = new ConfirmEventBookLockData(bookLockId, user.getId());
-        confirmEventBookLockUseCase.confirmEventBookLock(data);
-    }
-
-    @DeleteMapping(path = "/book-lock/{id}")
-    @StudentAllowed
-    public void removeBookLock(@PathVariable("id") final Integer bookLockId,
-                               @AuthenticationPrincipal final UserContext user) {
-        DeleteEventBookLockData data = new DeleteEventBookLockData(bookLockId, user.getId());
-        deleteEventBookLockUseCase.deleteBookLock(data);
-    }
-
     @PostMapping(path = "/realization/{id}/absence", consumes = MediaType.APPLICATION_JSON_VALUE)
     @InstructorAndStudentAllowed
     public void reportAbsence(@PathVariable("id") final Integer eventRealizationId,

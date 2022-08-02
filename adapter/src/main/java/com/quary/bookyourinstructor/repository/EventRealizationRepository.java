@@ -33,8 +33,8 @@ public interface EventRealizationRepository extends CrudRepository<EventRealizat
     @Query("select r from EventRealizationEntity r where r.event.id = ?1")
     List<EventRealizationEntity> findAllByEventId(final Integer eventId);
 
-    @Query("select r from EventRealizationEntity r where r.event.id = ?1 and r.start > ?2")
-    List<EventRealizationEntity> findAllByEventIdStartingAfter(final Integer eventId, final Instant now);
+    @Query("select r from EventRealizationEntity r where r.event.id = ?1 and r.start > ?2 and r.status = ?3")
+    List<EventRealizationEntity> findAllByEventIdStartingAfterAndWithStatus(final Integer eventId, final Instant now, final EventRealizationStatus status);
 
     @Query(value = "select * from event_realization where event_id = ?1 and start_timestamp > ?2 order by start_timestamp for update nowait", nativeQuery = true)
     List<EventRealizationEntity> findAllByEventIdStartingAfterOrderByStartAscWithLockForUpdate(final Integer eventId, final Instant startThreshold);

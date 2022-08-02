@@ -32,7 +32,7 @@ public class GetEventDetailsAsStudentUseCase {
         return transactionFacade.executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.READ_COMMITTED, () -> {
             Event event = findEventOrThrow(data.getEventId());
             User instructor = findInstructorOrThrow(event.getInstructorId());
-            List<EventRealization> realizations = eventRealizationStore.findAllFutureRealizations(data.getEventId(), now);
+            List<EventRealization> realizations = eventRealizationStore.findAllFutureRealizationsWithStatus(data.getEventId(), now, EventRealizationStatus.ACCEPTED);
             boolean eventLocked = eventLockStore.existsByEventIdAndFutureExpirationTime(data.getEventId(), now);
             return buildResult(event, instructor, realizations, eventLocked);
         });
