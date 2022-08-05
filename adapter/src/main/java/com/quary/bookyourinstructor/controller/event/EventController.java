@@ -1,11 +1,5 @@
 package com.quary.bookyourinstructor.controller.event;
 
-import bookyourinstructor.usecase.event.booklock.ConfirmEventBookLockUseCase;
-import bookyourinstructor.usecase.event.booklock.CreateEventBookLockUseCase;
-import bookyourinstructor.usecase.event.booklock.DeleteEventBookLockUseCase;
-import bookyourinstructor.usecase.event.booklock.data.ConfirmEventBookLockData;
-import bookyourinstructor.usecase.event.booklock.data.CreateEventBookLockData;
-import bookyourinstructor.usecase.event.booklock.data.DeleteEventBookLockData;
 import bookyourinstructor.usecase.event.common.AcceptEventUseCase;
 import bookyourinstructor.usecase.event.common.DeleteDraftEventUseCase;
 import bookyourinstructor.usecase.event.common.GetEventDetailsAsStudentUseCase;
@@ -34,8 +28,10 @@ import com.quary.bookyourinstructor.configuration.security.annotation.StudentAll
 import com.quary.bookyourinstructor.configuration.security.model.UserContext;
 import com.quary.bookyourinstructor.controller.event.mapper.EventMapper;
 import com.quary.bookyourinstructor.controller.event.request.*;
-import com.quary.bookyourinstructor.controller.event.response.*;
-import com.quary.bookyourinstructor.model.event.EventLock;
+import com.quary.bookyourinstructor.controller.event.response.DeclareCyclicEventResponse;
+import com.quary.bookyourinstructor.controller.event.response.DeclareSingleEventResponse;
+import com.quary.bookyourinstructor.controller.event.response.GetEventDetailsAsStudentResponse;
+import com.quary.bookyourinstructor.controller.event.response.SearchEventsResponse;
 import com.quary.bookyourinstructor.model.event.exception.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -50,11 +46,8 @@ public class EventController {
     private final EventMapper mapper;
     private final DeclareSingleEventUseCase declareSingleEventUseCase;
     private final DeclareCyclicEventUseCase declareCyclicEventUseCase;
-    private final CreateEventBookLockUseCase createEventBookLockUseCase;
-    private final ConfirmEventBookLockUseCase confirmEventBookLockUseCase;
     private final AcceptEventUseCase acceptEventUseCase;
     private final UpdateCyclicEventRealizationUseCase updateCyclicEventRealizationUseCase;
-    private final DeleteEventBookLockUseCase deleteEventBookLockUseCase;
     private final DeleteDraftEventUseCase deleteDraftEventUseCase;
     private final ReportAbsenceUseCase reportAbsenceUseCase;
     private final ResignCyclicEventUseCase resignCyclicEventUseCase;
