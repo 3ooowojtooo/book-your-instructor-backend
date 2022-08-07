@@ -74,10 +74,10 @@ public class EventEntity {
     private DayOfWeek cyclicDayOfWeek;
 
     @Column(name = "cyclic_start_boundary")
-    private LocalDate cyclicStartBoundary;
+    private LocalDateTime cyclicStartBoundary;
 
     @Column(name = "cyclic_end_boundary")
-    private LocalDate cyclicEndBoundary;
+    private LocalDateTime cyclicEndBoundary;
 
     @Column(name = "cyclic_absence_event")
     private Boolean cyclicAbsenceEvent;

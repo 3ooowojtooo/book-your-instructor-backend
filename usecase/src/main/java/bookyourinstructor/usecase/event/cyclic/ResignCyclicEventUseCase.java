@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -97,8 +98,8 @@ public class ResignCyclicEventUseCase {
     private CyclicEvent buildEvent(CyclicEvent cyclicEvent, List<EventRealization> realizations) {
         EventRealization firstRealization = realizations.get(0);
         EventRealization lastRealization = realizations.get(realizations.size() - 1);
-        LocalDate startBoundary = timeUtils.toLocalDateTimeUTCZone(firstRealization.getStart()).toLocalDate().minusDays(1);
-        LocalDate endBoundary = timeUtils.toLocalDateTimeUTCZone(lastRealization.getEnd()).toLocalDate().plusDays(1);
+        LocalDateTime startBoundary = timeUtils.toLocalDateTimeUTCZone(firstRealization.getStart());
+        LocalDateTime endBoundary = timeUtils.toLocalDateTimeUTCZone(lastRealization.getEnd());
         return CyclicEvent.newCyclicEventFree(cyclicEvent.getInstructorId(), cyclicEvent.getName(), cyclicEvent.getDescription(),
                 cyclicEvent.getLocation(), cyclicEvent.getPrice(), cyclicEvent.getCreatedAt(), cyclicEvent.getStartTime(), cyclicEvent.getDuration(),
                 cyclicEvent.getDayOfWeek(), startBoundary, endBoundary, cyclicEvent.isAbsenceEvent(), cyclicEvent.getAbsenceEventName(),

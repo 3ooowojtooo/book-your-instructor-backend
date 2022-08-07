@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -38,6 +39,7 @@ public class UpdateCyclicEventRealizationUseCase {
                 EventRealization eventRealization = findEventRealizationOrThrow(data.getEventRealizationId());
                 Event event = findEventOrThrow(eventRealization.getEventId());
                 CyclicEvent cyclicEvent = validateEventCyclic(event);
+                validateNewRealizationTimeNotBeforeCreationTime(data, cyclicEvent);
                 validateEventOwner(event, data.getInstructorId());
                 validateEventRealizationDraft(eventRealization);
                 validateNewRealizationTimeWithinEventBoundaries(cyclicEvent, data.getStart(), data.getEnd());
@@ -72,15 +74,20 @@ public class UpdateCyclicEventRealizationUseCase {
         checkState(eventRealization.getStatus() == EventRealizationStatus.DRAFT, "You can only change draft event realization");
     }
 
+    private void validateNewRealizationTimeNotBeforeCreationTime(UpdateCyclicEventRealizationData data, Event event) {
+        checkArgument(!data.getStart().isBefore(event.getCreatedAt()) && !data.getEnd().isBefore(event.getCreatedAt()),
+                "New cyclic event start / end date time cannot be before event creation time: " + event.getCreatedAt());
+    }
+
     private void validateEventOwner(Event event, Integer ownerId) {
         checkArgument(Objects.equals(event.getInstructorId(), ownerId), "You can only change realization of your event");
     }
 
     private void validateNewRealizationTimeWithinEventBoundaries(CyclicEvent event, Instant newStart, Instant newEnd)
             throws CyclicEventRealizationOutOfEventBoundRuntimeException {
-        LocalDate newStartLocalDate = timeUtils.toLocalDateTimeUTCZone(newStart).toLocalDate();
-        LocalDate newEndLocalDate = timeUtils.toLocalDateTimeUTCZone(newEnd).toLocalDate();
-        if (newStartLocalDate.isBefore(event.getStartBoundary()) || newEndLocalDate.isAfter(event.getEndBoundary())) {
+        LocalDateTime newStartLocalDateTime = timeUtils.toLocalDateTimeUTCZone(newStart);
+        LocalDateTime newEndLocalDateTime = timeUtils.toLocalDateTimeUTCZone(newEnd);
+        if (newStartLocalDateTime.isBefore(event.getStartBoundary()) || newEndLocalDateTime.isAfter(event.getEndBoundary())) {
             throw new CyclicEventRealizationOutOfEventBoundRuntimeException();
         }
     }

@@ -55,8 +55,8 @@ public class GetEventDetailsAsStudentUseCase {
         DayOfWeek cyclicEventDayOfWeek = null;
         LocalTime cyclicEventStartTime = null;
         Duration cyclicEventDuration = null;
-        LocalDate cyclicEventStartBoundary = null;
-        LocalDate cyclicEventEndBoundary = null;
+        LocalDateTime cyclicEventStartBoundary = null;
+        LocalDateTime cyclicEventEndBoundary = null;
 
         if (event.getType() == EventType.SINGLE) {
             SingleEvent singleEvent = (SingleEvent) event;

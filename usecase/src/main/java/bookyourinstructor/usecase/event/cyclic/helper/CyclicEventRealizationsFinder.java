@@ -17,13 +17,10 @@ public class CyclicEventRealizationsFinder {
     private final TimeUtils timeUtils;
 
     public List<EventRealization> findCyclicEventRealizations(final CyclicEvent cyclicEvent) throws NoRealizationsOfCyclicEventFoundRuntimeException {
-        LocalDate firstRealizationDateStart = timeUtils.findDayOfWeekAtOrAfterDate(cyclicEvent.getDayOfWeek(), cyclicEvent.getStartBoundary());
-        if (firstRealizationDateStart.isAfter(cyclicEvent.getEndBoundary())) {
-            throw new NoRealizationsOfCyclicEventFoundRuntimeException();
-        }
+        LocalDate firstRealizationDateStart = timeUtils.findDayOfWeekAtOrAfterDateTime(cyclicEvent.getDayOfWeek(), cyclicEvent.getStartBoundary());
         LocalDateTime firstRealizationDateTimeStart = LocalDateTime.of(firstRealizationDateStart, cyclicEvent.getStartTime());
         LocalDateTime firstRealizationDateTimeEnd = firstRealizationDateTimeStart.plus(cyclicEvent.getDuration());
-        if (firstRealizationDateTimeEnd.toLocalDate().isAfter(cyclicEvent.getEndBoundary())) {
+        if (firstRealizationDateTimeStart.isAfter(cyclicEvent.getEndBoundary())) {
             throw new NoRealizationsOfCyclicEventFoundRuntimeException();
         }
 
@@ -31,7 +28,7 @@ public class CyclicEventRealizationsFinder {
 
         LocalDateTime currentRealizationDateTimeStart = firstRealizationDateTimeStart;
         LocalDateTime currentRealizationDateTimeEnd = firstRealizationDateTimeEnd;
-        while (currentRealizationDateTimeEnd.toLocalDate().isBefore(cyclicEvent.getEndBoundary()) || currentRealizationDateTimeEnd.toLocalDate().isEqual(cyclicEvent.getEndBoundary())) {
+        while (timeUtils.isBeforeOrEqual(currentRealizationDateTimeEnd, cyclicEvent.getEndBoundary())) {
             EventRealization eventRealization = buildEventRealization(currentRealizationDateTimeStart, currentRealizationDateTimeEnd, cyclicEvent);
             eventRealizations.add(eventRealization);
             currentRealizationDateTimeStart = currentRealizationDateTimeStart.plusWeeks(1);

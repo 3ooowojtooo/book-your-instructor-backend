@@ -37,8 +37,8 @@ public class SearchEventsResponseItem {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private final LocalTime cyclicEventStartTime;
     private final Long cyclicEventDurationSeconds;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private final LocalDate cyclicEventStartBoundary;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private final LocalDate cyclicEventEndBoundary;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private final LocalDateTime cyclicEventStartBoundary;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private final LocalDateTime cyclicEventEndBoundary;
 }

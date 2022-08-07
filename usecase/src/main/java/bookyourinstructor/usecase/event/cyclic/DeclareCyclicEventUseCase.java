@@ -2,7 +2,7 @@ package bookyourinstructor.usecase.event.cyclic;
 
 import bookyourinstructor.usecase.event.common.store.EventRealizationStore;
 import bookyourinstructor.usecase.event.common.store.EventStore;
-import bookyourinstructor.usecase.event.cyclic.data.NewCyclicEventData;
+import bookyourinstructor.usecase.event.cyclic.data.DeclareCyclicEventData;
 import bookyourinstructor.usecase.event.cyclic.exception.NoRealizationsOfCyclicEventFoundRuntimeException;
 import bookyourinstructor.usecase.event.cyclic.helper.CyclicEventRealizationsFinder;
 import bookyourinstructor.usecase.event.cyclic.result.DeclareCyclicEventResult;
@@ -17,6 +17,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 @RequiredArgsConstructor
 public class DeclareCyclicEventUseCase {
 
@@ -26,8 +28,9 @@ public class DeclareCyclicEventUseCase {
     private final CyclicEventRealizationsFinder realizationsFinder;
     private final TimeUtils timeUtils;
 
-    public DeclareCyclicEventResult declareNewCyclicEvent(final NewCyclicEventData eventData) throws InvalidCyclicEventBoundariesException {
+    public DeclareCyclicEventResult declareNewCyclicEvent(final DeclareCyclicEventData eventData) throws InvalidCyclicEventBoundariesException {
         final Instant now = timeUtils.nowInstant();
+        validateBoundariesNotInThePast(eventData, now);
         try {
             return transactionFacade.executeInTransaction(() -> {
                 CyclicEvent event = buildCyclicEvent(eventData, now);
@@ -42,6 +45,12 @@ public class DeclareCyclicEventUseCase {
         }
     }
 
+    private void validateBoundariesNotInThePast(DeclareCyclicEventData data, Instant now) {
+        Instant startBoundary = timeUtils.toInstantFromUTCZone(data.getStartBoundary());
+        Instant endBoundary = timeUtils.toInstantFromUTCZone(data.getEndBoundary());
+        checkArgument(!startBoundary.isBefore(now) && !endBoundary.isBefore(now), "Cyclic event boundaries must not be in the past");
+    }
+
     private void updateCyclicEventBoundaries(Integer eventId, List<EventRealization> realizations) {
         EventRealization firstRealization = realizations.get(0);
         EventRealization lastRealization = realizations.get(realizations.size() - 1);
@@ -50,7 +59,7 @@ public class DeclareCyclicEventUseCase {
         eventStore.updateCyclicEventBoundaries(eventId, startBoundary, endBoundary);
     }
 
-    private static CyclicEvent buildCyclicEvent(final NewCyclicEventData eventData, Instant now) {
+    private static CyclicEvent buildCyclicEvent(final DeclareCyclicEventData eventData, Instant now) {
         return CyclicEvent.newCyclicEventDraft(eventData.getInstructorId(), eventData.getName(), eventData.getDescription(),
                 eventData.getLocation(), eventData.getPrice(), now, eventData.getStartTime(), eventData.getDuration(), eventData.getDayOfWeek(),
                 eventData.getStartBoundary(), eventData.getEndBoundary(), eventData.getAbsenceEvent(), eventData.getAbsenceEventName(),
@@ -58,6 +67,6 @@ public class DeclareCyclicEventUseCase {
     }
 
     private static DeclareCyclicEventResult buildResult(CyclicEvent event, List<EventRealization> eventRealizations) {
-        return new DeclareCyclicEventResult(event.getId(), eventRealizations);
+        return new DeclareCyclicEventResult(event.getId(), event.getCreatedAt(), eventRealizations);
     }
 }

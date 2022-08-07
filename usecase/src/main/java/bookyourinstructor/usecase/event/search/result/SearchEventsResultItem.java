@@ -30,13 +30,13 @@ public class SearchEventsResultItem {
     private final DayOfWeek cyclicEventDayOfWeek;
     private final LocalTime cyclicEventStartTime;
     private final Duration cyclicEventDuration;
-    private final LocalDate cyclicEventStartBoundary;
-    private final LocalDate cyclicEventEndBoundary;
+    private final LocalDateTime cyclicEventStartBoundary;
+    private final LocalDateTime cyclicEventEndBoundary;
 
     public SearchEventsResultItem(Integer id, Integer version, String name, String description, String location, String instructorName,
                                   EventType eventType, long futureRealizations, BigDecimal price, Instant createdAt, LocalDateTime singleEventStart, LocalDateTime singleEventEnd,
                                   DayOfWeek cyclicEventDayOfWeek, LocalTime cyclicEventStartTime, Duration cyclicEventDuration,
-                                  LocalDate cyclicEventStartBoundary, LocalDate cyclicEventEndBoundary) {
+                                  LocalDateTime cyclicEventStartBoundary, LocalDateTime cyclicEventEndBoundary) {
         validateConstructorArgs(id, version, name, location, instructorName, eventType, futureRealizations, price, createdAt, singleEventStart, singleEventEnd,
                 cyclicEventDayOfWeek, cyclicEventStartTime, cyclicEventDuration, cyclicEventStartBoundary, cyclicEventEndBoundary);
         this.id = id;
@@ -61,7 +61,7 @@ public class SearchEventsResultItem {
     private static void validateConstructorArgs(Integer id, Integer version, String name, String location, String instructorName,
                                                 EventType eventType, long futureRealizations, BigDecimal price, Instant createdAt, LocalDateTime singleEventStart, LocalDateTime singleEventEnd,
                                                 DayOfWeek cyclicEventDayOfWeek, LocalTime cyclicEventStartTime, Duration cyclicEventDuration,
-                                                LocalDate cyclicEventStartBoundary, LocalDate cyclicEventEndBoundary) {
+                                                LocalDateTime cyclicEventStartBoundary, LocalDateTime cyclicEventEndBoundary) {
         checkNotNull(id, "Searched event id cannot be null");
         checkNotNull(version, "Searched event version cannot be null");
         checkArgument(isNotBlank(name), "Searched event name cannot be blank");

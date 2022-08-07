@@ -46,16 +46,23 @@ public enum TimeUtilsImpl implements TimeUtils {
     }
 
     @Override
-    public LocalDate findDayOfWeekAtOrAfterDate(DayOfWeek dayOfWeek, LocalDate date) {
-        LocalDate currentDate = date;
-        while (currentDate.getDayOfWeek() != dayOfWeek) {
-            currentDate = currentDate.plusDays(1);
+    public LocalDate findDayOfWeekAtOrAfterDateTime(DayOfWeek dayOfWeek, LocalDateTime dateTime) {
+        LocalDateTime currentDateTime = dateTime;
+        while (currentDateTime.getDayOfWeek() != dayOfWeek) {
+            currentDateTime = currentDateTime.plusDays(1);
         }
-        return currentDate;
+        return currentDateTime.toLocalDate();
+    }
+
+    @Override
+    public boolean isBeforeOrEqual(LocalDateTime one, LocalDateTime two) {
+        return one.compareTo(two) <= 0;
     }
 
     private ZoneOffset createZoneOffset() {
         Instant now = nowInstant();
         return SYSTEM_ZONE_ID.getRules().getOffset(now);
     }
+
+
 }

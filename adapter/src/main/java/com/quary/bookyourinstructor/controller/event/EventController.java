@@ -12,7 +12,7 @@ import bookyourinstructor.usecase.event.common.result.GetEventDetailsAsStudentRe
 import bookyourinstructor.usecase.event.cyclic.DeclareCyclicEventUseCase;
 import bookyourinstructor.usecase.event.cyclic.ResignCyclicEventUseCase;
 import bookyourinstructor.usecase.event.cyclic.UpdateCyclicEventRealizationUseCase;
-import bookyourinstructor.usecase.event.cyclic.data.NewCyclicEventData;
+import bookyourinstructor.usecase.event.cyclic.data.DeclareCyclicEventData;
 import bookyourinstructor.usecase.event.cyclic.data.ResignCyclicEventData;
 import bookyourinstructor.usecase.event.cyclic.data.UpdateCyclicEventRealizationData;
 import bookyourinstructor.usecase.event.cyclic.result.DeclareCyclicEventResult;
@@ -20,7 +20,7 @@ import bookyourinstructor.usecase.event.search.SearchEventsUseCase;
 import bookyourinstructor.usecase.event.search.data.SearchEventsData;
 import bookyourinstructor.usecase.event.search.result.SearchEventsResult;
 import bookyourinstructor.usecase.event.single.DeclareSingleEventUseCase;
-import bookyourinstructor.usecase.event.single.data.NewSingleEventData;
+import bookyourinstructor.usecase.event.single.data.DeclareSingleEventData;
 import bookyourinstructor.usecase.event.single.result.DeclareSingleEventResult;
 import com.quary.bookyourinstructor.configuration.security.annotation.InstructorAllowed;
 import com.quary.bookyourinstructor.configuration.security.annotation.InstructorAndStudentAllowed;
@@ -58,7 +58,7 @@ public class EventController {
     @InstructorAllowed
     public DeclareSingleEventResponse declareSingleEvent(@RequestBody final DeclareSingleEventRequest request,
                                                          @AuthenticationPrincipal final UserContext user) {
-        final NewSingleEventData eventData = mapper.mapToNewSingleEventData(request, user.getId());
+        final DeclareSingleEventData eventData = mapper.mapToNewSingleEventData(request, user.getId());
         final DeclareSingleEventResult result = declareSingleEventUseCase.declareNewSingleEvent(eventData);
         return mapper.mapToDeclareSingleEventResponse(result);
     }
@@ -67,7 +67,7 @@ public class EventController {
     @InstructorAllowed
     public DeclareCyclicEventResponse declareCyclicEvent(@RequestBody final DeclareCyclicEventRequest request,
                                                          @AuthenticationPrincipal final UserContext user) throws InvalidCyclicEventBoundariesException {
-        final NewCyclicEventData eventData = mapper.mapToNewCyclicEventData(request, user.getId());
+        final DeclareCyclicEventData eventData = mapper.mapToNewCyclicEventData(request, user.getId());
         final DeclareCyclicEventResult result = declareCyclicEventUseCase.declareNewCyclicEvent(eventData);
         return mapper.mapToDeclareCyclicEventResponse(result);
     }

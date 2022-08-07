@@ -21,5 +21,7 @@ public interface TimeUtils {
 
     Instant toInstantFromUTCZone(LocalDateTime localDateTime);
 
-    LocalDate findDayOfWeekAtOrAfterDate(DayOfWeek dayOfWeek, LocalDate date);
+    LocalDate findDayOfWeekAtOrAfterDateTime(DayOfWeek dayOfWeek, LocalDateTime dateTime);
+
+    boolean isBeforeOrEqual(LocalDateTime one, LocalDateTime two);
 }
