@@ -11,6 +11,7 @@ import com.quary.bookyourinstructor.model.event.SingleEvent;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,7 +21,7 @@ public interface EventStore {
 
     CyclicEvent saveCyclicEvent(CyclicEvent event);
 
-    void updateCyclicEventBoundaries(Integer eventId, LocalDate startBoundary, LocalDate endBoundary);
+    void updateCyclicEventBoundaries(Integer eventId, LocalDateTime startBoundary, LocalDateTime endBoundary);
 
     Optional<Event> findByIdWithLockForShare(Integer id);
 

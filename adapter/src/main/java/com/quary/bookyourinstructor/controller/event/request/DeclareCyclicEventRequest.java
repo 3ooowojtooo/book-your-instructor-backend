@@ -20,9 +20,9 @@ public class DeclareCyclicEventRequest {
     private LocalTime startTime;
     private Integer durationSeconds;
     private DayOfWeek dayOfWeek;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
     private LocalDateTime startBoundary;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
     private LocalDateTime endBoundary;
     private Boolean absenceEvent;
     private String absenceEventName;

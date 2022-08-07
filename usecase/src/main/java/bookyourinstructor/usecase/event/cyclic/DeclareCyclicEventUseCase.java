@@ -14,7 +14,7 @@ import com.quary.bookyourinstructor.model.event.exception.InvalidCyclicEventBoun
 import lombok.RequiredArgsConstructor;
 
 import java.time.Instant;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -54,8 +54,8 @@ public class DeclareCyclicEventUseCase {
     private void updateCyclicEventBoundaries(Integer eventId, List<EventRealization> realizations) {
         EventRealization firstRealization = realizations.get(0);
         EventRealization lastRealization = realizations.get(realizations.size() - 1);
-        LocalDate startBoundary = timeUtils.toLocalDateUTCZone(firstRealization.getStart());
-        LocalDate endBoundary = timeUtils.toLocalDateUTCZone(lastRealization.getStart());
+        LocalDateTime startBoundary = timeUtils.toLocalDateTimeUTCZone(firstRealization.getStart());
+        LocalDateTime endBoundary = timeUtils.toLocalDateTimeUTCZone(lastRealization.getStart());
         eventStore.updateCyclicEventBoundaries(eventId, startBoundary, endBoundary);
     }
 
