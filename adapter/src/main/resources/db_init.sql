@@ -55,8 +55,8 @@ CREATE TABLE "event"
     CHECK ((type = 'CYCLIC' AND cyclic_end_boundary IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_end_boundary IS NULL)),
     CHECK ( (type = 'CYCLIC' AND cyclic_start_boundary < cyclic_end_boundary) OR type != 'CYCLIC'),
     CHECK (status = 'DRAFT' OR status = 'FREE' OR status = 'BOOKED' OR status = 'RESIGNED'),
-    CHECK ((cyclic_absence_event = true AND cyclic_absence_event IS NOT NULL) OR
-           (cyclic_absence_event = false AND cyclic_absence_event IS NULL)),
+    CHECK ((cyclic_absence_event = true AND cyclic_absence_event_name IS NOT NULL) OR
+           (cyclic_absence_event = false AND cyclic_absence_event_name IS NULL)),
     CHECK ((cyclic_absence_event = false AND cyclic_absence_event_description IS NULL) OR cyclic_absence_event = true)
 );
 
