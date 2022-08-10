@@ -10,7 +10,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Getter
-public class NewSingleEventData {
+public class DeclareSingleEventData {
 
     private final String name;
     private final String description;
@@ -20,9 +20,9 @@ public class NewSingleEventData {
     private final LocalDateTime endDateTime;
     private final Integer instructorId;
 
-    public NewSingleEventData(String name, String description, String location, BigDecimal price,
-                              LocalDateTime startDateTime, LocalDateTime endDateTime,
-                              Integer instructorId) {
+    public DeclareSingleEventData(String name, String description, String location, BigDecimal price,
+                                  LocalDateTime startDateTime, LocalDateTime endDateTime,
+                                  Integer instructorId) {
         validateConstructorArgs(name, location, price, startDateTime, endDateTime, instructorId);
         this.name = name;
         this.description = description;

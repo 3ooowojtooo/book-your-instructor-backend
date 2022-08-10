@@ -1,7 +1,7 @@
 package com.quary.bookyourinstructor.controller.event.mapper;
 
 import bookyourinstructor.usecase.event.common.result.GetEventDetailsAsStudentResult;
-import bookyourinstructor.usecase.event.cyclic.data.NewCyclicEventData;
+import bookyourinstructor.usecase.event.cyclic.data.DeclareCyclicEventData;
 import bookyourinstructor.usecase.event.cyclic.data.UpdateCyclicEventRealizationData;
 import bookyourinstructor.usecase.event.cyclic.result.DeclareCyclicEventResult;
 import bookyourinstructor.usecase.event.search.data.DateRangeFilter;
@@ -9,7 +9,7 @@ import bookyourinstructor.usecase.event.search.data.SearchEventsData;
 import bookyourinstructor.usecase.event.search.data.TextSearchFilter;
 import bookyourinstructor.usecase.event.search.result.SearchEventsResult;
 import bookyourinstructor.usecase.event.search.result.SearchEventsResultItem;
-import bookyourinstructor.usecase.event.single.data.NewSingleEventData;
+import bookyourinstructor.usecase.event.single.data.DeclareSingleEventData;
 import bookyourinstructor.usecase.event.single.result.DeclareSingleEventResult;
 import bookyourinstructor.usecase.util.time.TimeUtils;
 import bookyourinstructor.usecase.util.time.impl.TimeUtilsImpl;
@@ -19,7 +19,6 @@ import com.quary.bookyourinstructor.controller.event.request.DeclareSingleEventR
 import com.quary.bookyourinstructor.controller.event.request.SearchEventsRequest;
 import com.quary.bookyourinstructor.controller.event.request.UpdateCyclicEventRealizationRequest;
 import com.quary.bookyourinstructor.controller.event.response.*;
-import com.quary.bookyourinstructor.model.event.EventLock;
 import com.quary.bookyourinstructor.model.event.EventRealization;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -32,7 +31,7 @@ public interface EventMapper {
 
     TimeUtils timeUtils = TimeUtilsImpl.INSTANCE;
 
-    NewSingleEventData mapToNewSingleEventData(DeclareSingleEventRequest request, Integer instructorId);
+    DeclareSingleEventData mapToNewSingleEventData(DeclareSingleEventRequest request, Integer instructorId);
 
     DeclareSingleEventResponse mapToDeclareSingleEventResponse(DeclareSingleEventResult result);
 
@@ -43,7 +42,7 @@ public interface EventMapper {
 
     List<EventRealizationTimeBoundaries> mapToBoundariesList(List<EventRealization> eventRealizations);
 
-    NewCyclicEventData mapToNewCyclicEventData(DeclareCyclicEventRequest request, Integer instructorId);
+    DeclareCyclicEventData mapToNewCyclicEventData(DeclareCyclicEventRequest request, Integer instructorId);
 
     DeclareCyclicEventResponse mapToDeclareCyclicEventResponse(DeclareCyclicEventResult result);
 

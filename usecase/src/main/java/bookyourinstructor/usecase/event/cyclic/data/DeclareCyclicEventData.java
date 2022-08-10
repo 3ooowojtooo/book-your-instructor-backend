@@ -3,10 +3,7 @@ package bookyourinstructor.usecase.event.cyclic.data;
 import lombok.Getter;
 
 import java.math.BigDecimal;
-import java.time.DayOfWeek;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -14,7 +11,7 @@ import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Getter
-public class NewCyclicEventData {
+public class DeclareCyclicEventData {
 
     private static final long DURATION_SECONDS_MAXIMUM = Duration.ofDays(7).toSeconds();
 
@@ -25,16 +22,16 @@ public class NewCyclicEventData {
     private final LocalTime startTime;
     private final Duration duration;
     private final DayOfWeek dayOfWeek;
-    private final LocalDate startBoundary;
-    private final LocalDate endBoundary;
+    private final LocalDateTime startBoundary;
+    private final LocalDateTime endBoundary;
     private final Integer instructorId;
     private final Boolean absenceEvent;
     private final String absenceEventName;
     private final String absenceEventDescription;
 
-    public NewCyclicEventData(String name, String description, String location, BigDecimal price, LocalTime startTime, Integer durationSeconds,
-                              DayOfWeek dayOfWeek, LocalDate startBoundary, LocalDate endBoundary, Integer instructorId,
-                              Boolean absenceEvent, String absenceEventName, String absenceEventDescription) {
+    public DeclareCyclicEventData(String name, String description, String location, BigDecimal price, LocalTime startTime, Integer durationSeconds,
+                                  DayOfWeek dayOfWeek, LocalDateTime startBoundary, LocalDateTime endBoundary, Integer instructorId,
+                                  Boolean absenceEvent, String absenceEventName, String absenceEventDescription) {
         validateConstructorArgs(name, location, price, startTime, durationSeconds, dayOfWeek, startBoundary, endBoundary, instructorId,
                 absenceEvent, absenceEventName, absenceEventDescription);
         this.name = name;
@@ -53,7 +50,7 @@ public class NewCyclicEventData {
     }
 
     private static void validateConstructorArgs(String name, String location, BigDecimal price, LocalTime startTime, Integer durationSeconds,
-                                                DayOfWeek dayOfWeek, LocalDate startBoundary, LocalDate endBoundary,
+                                                DayOfWeek dayOfWeek, LocalDateTime startBoundary, LocalDateTime endBoundary,
                                                 Integer instructorId, Boolean absenceEvent, String absenceEventName, String absenceEventDescription) {
         checkArgument(isNotBlank(name), "Cyclic event name cannot be blank");
         checkArgument(isNotBlank(location), "Cyclic event location cannot be blank");
@@ -66,7 +63,7 @@ public class NewCyclicEventData {
         checkNotNull(dayOfWeek, "Cyclic event day of week cannot be null");
         checkNotNull(startBoundary, "Cyclic event start boundary cannot be null");
         checkNotNull(endBoundary, "Cyclic event end boundary cannot be null");
-        checkArgument(endBoundary.isAfter(startBoundary), "Cyclic event end boundary must be after start boundary");
+        checkArgument(startBoundary.compareTo(endBoundary) <= 0, "Cyclic event end boundary must be after or equal start boundary");
         checkNotNull(instructorId, "Cyclic event instructor id cannot be null");
         checkNotNull(absenceEvent, "Cyclic event absence event flag cannot be null");
         if (absenceEvent) {

@@ -22,29 +22,29 @@ public class CyclicEvent extends Event {
     private final LocalTime startTime;
     private final Duration duration;
     private final DayOfWeek dayOfWeek;
-    private final LocalDate startBoundary;
-    private final LocalDate endBoundary;
+    private final LocalDateTime startBoundary;
+    private final LocalDateTime endBoundary;
     private final boolean absenceEvent;
     private final String absenceEventName;
     private final String absenceEventDescription;
 
     public static CyclicEvent newCyclicEventDraft(int instructorId, String name, String description, String location, BigDecimal price, Instant createdAt,
-                                                  LocalTime startTime, Duration duration, DayOfWeek dayOfWeek, LocalDate startBoundary,
-                                                  LocalDate endBoundary, boolean absenceEvent, String absenceEventName, String absenceEventDescription) {
+                                                  LocalTime startTime, Duration duration, DayOfWeek dayOfWeek, LocalDateTime startBoundary,
+                                                  LocalDateTime endBoundary, boolean absenceEvent, String absenceEventName, String absenceEventDescription) {
         return new CyclicEvent(null, null, EventType.CYCLIC, instructorId, name, description, location, EventStatus.DRAFT,
                 price, createdAt, startTime, duration, dayOfWeek, startBoundary, endBoundary, absenceEvent, absenceEventName, absenceEventDescription);
     }
 
     public static CyclicEvent newCyclicEventFree(int instructorId, String name, String description, String location, BigDecimal price, Instant createdAt,
-                                                 LocalTime startTime, Duration duration, DayOfWeek dayOfWeek, LocalDate startBoundary,
-                                                 LocalDate endBoundary, boolean absenceEvent, String absenceEventName, String absenceEventDescription) {
+                                                 LocalTime startTime, Duration duration, DayOfWeek dayOfWeek, LocalDateTime startBoundary,
+                                                 LocalDateTime endBoundary, boolean absenceEvent, String absenceEventName, String absenceEventDescription) {
         return new CyclicEvent(null, null, EventType.CYCLIC, instructorId, name, description, location, EventStatus.FREE,
                 price, createdAt, startTime, duration, dayOfWeek, startBoundary, endBoundary, absenceEvent, absenceEventName, absenceEventDescription);
     }
 
     public CyclicEvent(Integer id, Integer version, EventType type, Integer instructorId, String name, String description,
                        String location, EventStatus status, BigDecimal price, Instant createdAt, LocalTime startTime, Duration duration, DayOfWeek dayOfWeek,
-                       LocalDate startBoundary, LocalDate endBoundary, boolean absenceEvent, String absenceEventName, String absenceEventDescription) {
+                       LocalDateTime startBoundary, LocalDateTime endBoundary, boolean absenceEvent, String absenceEventName, String absenceEventDescription) {
         super(id, version, type, instructorId, name, description, location, status, price, createdAt);
         validateConstructorArgs(startTime, duration, dayOfWeek, startBoundary, endBoundary, absenceEvent, absenceEventName, absenceEventDescription);
         this.startTime = startTime;
@@ -58,7 +58,7 @@ public class CyclicEvent extends Event {
     }
 
     private static void validateConstructorArgs(LocalTime startTime, Duration duration, DayOfWeek dayOfWeek,
-                                                LocalDate startBoundary, LocalDate endBoundary, boolean absenceEvent,
+                                                LocalDateTime startBoundary, LocalDateTime endBoundary, boolean absenceEvent,
                                                 String absenceEventName, String absenceEventDescription) {
         checkNotNull(startTime, "Cyclic event start time cannot be null");
         checkNotNull(duration, "Cyclic event end time cannot be null");

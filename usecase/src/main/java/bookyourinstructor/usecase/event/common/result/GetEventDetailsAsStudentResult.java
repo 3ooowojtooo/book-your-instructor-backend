@@ -32,8 +32,8 @@ public class GetEventDetailsAsStudentResult {
     private final DayOfWeek cyclicEventDayOfWeek;
     private final LocalTime cyclicEventStartTime;
     private final Duration cyclicEventDuration;
-    private final LocalDate cyclicEventStartBoundary;
-    private final LocalDate cyclicEventEndBoundary;
+    private final LocalDateTime cyclicEventStartBoundary;
+    private final LocalDateTime cyclicEventEndBoundary;
 
     private final boolean locked;
 
@@ -42,7 +42,7 @@ public class GetEventDetailsAsStudentResult {
     public GetEventDetailsAsStudentResult(Integer id, Integer version, String name, String description, String location, String instructorName,
                                           EventType eventType, long futureRealizations, BigDecimal price, Instant createdAt, LocalDateTime singleEventStart, LocalDateTime singleEventEnd,
                                           DayOfWeek cyclicEventDayOfWeek, LocalTime cyclicEventStartTime, Duration cyclicEventDuration,
-                                          LocalDate cyclicEventStartBoundary, LocalDate cyclicEventEndBoundary,
+                                          LocalDateTime cyclicEventStartBoundary, LocalDateTime cyclicEventEndBoundary,
                                           boolean locked, List<EventRealization> realizations) {
         validateConstructorArgs(id, version, name, location, instructorName, eventType, futureRealizations, price, createdAt, singleEventStart, singleEventEnd,
                 cyclicEventDayOfWeek, cyclicEventStartTime, cyclicEventDuration, cyclicEventStartBoundary, cyclicEventEndBoundary, realizations);
@@ -70,7 +70,7 @@ public class GetEventDetailsAsStudentResult {
     private static void validateConstructorArgs(Integer id, Integer version, String name, String location, String instructorName,
                                                 EventType eventType, long futureRealizations, BigDecimal price, Instant createdAt, LocalDateTime singleEventStart, LocalDateTime singleEventEnd,
                                                 DayOfWeek cyclicEventDayOfWeek, LocalTime cyclicEventStartTime, Duration cyclicEventDuration,
-                                                LocalDate cyclicEventStartBoundary, LocalDate cyclicEventEndBoundary,
+                                                LocalDateTime cyclicEventStartBoundary, LocalDateTime cyclicEventEndBoundary,
                                                 List<EventRealization> realizations) {
         checkNotNull(id, "Event id cannot be null");
         checkNotNull(version, "Event version cannot be null");
