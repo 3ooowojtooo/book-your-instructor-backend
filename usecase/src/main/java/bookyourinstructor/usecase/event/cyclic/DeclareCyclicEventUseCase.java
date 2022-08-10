@@ -55,7 +55,7 @@ public class DeclareCyclicEventUseCase {
         EventRealization firstRealization = realizations.get(0);
         EventRealization lastRealization = realizations.get(realizations.size() - 1);
         LocalDateTime startBoundary = timeUtils.toLocalDateTimeUTCZone(firstRealization.getStart());
-        LocalDateTime endBoundary = timeUtils.toLocalDateTimeUTCZone(lastRealization.getStart());
+        LocalDateTime endBoundary = timeUtils.toLocalDateTimeUTCZone(lastRealization.getEnd());
         eventStore.updateCyclicEventBoundaries(eventId, startBoundary, endBoundary);
     }
 
