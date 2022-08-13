@@ -12,12 +12,14 @@ import bookyourinstructor.usecase.event.common.helper.InstructorAbsenceReporter;
 import bookyourinstructor.usecase.event.common.helper.StudentAbsenceReporter;
 import bookyourinstructor.usecase.event.common.store.EventLockStore;
 import bookyourinstructor.usecase.event.common.store.EventRealizationStore;
+import bookyourinstructor.usecase.event.common.store.EventScheduleStore;
 import bookyourinstructor.usecase.event.common.store.EventStore;
-import bookyourinstructor.usecase.event.common.store.EventStudentAbsenceStore;
 import bookyourinstructor.usecase.event.cyclic.DeclareCyclicEventUseCase;
 import bookyourinstructor.usecase.event.cyclic.ResignCyclicEventUseCase;
 import bookyourinstructor.usecase.event.cyclic.UpdateCyclicEventRealizationUseCase;
 import bookyourinstructor.usecase.event.cyclic.helper.CyclicEventRealizationsFinder;
+import bookyourinstructor.usecase.event.schedule.GetEventScheduleUseCase;
+import bookyourinstructor.usecase.event.schedule.helper.ScheduleCreatingHelper;
 import bookyourinstructor.usecase.event.search.SearchEventsUseCase;
 import bookyourinstructor.usecase.event.single.DeclareSingleEventUseCase;
 import bookyourinstructor.usecase.util.retry.RetryManager;
@@ -55,8 +57,9 @@ public class EventConfiguration {
     @Bean
     ConfirmEventBookLockUseCase confirmEventBookLockUseCase(TransactionFacade transactionFacade, TimeUtils timeUtils, RetryManager retryManager,
                                                             EventStore eventStore, EventLockStore eventLockStore,
-                                                            EventRealizationStore eventRealizationStore) {
-        return new ConfirmEventBookLockUseCase(transactionFacade, timeUtils, retryManager, eventStore, eventLockStore, eventRealizationStore);
+                                                            EventRealizationStore eventRealizationStore, ScheduleCreatingHelper scheduleCreatingHelper) {
+        return new ConfirmEventBookLockUseCase(transactionFacade, timeUtils, retryManager, eventStore, eventLockStore,
+                eventRealizationStore, scheduleCreatingHelper);
     }
 
     @Bean
@@ -84,19 +87,21 @@ public class EventConfiguration {
 
     @Bean
     ReportAbsenceUseCase reportAbsenceUseCase(EventStore eventStore, EventRealizationStore eventRealizationStore,
-                                              EventStudentAbsenceStore eventStudentAbsenceStore, TimeUtils timeUtils,
-                                              TransactionFacade transactionFacade, RetryManager retryManager) {
+                                              TimeUtils timeUtils, TransactionFacade transactionFacade, RetryManager retryManager,
+                                              ScheduleCreatingHelper scheduleCreatingHelper) {
         InstructorAbsenceReporter instructorAbsenceReporter = new InstructorAbsenceReporter(eventStore, eventRealizationStore,
-                timeUtils, transactionFacade, retryManager);
+                timeUtils, transactionFacade, retryManager, scheduleCreatingHelper);
         StudentAbsenceReporter studentAbsenceReporter = new StudentAbsenceReporter(eventStore, eventRealizationStore,
-                eventStudentAbsenceStore, transactionFacade, timeUtils, retryManager);
+                transactionFacade, timeUtils, retryManager, scheduleCreatingHelper);
         return new ReportAbsenceUseCase(instructorAbsenceReporter, studentAbsenceReporter);
     }
 
     @Bean
     ResignCyclicEventUseCase resignCyclicEventUseCase(EventStore eventStore, EventRealizationStore eventRealizationStore,
-                                                      TimeUtils timeUtils, TransactionFacade transactionFacade, RetryManager retryManager) {
-        return new ResignCyclicEventUseCase(eventStore, eventRealizationStore, timeUtils, transactionFacade, retryManager);
+                                                      TimeUtils timeUtils, TransactionFacade transactionFacade,
+                                                      RetryManager retryManager, ScheduleCreatingHelper scheduleCreatingHelper) {
+        return new ResignCyclicEventUseCase(eventStore, eventRealizationStore, timeUtils, transactionFacade, retryManager,
+                scheduleCreatingHelper);
     }
 
     @Bean
@@ -112,5 +117,11 @@ public class EventConfiguration {
                                                                     TimeUtils timeUtils) {
         return new GetEventDetailsAsStudentUseCase(eventStore, userStore, eventRealizationStore, eventLockStore,
                 transactionFacade, timeUtils);
+    }
+
+    @Bean
+    GetEventScheduleUseCase getEventScheduleUseCase(EventScheduleStore eventScheduleStore, TransactionFacade transactionFacade,
+                                                    TimeUtils timeUtils) {
+        return new GetEventScheduleUseCase(eventScheduleStore, transactionFacade, timeUtils);
     }
 }

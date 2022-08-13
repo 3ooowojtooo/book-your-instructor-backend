@@ -2,7 +2,7 @@ package com.quary.bookyourinstructor.configuration.security;
 
 import bookyourinstructor.usecase.authentication.user.UserStore;
 import com.quary.bookyourinstructor.configuration.security.mapper.UserDetailsMapper;
-import com.quary.bookyourinstructor.configuration.security.model.UserContext;
+import com.quary.bookyourinstructor.configuration.security.model.UserPrincipal;
 import com.quary.bookyourinstructor.entity.UserEntity;
 import com.quary.bookyourinstructor.model.authentication.exception.UserWithEmailAlreadyExists;
 import com.quary.bookyourinstructor.model.user.ExternalIdentity;
@@ -26,7 +26,7 @@ public class JpaUserDetailsService implements UserDetailsService, UserStore {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByEmail(username)
-                .map(UserContext::new)
+                .map(UserPrincipal::new)
                 .orElseThrow(() -> new UsernameNotFoundException(username + " user not found"));
     }
 

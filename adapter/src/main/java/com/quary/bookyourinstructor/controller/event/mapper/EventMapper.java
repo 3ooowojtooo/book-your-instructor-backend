@@ -4,6 +4,8 @@ import bookyourinstructor.usecase.event.common.result.GetEventDetailsAsStudentRe
 import bookyourinstructor.usecase.event.cyclic.data.DeclareCyclicEventData;
 import bookyourinstructor.usecase.event.cyclic.data.UpdateCyclicEventRealizationData;
 import bookyourinstructor.usecase.event.cyclic.result.DeclareCyclicEventResult;
+import bookyourinstructor.usecase.event.schedule.result.GetEventScheduleResult;
+import bookyourinstructor.usecase.event.schedule.result.GetEventScheduleResultItem;
 import bookyourinstructor.usecase.event.search.data.DateRangeFilter;
 import bookyourinstructor.usecase.event.search.data.SearchEventsData;
 import bookyourinstructor.usecase.event.search.data.TextSearchFilter;
@@ -72,4 +74,8 @@ public interface EventMapper {
 
     @Mapping(target = "cyclicEventDurationSeconds", expression = "java(result.getCyclicEventDuration() == null ? null : result.getCyclicEventDuration().toSeconds())")
     GetEventDetailsAsStudentResponse mapToGetEventDetailsAsStudentResponse(GetEventDetailsAsStudentResult result);
+
+    GetEventScheduleResponse mapToGetEventScheduleResponse(GetEventScheduleResult result);
+
+    GetEventScheduleResponseItem mapToGetEventScheduleResponseItem(GetEventScheduleResultItem result);
 }

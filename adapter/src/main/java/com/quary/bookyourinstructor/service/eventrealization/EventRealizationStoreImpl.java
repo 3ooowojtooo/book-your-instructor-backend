@@ -11,8 +11,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -53,6 +55,17 @@ public class EventRealizationStoreImpl implements EventRealizationStore {
     }
 
     @Override
+    public void setStatusForEventRealizations(EventRealizationStatus status, Collection<Integer> ids) {
+        eventRealizationRepository.setStatusForEventRealizations(status, ids);
+    }
+
+    @Override
+    public void setStatusForEventRealizationsWithStatus(EventRealizationStatus currentStatus, EventRealizationStatus newStatus,
+                                                        Integer eventId) {
+        eventRealizationRepository.setStatusForEventRealizationsWithStatus(currentStatus, newStatus, eventId);
+    }
+
+    @Override
     public Optional<EventRealization> findById(Integer eventRealizationId) {
         return eventRealizationRepository.findById(eventRealizationId)
                 .map(mapper::mapToEventRealization);
@@ -75,8 +88,21 @@ public class EventRealizationStoreImpl implements EventRealizationStore {
     }
 
     @Override
-    public List<EventRealization> findAllByEventIdStartingAfterSortedAscWithLockForUpdate(Integer eventId, Instant now) {
-        return eventRealizationRepository.findAllByEventIdStartingAfterOrderByStartAscWithLockForUpdate(eventId, now)
+    public List<EventRealization> findAllByEventIdAndStatusStartingAfterSortedAscWithLockForUpdate(Integer eventId,
+                                                                                                   Set<EventRealizationStatus> statuses,
+                                                                                                   Instant now) {
+        Set<String> statusesAsString = statuses.stream()
+                .map(EventRealizationStatus::name)
+                .collect(Collectors.toSet());
+        return eventRealizationRepository.findAllByEventIdAndStatusStartingAfterOrderByStartAscWithLockForUpdate(eventId, statusesAsString, now)
+                .stream()
+                .map(mapper::mapToEventRealization)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<EventRealization> findAllRealizationWithStatusAndStudentId(Integer eventId, EventRealizationStatus status, Integer studentId) {
+        return eventRealizationRepository.findAllRealizationWithStatusAndStudentId(eventId, status, studentId)
                 .stream()
                 .map(mapper::mapToEventRealization)
                 .collect(Collectors.toList());
@@ -105,7 +131,7 @@ public class EventRealizationStoreImpl implements EventRealizationStore {
 
     private EventRealizationEntity mapToEntity(EventRealization eventRealization) {
         final EventEntity event = eventRepository.findById(eventRealization.getEventId())
-                .orElseThrow(() -> new IllegalStateException("Event instance with id " + eventRealization.getEventId() + " not found during single event realization creation"));
+                .orElseThrow(() -> new IllegalStateException("Event realization with id " + eventRealization.getEventId() + " not found during single event realization creation"));
         return mapper.mapToNewEntity(eventRealization, event);
     }
 }

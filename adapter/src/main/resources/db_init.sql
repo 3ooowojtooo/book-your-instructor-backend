@@ -40,7 +40,8 @@ CREATE TABLE "event"
     cyclic_absence_event             bool,
     cyclic_absence_event_name        varchar(100),
     cyclic_absence_event_description varchar(255),
-    CHECK (price > 0),
+    cyclic_absence_event_parent_id   int references "event" (id)
+        CHECK (price > 0),
     CHECK ( (type = 'SINGLE' AND single_start_timestamp IS NOT NULL) OR
             (type != 'SINGLE' AND single_start_timestamp IS NULL)),
     CHECK ( (type = 'SINGLE' AND single_end_timestamp IS NOT NULL) OR
@@ -57,7 +58,8 @@ CREATE TABLE "event"
     CHECK (status = 'DRAFT' OR status = 'FREE' OR status = 'BOOKED' OR status = 'RESIGNED'),
     CHECK ((cyclic_absence_event = true AND cyclic_absence_event_name IS NOT NULL) OR
            (cyclic_absence_event = false AND cyclic_absence_event_name IS NULL)),
-    CHECK ((cyclic_absence_event = false AND cyclic_absence_event_description IS NULL) OR cyclic_absence_event = true)
+    CHECK ((cyclic_absence_event = false AND cyclic_absence_event_description IS NULL) OR cyclic_absence_event = true),
+    CHECK ((type = 'CYCLIC' AND cyclic_absence_event_parent_id IS NULL) OR (type = 'SINGLE'))
 );
 
 
@@ -70,7 +72,8 @@ CREATE TABLE "event_realization"
     end_timestamp   timestamp with time zone    not null,
     status          varchar(20)                 not null,
     CHECK ( "start_timestamp" < "end_timestamp" ),
-    CHECK (status = 'DRAFT' OR status = 'ACCEPTED' OR status = 'INSTRUCTOR_ABSENT' OR status = 'RESIGNED')
+    CHECK (status = 'DRAFT' OR status = 'ACCEPTED' OR status = 'BOOKED' OR status = 'INSTRUCTOR_ABSENT' OR
+           status = 'STUDENT_ABSENT' OR status = 'RESIGNED')
 );
 
 CREATE TABLE "event_lock"
@@ -82,16 +85,24 @@ CREATE TABLE "event_lock"
     expiration_timestamp timestamp with time zone    not null
 );
 
-CREATE TABLE "event_student_absence"
+CREATE TABLE "event_schedule"
 (
     id                    int primary key,
+    event_id              int references "event" (id)             not null,
     event_realization_id  int references "event_realization" (id) not null,
     student_id            int references "user" (id)              not null,
-    event_name            varchar(100)                            not null,
-    event_location        varchar(255)                            not null,
+    instructor_id         int references "user" (id)              not null,
+    status                varchar(20)                             not null,
+    owner                 varchar(20)                             not null,
+    type                  varchar(20)                             not null,
+    event_name            varchar(100),
     event_description     varchar(255),
+    event_location        varchar(255),
+    event_price           decimal,
     event_start_timestamp timestamp with time zone                not null,
     event_end_timestamp   timestamp with time zone                not null,
-    unique (event_realization_id, student_id),
-    CHECK ("event_start_timestamp" < "event_end_timestamp")
+    CHECK ("event_start_timestamp" < "event_end_timestamp"),
+    CHECK (status = 'BOOKED' OR status = 'INSTRUCTOR_ABSENT' OR status = 'STUDENT_ABSENT'),
+    CHECK (owner = 'STUDENT' OR owner = 'INSTRUCTOR'),
+    CHECK (event_price > 0)
 );

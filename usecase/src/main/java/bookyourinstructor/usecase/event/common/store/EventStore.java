@@ -10,7 +10,6 @@ import com.quary.bookyourinstructor.model.event.EventStatus;
 import com.quary.bookyourinstructor.model.event.SingleEvent;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

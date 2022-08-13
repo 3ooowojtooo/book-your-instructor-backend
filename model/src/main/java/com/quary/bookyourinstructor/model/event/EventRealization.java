@@ -17,8 +17,7 @@ public class EventRealization {
 
     private final Integer id;
     private final Integer eventId;
-    @Setter
-    private Integer studentId;
+    private final Integer studentId;
     private Instant start;
     private Instant end;
     private final EventRealizationStatus status;

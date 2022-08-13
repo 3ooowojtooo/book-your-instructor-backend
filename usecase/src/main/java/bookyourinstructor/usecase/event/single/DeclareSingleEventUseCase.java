@@ -2,7 +2,6 @@ package bookyourinstructor.usecase.event.single;
 
 import bookyourinstructor.usecase.event.common.store.EventRealizationStore;
 import bookyourinstructor.usecase.event.common.store.EventStore;
-import bookyourinstructor.usecase.event.cyclic.data.DeclareCyclicEventData;
 import bookyourinstructor.usecase.event.single.data.DeclareSingleEventData;
 import bookyourinstructor.usecase.event.single.result.DeclareSingleEventResult;
 import bookyourinstructor.usecase.util.time.TimeUtils;

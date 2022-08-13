@@ -6,6 +6,7 @@ import bookyourinstructor.usecase.event.common.exception.EventChangedRuntimeExce
 import bookyourinstructor.usecase.event.common.port.UserData;
 import bookyourinstructor.usecase.event.common.store.EventRealizationStore;
 import bookyourinstructor.usecase.event.common.store.EventStore;
+import bookyourinstructor.usecase.event.schedule.helper.ScheduleCreatingHelper;
 import bookyourinstructor.usecase.util.retry.RetryInstanceName;
 import bookyourinstructor.usecase.util.retry.RetryManager;
 import bookyourinstructor.usecase.util.time.TimeUtils;
@@ -33,6 +34,7 @@ public class InstructorAbsenceReporter {
     private final TimeUtils timeUtils;
     private final TransactionFacade transactionFacade;
     private final RetryManager retryManager;
+    private final ScheduleCreatingHelper scheduleCreatingHelper;
 
     public void reportAbsence(ReportAbsenceData data) throws EventChangedException, ConcurrentDataModificationException {
         Instant now = timeUtils.nowInstant();
@@ -60,6 +62,7 @@ public class InstructorAbsenceReporter {
             validateEventVersion(event, data.getEventVersion());
             eventRealizationStore.setStatusForEventRealization(EventRealizationStatus.INSTRUCTOR_ABSENT, eventRealization.getId());
             eventStore.incrementVersion(event.getId());
+            scheduleCreatingHelper.handleInstructorAbsence(event, eventRealization);
         });
     }
 
@@ -69,7 +72,7 @@ public class InstructorAbsenceReporter {
     }
 
     private static void validateEventRealizationStatus(EventRealization eventRealization) {
-        checkState(eventRealization.getStatus() == EventRealizationStatus.ACCEPTED, "You can only report abuse for accepted event");
+        checkState(eventRealization.getStatus() == EventRealizationStatus.BOOKED, "You can only report absence for booked event");
     }
 
     private static void validateEventRealizationNotStarted(EventRealization eventRealization, Instant now) {

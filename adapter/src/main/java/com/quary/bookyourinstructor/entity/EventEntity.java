@@ -88,9 +88,16 @@ public class EventEntity {
     @Column(name = "cyclic_absence_event_description")
     private String cyclicAbsenceEventDescription;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event", orphanRemoval = true, cascade = CascadeType.ALL)
-    List<EventRealizationEntity> realizations = new ArrayList<>();
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinColumn(name = "cyclic_absence_event_parent_id")
+    private EventEntity cyclicEventAbsenceParentEvent;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "cyclicEventAbsenceParentEvent", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<EventEntity> cyclicEventAbsenceChildEvent;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "event", orphanRemoval = true, cascade = CascadeType.ALL)
-    List<EventLockEntity> locks = new ArrayList<>();
+    private List<EventRealizationEntity> realizations = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<EventLockEntity> locks = new ArrayList<>();
 }

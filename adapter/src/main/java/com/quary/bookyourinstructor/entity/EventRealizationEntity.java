@@ -43,6 +43,5 @@ public class EventRealizationEntity {
     private Instant end;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "eventRealization", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<EventStudentAbsenceEntity> studentAbsences = new ArrayList<>();
-
+    private List<EventScheduleEntity> schedules = new ArrayList<>();
 }

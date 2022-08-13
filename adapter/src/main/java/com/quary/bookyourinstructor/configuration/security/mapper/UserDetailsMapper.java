@@ -15,7 +15,6 @@ public interface UserDetailsMapper {
     @Mapping(target = "externalIdProvider", source = "externalIdentity.provider")
     @Mapping(target = "events", ignore = true)
     @Mapping(target = "eventRealizations", ignore = true)
-    @Mapping(target = "absences", ignore = true)
     UserEntity mapToEntity(User user);
 
     @Mapping(target = "externalIdentity", source = "userEntity")

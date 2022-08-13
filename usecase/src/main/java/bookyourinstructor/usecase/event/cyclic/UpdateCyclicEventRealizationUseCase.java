@@ -15,7 +15,6 @@ import com.quary.bookyourinstructor.model.event.exception.CyclicEventRealization
 import lombok.RequiredArgsConstructor;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;

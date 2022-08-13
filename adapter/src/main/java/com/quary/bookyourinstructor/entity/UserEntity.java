@@ -57,7 +57,4 @@ public class UserEntity {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "student", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<EventRealizationEntity> eventRealizations = new ArrayList<>();
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "student", orphanRemoval = true, cascade = CascadeType.ALL)
-    List<EventStudentAbsenceEntity> absences = new ArrayList<>();
 }
