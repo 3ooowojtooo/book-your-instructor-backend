@@ -6,17 +6,13 @@ import bookyourinstructor.usecase.event.search.data.EventTypeFilter;
 import bookyourinstructor.usecase.event.search.data.TextSearchFilter;
 import bookyourinstructor.usecase.event.search.result.SearchEventsResultItem;
 import com.quary.bookyourinstructor.entity.EventEntity;
-import com.quary.bookyourinstructor.model.event.CyclicEvent;
-import com.quary.bookyourinstructor.model.event.Event;
-import com.quary.bookyourinstructor.model.event.EventStatus;
-import com.quary.bookyourinstructor.model.event.SingleEvent;
+import com.quary.bookyourinstructor.model.event.*;
 import com.quary.bookyourinstructor.repository.EventRepository;
 import com.quary.bookyourinstructor.repository.EventSearchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -31,9 +27,23 @@ public class EventStoreImpl implements EventStore {
 
     @Override
     public SingleEvent saveSingleEvent(SingleEvent event) {
-        EventEntity entity = mapper.mapToEntity(event);
+        EventEntity entity = mapToEntity(event);
         EventEntity savedEntity = eventRepository.save(entity);
         return mapper.mapToSingleEvent(savedEntity);
+    }
+
+    private EventEntity mapToEntity(SingleEvent event) {
+        final EventEntity absenceEventParentEvent = getParentEventIfNecessary(event.getAbsenceEventParent());
+        return mapper.mapToEntity(event, absenceEventParentEvent);
+    }
+
+    private EventEntity getParentEventIfNecessary(Integer absenceEventParent) {
+        if (absenceEventParent != null) {
+            return eventRepository.findById(absenceEventParent)
+                    .filter(event -> event.getType() == EventType.CYCLIC)
+                    .orElseThrow(() -> new IllegalStateException("Cyclic event with id " + absenceEventParent + " not found"));
+        }
+        return null;
     }
 
     @Override

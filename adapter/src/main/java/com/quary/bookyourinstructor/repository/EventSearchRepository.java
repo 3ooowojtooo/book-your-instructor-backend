@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.quary.bookyourinstructor.repository.util.RepositoryUtils.mergePredicates;
+
 @Repository
 @RequiredArgsConstructor
 public class EventSearchRepository {
@@ -34,7 +36,7 @@ public class EventSearchRepository {
 
     public List<SearchEventsResultItem> searchEvents(DateRangeFilter dateRange, TextSearchFilter text, EventTypeFilter eventType, Instant now) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<SearchQueryResult> cq = cb.createQuery(SearchQueryResult.class);
+        CriteriaQuery<QueryResult> cq = cb.createQuery(QueryResult.class);
         Metamodel metamodel = entityManager.getMetamodel();
         EntityType<EventEntity> eventModel = metamodel.entity(EventEntity.class);
 
@@ -53,8 +55,8 @@ public class EventSearchRepository {
         cq.groupBy(event.get("id"));
         cq.orderBy(buildOrder(cb, event, realization));
 
-        TypedQuery<SearchQueryResult> query = entityManager.createQuery(cq);
-        List<SearchQueryResult> result = query.getResultList();
+        TypedQuery<QueryResult> query = entityManager.createQuery(cq);
+        List<QueryResult> result = query.getResultList();
 
         return toResultItems(result, now);
     }
@@ -156,17 +158,6 @@ public class EventSearchRepository {
         return Optional.of(cb.equal(event.get("type"), eventTypeFilter.getEventType()));
     }
 
-    @SafeVarargs
-    private static Predicate[] mergePredicates(Predicate predicate, Optional<Predicate>... optionalPredicates) {
-        List<Predicate> predicates = new ArrayList<>();
-        predicates.add(predicate);
-        Arrays.stream(optionalPredicates)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .forEach(predicates::add);
-        return predicates.toArray(new Predicate[]{});
-    }
-
     private List<Order> buildOrder(CriteriaBuilder cb, Root<EventEntity> event, ListJoin<EventEntity, EventRealizationEntity> realization) {
         return List.of(
                 cb.asc(cb.min(realization.get("start"))),
@@ -174,9 +165,9 @@ public class EventSearchRepository {
         );
     }
 
-    private List<SearchEventsResultItem> toResultItems(List<SearchQueryResult> results, Instant now) {
+    private List<SearchEventsResultItem> toResultItems(List<QueryResult> results, Instant now) {
         return results.stream()
-                .map(SearchQueryResult::getEvent)
+                .map(QueryResult::getEvent)
                 .map(event -> mapToResultItem(event, now))
                 .collect(Collectors.toList());
     }
@@ -199,7 +190,7 @@ public class EventSearchRepository {
     }
 
     @RequiredArgsConstructor
-    private static class SearchQueryResult {
+    private static class QueryResult {
         @Getter
         private final EventEntity event;
         private final Instant minimumRealizationStart;

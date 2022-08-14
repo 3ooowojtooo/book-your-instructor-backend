@@ -6,7 +6,7 @@ import bookyourinstructor.usecase.event.common.exception.EventChangedRuntimeExce
 import bookyourinstructor.usecase.event.common.port.UserData;
 import bookyourinstructor.usecase.event.common.store.EventRealizationStore;
 import bookyourinstructor.usecase.event.common.store.EventStore;
-import bookyourinstructor.usecase.event.common.store.EventStudentAbsenceStore;
+import bookyourinstructor.usecase.event.schedule.helper.ScheduleCreatingHelper;
 import bookyourinstructor.usecase.util.retry.RetryInstanceName;
 import bookyourinstructor.usecase.util.retry.RetryManager;
 import bookyourinstructor.usecase.util.time.TimeUtils;
@@ -30,10 +30,10 @@ public class StudentAbsenceReporter {
 
     private final EventStore eventStore;
     private final EventRealizationStore eventRealizationStore;
-    private final EventStudentAbsenceStore eventStudentAbsenceStore;
     private final TransactionFacade transactionFacade;
     private final TimeUtils timeUtils;
     private final RetryManager retryManager;
+    private final ScheduleCreatingHelper scheduleCreatingHelper;
 
     public void reportAbsence(ReportAbsenceData data) throws EventChangedException, ConcurrentDataModificationException {
         Instant now = timeUtils.nowInstant();
@@ -57,18 +57,18 @@ public class StudentAbsenceReporter {
             validateEventRealizationStatus(eventRealization);
             validateEventRealizationNotStarted(eventRealization, now);
             validateEventRealizationOwner(eventRealization, data.getUser().getId());
-            validateEventRealizationNotReportedAbsence(eventRealization, data.getUser().getId());
             Event event = findEventWithLockForUpdateOrThrow(eventRealization.getEventId());
             validateEventVersion(event, data.getEventVersion());
-            EventStudentAbsence absence = buildAbsence(event, eventRealization, data.getUser().getId());
-            eventStudentAbsenceStore.save(absence);
+            eventRealizationStore.setStatusForEventRealization(EventRealizationStatus.STUDENT_ABSENT, eventRealization.getId());
             if (event.getType() == EventType.SINGLE) {
                 eventStore.setStatusByIdAndIncrementVersion(event.getId(), EventStatus.FREE);
-                eventRealizationStore.setStudentIdForEventRealization(null, eventRealization.getId());
+                EventRealization newEventRealization = buildAbsenceEventRealization((SingleEvent) event);
+                eventRealizationStore.saveEventRealization(newEventRealization);
             } else if (event.getType() == EventType.CYCLIC) {
                 eventStore.incrementVersion(event.getId());
                 declareAbsenceEventIfNecessary((CyclicEvent) event, eventRealization);
             }
+            scheduleCreatingHelper.handleStudentAbsence(event, eventRealization);
         });
     }
 
@@ -78,7 +78,7 @@ public class StudentAbsenceReporter {
     }
 
     private static void validateEventRealizationStatus(EventRealization eventRealization) {
-        checkState(eventRealization.getStatus() == EventRealizationStatus.ACCEPTED, "You can only report abuse for accepted event");
+        checkState(eventRealization.getStatus() == EventRealizationStatus.BOOKED, "You can only report absence for booked event");
     }
 
     private static void validateEventRealizationNotStarted(EventRealization eventRealization, Instant now) {
@@ -87,11 +87,6 @@ public class StudentAbsenceReporter {
 
     private static void validateEventRealizationOwner(EventRealization eventRealization, Integer ownerId) {
         checkArgument(Objects.equals(eventRealization.getStudentId(), ownerId), "You can only report absent for your own events");
-    }
-
-    private void validateEventRealizationNotReportedAbsence(EventRealization eventRealization, Integer studentId) {
-        boolean absenceExists = eventStudentAbsenceStore.existsByRealizationIdAndStudentId(eventRealization.getId(), studentId);
-        checkState(!absenceExists, "You already reported absence for this event");
     }
 
     private Event findEventWithLockForUpdateOrThrow(Integer id) {
@@ -105,9 +100,10 @@ public class StudentAbsenceReporter {
         }
     }
 
-    private static EventStudentAbsence buildAbsence(Event event, EventRealization eventRealization, Integer studentId) {
-        return EventStudentAbsence.newAbsence(eventRealization.getId(), studentId, event.getName(), event.getDescription(),
-                event.getLocation(), eventRealization.getStart(), eventRealization.getEnd());
+    private EventRealization buildAbsenceEventRealization(SingleEvent singleEvent) {
+        Instant start = timeUtils.toInstantFromUTCZone(singleEvent.getStartDateTime());
+        Instant end = timeUtils.toInstantFromUTCZone(singleEvent.getEndDateTime());
+        return EventRealization.newAccepted(singleEvent.getId(), start, end);
     }
 
     private void declareAbsenceEventIfNecessary(CyclicEvent event, EventRealization eventRealization) {
@@ -115,13 +111,15 @@ public class StudentAbsenceReporter {
             return;
         }
         SingleEvent absenceEvent = buildAbsenceEvent(event, eventRealization);
-        eventStore.saveSingleEvent(absenceEvent);
+        SingleEvent savedAbsenceEvent = eventStore.saveSingleEvent(absenceEvent);
+        EventRealization newEventRealization = buildAbsenceEventRealization(savedAbsenceEvent);
+        eventRealizationStore.saveEventRealization(newEventRealization);
     }
 
     private SingleEvent buildAbsenceEvent(CyclicEvent event, EventRealization eventRealization) {
         LocalDateTime start = timeUtils.toLocalDateTimeUTCZone(eventRealization.getStart());
         LocalDateTime end = timeUtils.toLocalDateTimeUTCZone(eventRealization.getEnd());
-        return SingleEvent.newSingleEventFree(event.getInstructorId(), event.getAbsenceEventName(), event.getAbsenceEventDescription(),
-                event.getLocation(), event.getPrice(), event.getCreatedAt(), start, end);
+        return SingleEvent.newAbsenceEvent(event.getInstructorId(), event.getAbsenceEventName(), event.getAbsenceEventDescription(),
+                event.getLocation(), event.getPrice(), event.getCreatedAt(), start, end, event.getId());
     }
 }

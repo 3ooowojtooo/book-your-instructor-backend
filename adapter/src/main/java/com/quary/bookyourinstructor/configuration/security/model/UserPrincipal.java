@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Getter
-public class UserContext implements UserDetails, UserData {
+public class UserPrincipal implements UserDetails, UserData {
 
     private final Integer id;
     private final String email;
@@ -19,7 +19,7 @@ public class UserContext implements UserDetails, UserData {
     private final UserType userType;
     private final List<GrantedAuthority> authorities;
 
-    public UserContext(final UserEntity userEntity) {
+    public UserPrincipal(final UserEntity userEntity) {
         Objects.requireNonNull(userEntity, "UserEntity cannot be null");
         this.id = userEntity.getId();
         this.email = userEntity.getEmail();

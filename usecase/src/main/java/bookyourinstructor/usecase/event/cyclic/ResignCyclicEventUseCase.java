@@ -6,6 +6,7 @@ import bookyourinstructor.usecase.event.common.store.EventRealizationStore;
 import bookyourinstructor.usecase.event.common.store.EventStore;
 import bookyourinstructor.usecase.event.cyclic.data.ResignCyclicEventData;
 import bookyourinstructor.usecase.event.cyclic.exception.CyclicEventNoFutureRealizationsFoundRuntimeException;
+import bookyourinstructor.usecase.event.schedule.helper.ScheduleCreatingHelper;
 import bookyourinstructor.usecase.util.retry.RetryInstanceName;
 import bookyourinstructor.usecase.util.retry.RetryManager;
 import bookyourinstructor.usecase.util.time.TimeUtils;
@@ -19,12 +20,14 @@ import com.quary.bookyourinstructor.model.event.exception.EventChangedException;
 import lombok.RequiredArgsConstructor;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkState;
 
 @RequiredArgsConstructor
 public class ResignCyclicEventUseCase {
@@ -34,6 +37,7 @@ public class ResignCyclicEventUseCase {
     private final TimeUtils timeUtils;
     private final TransactionFacade transactionFacade;
     private final RetryManager retryManager;
+    private final ScheduleCreatingHelper scheduleCreatingHelper;
 
     public void resignCyclicEvent(ResignCyclicEventData data) throws EventChangedException, CyclicEventNoFutureRealizationsFoundException,
             ConcurrentDataModificationException {
@@ -53,14 +57,17 @@ public class ResignCyclicEventUseCase {
         transactionFacade.executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.REPEATABLE_READ, () -> {
             CyclicEvent cyclicEvent = findCyclicEventByIdWithLockForUpdate(data.getCyclicEventId());
             validateEventVersion(cyclicEvent, data.getCyclicEventVersion());
+            validateEventBooked(cyclicEvent);
             List<EventRealization> realizations = findRemainingRealizationsSortedWithLockForUpdate(data.getCyclicEventId(), now);
             validateRealizationsOwner(realizations, data.getStudentId());
+            List<Integer> resignedRealizationsIds = mapToRealizationIds(realizations);
             eventStore.setStatusByIdAndIncrementVersion(data.getCyclicEventId(), EventStatus.RESIGNED);
             eventRealizationStore.setStatusForEventRealizations(EventRealizationStatus.RESIGNED, data.getCyclicEventId());
             CyclicEvent newCyclicEvent = buildEvent(cyclicEvent, realizations);
             CyclicEvent savedEvent = eventStore.saveCyclicEvent(newCyclicEvent);
             List<EventRealization> newRealizations = buildRealizations(realizations, savedEvent);
             eventRealizationStore.saveEventRealizations(newRealizations);
+            scheduleCreatingHelper.handleCyclicEventResigned(cyclicEvent, resignedRealizationsIds, data.getStudentId());
         });
     }
 
@@ -77,8 +84,13 @@ public class ResignCyclicEventUseCase {
         }
     }
 
+    private static void validateEventBooked(Event event) {
+        checkState(event.getStatus() == EventStatus.BOOKED, "You can only resign of booked event");
+    }
+
     private List<EventRealization> findRemainingRealizationsSortedWithLockForUpdate(Integer eventId, Instant now) throws CyclicEventNoFutureRealizationsFoundRuntimeException {
-        List<EventRealization> eventRealizations = eventRealizationStore.findAllByEventIdStartingAfterSortedAscWithLockForUpdate(eventId, now).stream()
+        Set<EventRealizationStatus> statuses = Set.of(EventRealizationStatus.BOOKED);
+        List<EventRealization> eventRealizations = eventRealizationStore.findAllByEventIdAndStatusStartingAfterSortedAscWithLockForUpdate(eventId, statuses, now).stream()
                 .sorted(Comparator.comparing(EventRealization::getStart))
                 .collect(Collectors.toList());
         if (eventRealizations.isEmpty()) {
@@ -93,6 +105,12 @@ public class ResignCyclicEventUseCase {
         if (!allRealizationsBelongToUser) {
             throw new IllegalStateException("You can only resign from your own event");
         }
+    }
+
+    private static List<Integer> mapToRealizationIds(List<EventRealization> realizations) {
+        return realizations.stream()
+                .map(EventRealization::getId)
+                .collect(Collectors.toList());
     }
 
     private CyclicEvent buildEvent(CyclicEvent cyclicEvent, List<EventRealization> realizations) {

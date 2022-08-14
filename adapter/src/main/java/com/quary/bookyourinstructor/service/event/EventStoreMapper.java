@@ -12,9 +12,18 @@ import org.mapstruct.Mapping;
 @Mapper(config = DependencyInjectionMapperConfig.class)
 public interface EventStoreMapper {
 
-    @Mapping(target = "singleEventStart", source = "startDateTime")
-    @Mapping(target = "singleEventEnd", source = "endDateTime")
-    @Mapping(target = "instructor.id", source = "instructorId")
+    @Mapping(target = "id", source = "singleEvent.id")
+    @Mapping(target = "version", source = "singleEvent.version")
+    @Mapping(target = "type", source = "singleEvent.type")
+    @Mapping(target = "name", source = "singleEvent.name")
+    @Mapping(target = "description", source = "singleEvent.description")
+    @Mapping(target = "location", source = "singleEvent.location")
+    @Mapping(target = "status", source = "singleEvent.status")
+    @Mapping(target = "price", source = "singleEvent.price")
+    @Mapping(target = "createdAt", source = "singleEvent.createdAt")
+    @Mapping(target = "singleEventStart", source = "singleEvent.startDateTime")
+    @Mapping(target = "singleEventEnd", source = "singleEvent.endDateTime")
+    @Mapping(target = "instructor.id", source = "singleEvent.instructorId")
     @Mapping(target = "cyclicEventStart", ignore = true)
     @Mapping(target = "cyclicEventDuration", ignore = true)
     @Mapping(target = "cyclicDayOfWeek", ignore = true)
@@ -23,13 +32,16 @@ public interface EventStoreMapper {
     @Mapping(target = "cyclicAbsenceEvent", ignore = true)
     @Mapping(target = "cyclicAbsenceEventName", ignore = true)
     @Mapping(target = "cyclicAbsenceEventDescription", ignore = true)
+    @Mapping(target = "cyclicEventAbsenceParentEvent", source = "absenceEventParent")
     @Mapping(target = "realizations", ignore = true)
     @Mapping(target = "locks", ignore = true)
-    EventEntity mapToEntity(SingleEvent singleEvent);
+    @Mapping(target = "cyclicEventAbsenceChildEvent", ignore = true)
+    EventEntity mapToEntity(SingleEvent singleEvent, EventEntity absenceEventParent);
 
     @Mapping(target = "startDateTime", source = "singleEventStart")
     @Mapping(target = "endDateTime", source = "singleEventEnd")
     @Mapping(target = "instructorId", source = "instructor.id")
+    @Mapping(target = "absenceEventParent", source = "cyclicEventAbsenceParentEvent.id")
     SingleEvent mapToSingleEvent(EventEntity eventEntity);
 
     @Mapping(target = "instructor.id", source = "instructorId")
@@ -45,6 +57,8 @@ public interface EventStoreMapper {
     @Mapping(target = "cyclicAbsenceEvent", source = "absenceEvent")
     @Mapping(target = "cyclicAbsenceEventName", source = "absenceEventName")
     @Mapping(target = "cyclicAbsenceEventDescription", source = "absenceEventDescription")
+    @Mapping(target = "cyclicEventAbsenceParentEvent", ignore = true)
+    @Mapping(target = "cyclicEventAbsenceChildEvent", ignore = true)
     EventEntity mapToEntity(CyclicEvent cyclicEvent);
 
     @Mapping(target = "startTime", source = "cyclicEventStart")

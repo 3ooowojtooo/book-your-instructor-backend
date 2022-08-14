@@ -7,7 +7,7 @@ import bookyourinstructor.usecase.event.booklock.data.ConfirmEventBookLockData;
 import bookyourinstructor.usecase.event.booklock.data.CreateEventBookLockData;
 import bookyourinstructor.usecase.event.booklock.data.DeleteEventBookLockData;
 import com.quary.bookyourinstructor.configuration.security.annotation.StudentAllowed;
-import com.quary.bookyourinstructor.configuration.security.model.UserContext;
+import com.quary.bookyourinstructor.configuration.security.model.UserPrincipal;
 import com.quary.bookyourinstructor.controller.booklock.mapper.BookLockMapper;
 import com.quary.bookyourinstructor.controller.booklock.request.CreateEventBookLockRequest;
 import com.quary.bookyourinstructor.controller.booklock.response.CreateEventBookLockResponse;
@@ -34,7 +34,7 @@ public class BookLockController {
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @StudentAllowed
     public CreateEventBookLockResponse createEventBookLock(@RequestBody final CreateEventBookLockRequest request,
-                                                           @AuthenticationPrincipal final UserContext user)
+                                                           @AuthenticationPrincipal final UserPrincipal user)
             throws EventChangedException, EventBookingAlreadyLockedException, ConcurrentDataModificationException {
         final CreateEventBookLockData data = mapper.mapToCreateEventBookLockData(request, user.getId());
         final EventLock eventLock = createEventBookLockUseCase.createEventBookLock(data);
@@ -44,7 +44,7 @@ public class BookLockController {
     @PutMapping(path = "/{id}/confirm")
     @StudentAllowed
     public void confirmBookLock(@PathVariable("id") final Integer bookLockId,
-                                @AuthenticationPrincipal final UserContext user) throws EventChangedException,
+                                @AuthenticationPrincipal final UserPrincipal user) throws EventChangedException,
             EventBookLockExpiredException, ConcurrentDataModificationException {
         ConfirmEventBookLockData data = new ConfirmEventBookLockData(bookLockId, user.getId());
         confirmEventBookLockUseCase.confirmEventBookLock(data);
@@ -53,7 +53,7 @@ public class BookLockController {
     @DeleteMapping(path = "/{id}")
     @StudentAllowed
     public void removeBookLock(@PathVariable("id") final Integer bookLockId,
-                               @AuthenticationPrincipal final UserContext user) {
+                               @AuthenticationPrincipal final UserPrincipal user) {
         DeleteEventBookLockData data = new DeleteEventBookLockData(bookLockId, user.getId());
         deleteEventBookLockUseCase.deleteBookLock(data);
     }

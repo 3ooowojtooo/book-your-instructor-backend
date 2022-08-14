@@ -7,6 +7,7 @@ import bookyourinstructor.usecase.event.common.exception.EventChangedRuntimeExce
 import bookyourinstructor.usecase.event.common.store.EventLockStore;
 import bookyourinstructor.usecase.event.common.store.EventRealizationStore;
 import bookyourinstructor.usecase.event.common.store.EventStore;
+import bookyourinstructor.usecase.event.schedule.helper.ScheduleCreatingHelper;
 import bookyourinstructor.usecase.util.retry.RetryInstanceName;
 import bookyourinstructor.usecase.util.retry.RetryManager;
 import bookyourinstructor.usecase.util.time.TimeUtils;
@@ -15,6 +16,7 @@ import bookyourinstructor.usecase.util.tx.TransactionIsolation;
 import bookyourinstructor.usecase.util.tx.TransactionPropagation;
 import com.quary.bookyourinstructor.model.event.Event;
 import com.quary.bookyourinstructor.model.event.EventLock;
+import com.quary.bookyourinstructor.model.event.EventRealizationStatus;
 import com.quary.bookyourinstructor.model.event.EventStatus;
 import com.quary.bookyourinstructor.model.event.exception.ConcurrentDataModificationException;
 import com.quary.bookyourinstructor.model.event.exception.EventBookLockExpiredException;
@@ -35,6 +37,7 @@ public class ConfirmEventBookLockUseCase {
     private final EventStore eventStore;
     private final EventLockStore eventLockStore;
     private final EventRealizationStore eventRealizationStore;
+    private final ScheduleCreatingHelper scheduleCreatingHelper;
 
     public void confirmEventBookLock(ConfirmEventBookLockData data) throws EventChangedException, EventBookLockExpiredException,
             ConcurrentDataModificationException {
@@ -59,8 +62,10 @@ public class ConfirmEventBookLockUseCase {
             validateEventFree(event);
             validateEventBookLockValidity(eventLock, now);
             eventRealizationStore.setStudentIdForEventRealizations(data.getStudentId(), event.getId());
+            eventRealizationStore.setStatusForEventRealizationsWithStatus(EventRealizationStatus.ACCEPTED, EventRealizationStatus.BOOKED, event.getId());
             eventLockStore.deleteById(eventLock.getId());
             eventStore.setStatusByIdAndIncrementVersion(event.getId(), EventStatus.BOOKED);
+            scheduleCreatingHelper.handleEventBooked(event, data.getStudentId());
         });
     }
 
