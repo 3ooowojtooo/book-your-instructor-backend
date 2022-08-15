@@ -23,7 +23,8 @@ CREATE TABLE "event"
     id                               int primary key,
     version                          int                      not null,
     type                             varchar(20)              not null,
-    instructor_id                    int references "user" (id),
+    instructor_id                    int references "user" (id) not null,
+    student_id int references "user" (id),
     name                             varchar(100)             not null,
     description                      varchar(255),
     location                         varchar(255)             not null,
@@ -55,7 +56,7 @@ CREATE TABLE "event"
            (type != 'CYCLIC' AND cyclic_start_boundary IS NULL)),
     CHECK ((type = 'CYCLIC' AND cyclic_end_boundary IS NOT NULL) OR (type != 'CYCLIC' AND cyclic_end_boundary IS NULL)),
     CHECK ( (type = 'CYCLIC' AND cyclic_start_boundary < cyclic_end_boundary) OR type != 'CYCLIC'),
-    CHECK (status = 'DRAFT' OR status = 'FREE' OR status = 'BOOKED' OR status = 'RESIGNED'),
+    CHECK (status = 'DRAFT' OR status = 'FREE' OR status = 'BOOKED' OR status = 'STUDENT_RESIGNED' OR status = 'INSTRUCTOR_ABSENT'),
     CHECK ((cyclic_absence_event = true AND cyclic_absence_event_name IS NOT NULL) OR
            (cyclic_absence_event = false AND cyclic_absence_event_name IS NULL)),
     CHECK ((cyclic_absence_event = false AND cyclic_absence_event_description IS NULL) OR cyclic_absence_event = true),
@@ -72,8 +73,8 @@ CREATE TABLE "event_realization"
     end_timestamp   timestamp with time zone    not null,
     status          varchar(20)                 not null,
     CHECK ( "start_timestamp" < "end_timestamp" ),
-    CHECK (status = 'DRAFT' OR status = 'ACCEPTED' OR status = 'BOOKED' OR status = 'INSTRUCTOR_ABSENT' OR
-           status = 'STUDENT_ABSENT' OR status = 'RESIGNED')
+    CHECK (status = 'DRAFT' OR status = 'FREE' OR status = 'BOOKED' OR status = 'INSTRUCTOR_ABSENT' OR
+           status = 'STUDENT_ABSENT' OR status = 'STUDENT_RESIGNED')
 );
 
 CREATE TABLE "event_lock"

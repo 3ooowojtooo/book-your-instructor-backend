@@ -40,7 +40,7 @@ public class GetEventScheduleRepository {
 
         Predicate userPredicate = buildUserPredicate(cb, schedule, student, instructor, userId, owner);
         Predicate notFinishedPredicate = buildNotFinishedPredicate(cb, schedule, now);
-        Predicate[] mergedPredicates = mergePredicates(userPredicate, Optional.of(notFinishedPredicate));
+        Predicate[] mergedPredicates = new Predicate[]{userPredicate, notFinishedPredicate};
 
         cq.select(schedule);
         cq.where(cb.and(mergedPredicates));

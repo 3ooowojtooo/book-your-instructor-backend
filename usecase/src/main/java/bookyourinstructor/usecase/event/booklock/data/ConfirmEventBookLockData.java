@@ -18,6 +18,6 @@ public class ConfirmEventBookLockData {
 
     private static void validateConstructorArgs(Integer bookLockId, Integer userId) {
         checkNotNull(bookLockId, "Confirm book lock event id cannot be null");
-        checkNotNull(bookLockId, "Confirm book lock event student id cannot be null");
+        checkNotNull(userId, "Confirm book lock event student id cannot be null");
     }
 }

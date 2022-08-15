@@ -31,21 +31,21 @@ public class CyclicEvent extends Event {
     public static CyclicEvent newCyclicEventDraft(int instructorId, String name, String description, String location, BigDecimal price, Instant createdAt,
                                                   LocalTime startTime, Duration duration, DayOfWeek dayOfWeek, LocalDateTime startBoundary,
                                                   LocalDateTime endBoundary, boolean absenceEvent, String absenceEventName, String absenceEventDescription) {
-        return new CyclicEvent(null, null, EventType.CYCLIC, instructorId, name, description, location, EventStatus.DRAFT,
+        return new CyclicEvent(null, null, EventType.CYCLIC, instructorId, null, name, description, location, EventStatus.DRAFT,
                 price, createdAt, startTime, duration, dayOfWeek, startBoundary, endBoundary, absenceEvent, absenceEventName, absenceEventDescription);
     }
 
     public static CyclicEvent newCyclicEventFree(int instructorId, String name, String description, String location, BigDecimal price, Instant createdAt,
                                                  LocalTime startTime, Duration duration, DayOfWeek dayOfWeek, LocalDateTime startBoundary,
                                                  LocalDateTime endBoundary, boolean absenceEvent, String absenceEventName, String absenceEventDescription) {
-        return new CyclicEvent(null, null, EventType.CYCLIC, instructorId, name, description, location, EventStatus.FREE,
+        return new CyclicEvent(null, null, EventType.CYCLIC, instructorId, null, name, description, location, EventStatus.FREE,
                 price, createdAt, startTime, duration, dayOfWeek, startBoundary, endBoundary, absenceEvent, absenceEventName, absenceEventDescription);
     }
 
-    public CyclicEvent(Integer id, Integer version, EventType type, Integer instructorId, String name, String description,
+    public CyclicEvent(Integer id, Integer version, EventType type, Integer instructorId, Integer studentId, String name, String description,
                        String location, EventStatus status, BigDecimal price, Instant createdAt, LocalTime startTime, Duration duration, DayOfWeek dayOfWeek,
                        LocalDateTime startBoundary, LocalDateTime endBoundary, boolean absenceEvent, String absenceEventName, String absenceEventDescription) {
-        super(id, version, type, instructorId, name, description, location, status, price, createdAt);
+        super(id, version, type, instructorId, studentId, name, description, location, status, price, createdAt);
         validateConstructorArgs(startTime, duration, dayOfWeek, startBoundary, endBoundary, absenceEvent, absenceEventName, absenceEventDescription);
         this.startTime = startTime;
         this.duration = duration;

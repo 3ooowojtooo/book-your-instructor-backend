@@ -2,7 +2,6 @@ package com.quary.bookyourinstructor.model.event;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 import java.time.Instant;
@@ -27,7 +26,7 @@ public class EventRealization {
     }
 
     public static EventRealization newAccepted(Integer eventId, Instant start, Instant end) {
-        return new EventRealization(null, eventId, null, start, end, EventRealizationStatus.ACCEPTED);
+        return new EventRealization(null, eventId, null, start, end, EventRealizationStatus.FREE);
     }
 
     public EventRealization(Integer id, Integer eventId, Integer studentId, Instant start, Instant end, EventRealizationStatus status) {

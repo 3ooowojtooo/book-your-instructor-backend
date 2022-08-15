@@ -1,5 +1,6 @@
 package bookyourinstructor.usecase.event.common.store;
 
+import bookyourinstructor.usecase.event.common.result.GetEventListResultItem;
 import bookyourinstructor.usecase.event.search.data.DateRangeFilter;
 import bookyourinstructor.usecase.event.search.data.EventTypeFilter;
 import bookyourinstructor.usecase.event.search.data.TextSearchFilter;
@@ -8,6 +9,7 @@ import com.quary.bookyourinstructor.model.event.CyclicEvent;
 import com.quary.bookyourinstructor.model.event.Event;
 import com.quary.bookyourinstructor.model.event.EventStatus;
 import com.quary.bookyourinstructor.model.event.SingleEvent;
+import com.quary.bookyourinstructor.model.user.UserType;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -28,6 +30,8 @@ public interface EventStore {
 
     void setStatusByIdAndIncrementVersion(Integer id, EventStatus status);
 
+    void setStatusAndStudentByIdAndIncrementVersion(Integer id, Integer studentId, EventStatus status);
+
     void incrementVersion(Integer id);
 
     Optional<Event> findById(Integer id);
@@ -35,4 +39,6 @@ public interface EventStore {
     void deleteById(Integer id);
 
     List<SearchEventsResultItem> searchEvents(DateRangeFilter dateRange, TextSearchFilter text, EventTypeFilter eventType, Instant now);
+
+    List<GetEventListResultItem> getEventList(Integer userId, UserType userType, Instant now);
 }

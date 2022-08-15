@@ -4,5 +4,6 @@ public enum EventStatus {
     DRAFT,
     FREE,
     BOOKED,
-    RESIGNED
+    INSTRUCTOR_ABSENT,
+    STUDENT_RESIGNED
 }

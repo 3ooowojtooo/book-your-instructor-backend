@@ -13,9 +13,7 @@ import bookyourinstructor.usecase.util.time.TimeUtils;
 import bookyourinstructor.usecase.util.tx.TransactionFacade;
 import bookyourinstructor.usecase.util.tx.TransactionIsolation;
 import bookyourinstructor.usecase.util.tx.TransactionPropagation;
-import com.quary.bookyourinstructor.model.event.Event;
-import com.quary.bookyourinstructor.model.event.EventRealization;
-import com.quary.bookyourinstructor.model.event.EventRealizationStatus;
+import com.quary.bookyourinstructor.model.event.*;
 import com.quary.bookyourinstructor.model.event.exception.ConcurrentDataModificationException;
 import com.quary.bookyourinstructor.model.event.exception.EventChangedException;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +59,11 @@ public class InstructorAbsenceReporter {
             validateEventOwner(event, data.getUser().getId());
             validateEventVersion(event, data.getEventVersion());
             eventRealizationStore.setStatusForEventRealization(EventRealizationStatus.INSTRUCTOR_ABSENT, eventRealization.getId());
-            eventStore.incrementVersion(event.getId());
+            if (event.getType() == EventType.SINGLE) {
+                eventStore.setStatusByIdAndIncrementVersion(event.getId(), EventStatus.INSTRUCTOR_ABSENT);
+            } else {
+                eventStore.incrementVersion(event.getId());
+            }
             scheduleCreatingHelper.handleInstructorAbsence(event, eventRealization);
         });
     }

@@ -7,6 +7,8 @@ import com.quary.bookyourinstructor.model.event.EventRealization;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(config = DependencyInjectionMapperConfig.class)
 public interface EventRealizationStoreMapper {
 
@@ -22,4 +24,6 @@ public interface EventRealizationStoreMapper {
     @Mapping(target = "eventId", source = "event.id")
     @Mapping(target = "studentId", source = "student.id")
     EventRealization mapToEventRealization(EventRealizationEntity eventRealizationEntity);
+
+    List<EventRealization> mapToEventRealizations(List<EventRealizationEntity> realizationEntities);
 }

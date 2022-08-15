@@ -1,6 +1,7 @@
 package com.quary.bookyourinstructor.controller.event.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.quary.bookyourinstructor.model.event.EventRealizationStatus;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -19,4 +20,5 @@ public class EventRealizationTimeBoundaries {
     private final Instant eventStart;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS", timezone = "UTC")
     private final Instant eventEnd;
+    private final EventRealizationStatus status;
 }

@@ -1,14 +1,19 @@
 package com.quary.bookyourinstructor.service.event;
 
+import bookyourinstructor.usecase.event.common.result.GetEventListResultItem;
 import bookyourinstructor.usecase.event.common.store.EventStore;
 import bookyourinstructor.usecase.event.search.data.DateRangeFilter;
 import bookyourinstructor.usecase.event.search.data.EventTypeFilter;
 import bookyourinstructor.usecase.event.search.data.TextSearchFilter;
 import bookyourinstructor.usecase.event.search.result.SearchEventsResultItem;
 import com.quary.bookyourinstructor.entity.EventEntity;
+import com.quary.bookyourinstructor.entity.UserEntity;
 import com.quary.bookyourinstructor.model.event.*;
+import com.quary.bookyourinstructor.model.user.UserType;
 import com.quary.bookyourinstructor.repository.EventRepository;
 import com.quary.bookyourinstructor.repository.EventSearchRepository;
+import com.quary.bookyourinstructor.repository.GetEventListRepository;
+import com.quary.bookyourinstructor.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +27,9 @@ import java.util.Optional;
 public class EventStoreImpl implements EventStore {
 
     private final EventRepository eventRepository;
+    private final UserRepository userRepository;
     private final EventSearchRepository eventSearchRepository;
+    private final GetEventListRepository eventListRepository;
     private final EventStoreMapper mapper;
 
     @Override
@@ -33,8 +40,18 @@ public class EventStoreImpl implements EventStore {
     }
 
     private EventEntity mapToEntity(SingleEvent event) {
+        final UserEntity student = getUser(event.getStudentId());
+        final UserEntity instructor = getUser(event.getInstructorId());
         final EventEntity absenceEventParentEvent = getParentEventIfNecessary(event.getAbsenceEventParent());
-        return mapper.mapToEntity(event, absenceEventParentEvent);
+        return mapper.mapToEntity(event, student, instructor, absenceEventParentEvent);
+    }
+
+    private UserEntity getUser(Integer userId) {
+        if (userId == null) {
+            return null;
+        }
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalStateException("User with id " + userId + " not found"));
     }
 
     private EventEntity getParentEventIfNecessary(Integer absenceEventParent) {
@@ -48,7 +65,9 @@ public class EventStoreImpl implements EventStore {
 
     @Override
     public CyclicEvent saveCyclicEvent(CyclicEvent event) {
-        EventEntity eventEntity = mapper.mapToEntity(event);
+        final UserEntity student = getUser(event.getStudentId());
+        final UserEntity instructor = getUser(event.getInstructorId());
+        EventEntity eventEntity = mapper.mapToEntity(event, student, instructor);
         EventEntity savedEntity = eventRepository.save(eventEntity);
         return mapper.mapToCyclicEvent(savedEntity);
     }
@@ -76,6 +95,11 @@ public class EventStoreImpl implements EventStore {
     }
 
     @Override
+    public void setStatusAndStudentByIdAndIncrementVersion(Integer id, Integer studentId, EventStatus status) {
+        eventRepository.setStatusAndStudentByIdAndIncrementVersion(id, studentId, status);
+    }
+
+    @Override
     public Optional<Event> findById(Integer id) {
         return eventRepository.findById(id)
                 .map(mapper::mapToEvent);
@@ -94,5 +118,10 @@ public class EventStoreImpl implements EventStore {
     @Override
     public List<SearchEventsResultItem> searchEvents(DateRangeFilter dateRange, TextSearchFilter text, EventTypeFilter eventType, Instant now) {
         return eventSearchRepository.searchEvents(dateRange, text, eventType, now);
+    }
+
+    @Override
+    public List<GetEventListResultItem> getEventList(Integer userId, UserType userType, Instant now) {
+        return eventListRepository.getEventList(userId, userType, now);
     }
 }

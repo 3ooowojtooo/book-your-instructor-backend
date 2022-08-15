@@ -26,7 +26,7 @@ public class AcceptEventUseCase {
             validateEventDraft(event);
             validateEventOwner(event, data.getUserId());
             eventStore.setStatusByIdAndIncrementVersion(data.getEventId(), EventStatus.FREE);
-            eventRealizationStore.setStatusForEventRealizations(EventRealizationStatus.ACCEPTED, data.getEventId());
+            eventRealizationStore.setStatusForEventRealizations(EventRealizationStatus.FREE, data.getEventId());
             return null;
         });
     }

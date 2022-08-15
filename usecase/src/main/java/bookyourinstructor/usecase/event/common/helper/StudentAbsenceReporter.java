@@ -59,13 +59,13 @@ public class StudentAbsenceReporter {
             validateEventRealizationOwner(eventRealization, data.getUser().getId());
             Event event = findEventWithLockForUpdateOrThrow(eventRealization.getEventId());
             validateEventVersion(event, data.getEventVersion());
-            eventRealizationStore.setStatusForEventRealization(EventRealizationStatus.STUDENT_ABSENT, eventRealization.getId());
             if (event.getType() == EventType.SINGLE) {
-                eventStore.setStatusByIdAndIncrementVersion(event.getId(), EventStatus.FREE);
-                EventRealization newEventRealization = buildAbsenceEventRealization((SingleEvent) event);
-                eventRealizationStore.saveEventRealization(newEventRealization);
+                eventStore.setStatusByIdAndIncrementVersion(event.getId(), EventStatus.STUDENT_RESIGNED);
+                eventRealizationStore.setStatusForEventRealization(EventRealizationStatus.STUDENT_RESIGNED, eventRealization.getId());
+                declareAbsenceEvent((SingleEvent) event);
             } else if (event.getType() == EventType.CYCLIC) {
                 eventStore.incrementVersion(event.getId());
+                eventRealizationStore.setStatusForEventRealization(EventRealizationStatus.STUDENT_ABSENT, eventRealization.getId());
                 declareAbsenceEventIfNecessary((CyclicEvent) event, eventRealization);
             }
             scheduleCreatingHelper.handleStudentAbsence(event, eventRealization);
@@ -100,10 +100,11 @@ public class StudentAbsenceReporter {
         }
     }
 
-    private EventRealization buildAbsenceEventRealization(SingleEvent singleEvent) {
-        Instant start = timeUtils.toInstantFromUTCZone(singleEvent.getStartDateTime());
-        Instant end = timeUtils.toInstantFromUTCZone(singleEvent.getEndDateTime());
-        return EventRealization.newAccepted(singleEvent.getId(), start, end);
+    private void declareAbsenceEvent(SingleEvent event) {
+        SingleEvent absenceEvent = buildAbsenceEvent(event);
+        SingleEvent savedAbsenceEvent = eventStore.saveSingleEvent(absenceEvent);
+        EventRealization newEventRealization = buildAbsenceEventRealization(savedAbsenceEvent);
+        eventRealizationStore.saveEventRealization(newEventRealization);
     }
 
     private void declareAbsenceEventIfNecessary(CyclicEvent event, EventRealization eventRealization) {
@@ -114,6 +115,17 @@ public class StudentAbsenceReporter {
         SingleEvent savedAbsenceEvent = eventStore.saveSingleEvent(absenceEvent);
         EventRealization newEventRealization = buildAbsenceEventRealization(savedAbsenceEvent);
         eventRealizationStore.saveEventRealization(newEventRealization);
+    }
+
+    private EventRealization buildAbsenceEventRealization(SingleEvent singleEvent) {
+        Instant start = timeUtils.toInstantFromUTCZone(singleEvent.getStartDateTime());
+        Instant end = timeUtils.toInstantFromUTCZone(singleEvent.getEndDateTime());
+        return EventRealization.newAccepted(singleEvent.getId(), start, end);
+    }
+
+    private SingleEvent buildAbsenceEvent(SingleEvent event) {
+        return SingleEvent.newAbsenceEvent(event.getInstructorId(), event.getName(), event.getDescription(), event.getLocation(),
+                event.getPrice(), event.getCreatedAt(), event.getStartDateTime(), event.getEndDateTime(), null);
     }
 
     private SingleEvent buildAbsenceEvent(CyclicEvent event, EventRealization eventRealization) {

@@ -20,6 +20,7 @@ public abstract class Event {
     private final Integer version;
     private final EventType type;
     private final Integer instructorId;
+    private final Integer studentId;
     private final String name;
     private final String description;
     private final String location;
@@ -27,13 +28,14 @@ public abstract class Event {
     private final BigDecimal price;
     private final Instant createdAt;
 
-    protected Event(Integer id, Integer version, EventType type, Integer instructorId, String name, String description,
-                    String location, EventStatus status, BigDecimal price, Instant createdAt) {
+    protected Event(Integer id, Integer version, EventType type, Integer instructorId, Integer studentId,
+                    String name, String description, String location, EventStatus status, BigDecimal price, Instant createdAt) {
         validateConstructorArgs(type, instructorId, name, location, status, price, createdAt);
         this.id = id;
         this.version = version;
         this.type = type;
         this.instructorId = instructorId;
+        this.studentId = studentId;
         this.name = name;
         this.description = description;
         this.location = location;

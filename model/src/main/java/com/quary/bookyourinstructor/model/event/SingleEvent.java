@@ -22,21 +22,21 @@ public final class SingleEvent extends Event {
 
     public static SingleEvent newSingleEventDraft(int instructorId, String name, String description, String location, BigDecimal price,
                                                   Instant createdAt, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        return new SingleEvent(null, null, EventType.SINGLE, instructorId, name, description, location,
+        return new SingleEvent(null, null, EventType.SINGLE, instructorId, null, name, description, location,
                 EventStatus.DRAFT, price, createdAt, startDateTime, endDateTime, null);
     }
 
     public static SingleEvent newAbsenceEvent(int instructorId, String name, String description, String location, BigDecimal price,
                                               Instant createdAt, LocalDateTime startDateTime, LocalDateTime endDateTime,
                                               Integer absenceEventParent) {
-        return new SingleEvent(null, null, EventType.SINGLE, instructorId, name, description, location,
+        return new SingleEvent(null, null, EventType.SINGLE, instructorId, null, name, description, location,
                 EventStatus.FREE, price, createdAt, startDateTime, endDateTime, absenceEventParent);
     }
 
-    public SingleEvent(Integer id, Integer version, EventType type, Integer instructorId, String name, String description,
+    public SingleEvent(Integer id, Integer version, EventType type, Integer instructorId, Integer studentId, String name, String description,
                        String location, EventStatus status, BigDecimal price, Instant createdAt, LocalDateTime startDateTime,
                        LocalDateTime endDateTime, Integer absenceEventParent) {
-        super(id, version, type, instructorId, name, description, location, status, price, createdAt);
+        super(id, version, type, instructorId, studentId, name, description, location, status, price, createdAt);
         validateConstructorArgs(startDateTime, endDateTime);
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
