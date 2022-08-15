@@ -4,10 +4,7 @@ import bookyourinstructor.usecase.authentication.user.UserStore;
 import bookyourinstructor.usecase.event.booklock.ConfirmEventBookLockUseCase;
 import bookyourinstructor.usecase.event.booklock.CreateEventBookLockUseCase;
 import bookyourinstructor.usecase.event.booklock.DeleteEventBookLockUseCase;
-import bookyourinstructor.usecase.event.common.AcceptEventUseCase;
-import bookyourinstructor.usecase.event.common.DeleteDraftEventUseCase;
-import bookyourinstructor.usecase.event.common.GetEventDetailsAsStudentUseCase;
-import bookyourinstructor.usecase.event.common.ReportAbsenceUseCase;
+import bookyourinstructor.usecase.event.common.*;
 import bookyourinstructor.usecase.event.common.helper.InstructorAbsenceReporter;
 import bookyourinstructor.usecase.event.common.helper.StudentAbsenceReporter;
 import bookyourinstructor.usecase.event.common.store.EventLockStore;
@@ -123,5 +120,10 @@ public class EventConfiguration {
     GetEventScheduleUseCase getEventScheduleUseCase(EventScheduleStore eventScheduleStore, TransactionFacade transactionFacade,
                                                     TimeUtils timeUtils) {
         return new GetEventScheduleUseCase(eventScheduleStore, transactionFacade, timeUtils);
+    }
+
+    @Bean
+    GetEventListUseCase getEventListUseCase(EventStore eventStore, TransactionFacade transactionFacade, TimeUtils timeUtils) {
+        return new GetEventListUseCase(eventStore, transactionFacade, timeUtils);
     }
 }

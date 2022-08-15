@@ -36,7 +36,7 @@ public interface EventRealizationStore {
 
     List<EventRealization> findAllFutureRealizationsWithStatus(final Integer eventId, final Instant now, final EventRealizationStatus status);
 
-    List<EventRealization> findAllByEventIdAndStatusStartingAfterSortedAscWithLockForUpdate(final Integer eventId, Set<EventRealizationStatus> status, final Instant now);
+    List<EventRealization> findAllByEventIdAndStatusStartingAfterSortedAscWithLockForUpdate(final Integer eventId, EventRealizationStatus status, final Instant now);
 
     List<EventRealization> findAllRealizationWithStatusAndStudentId(final Integer eventId, EventRealizationStatus status, Integer studentId);
 

@@ -21,7 +21,6 @@ import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -48,7 +47,7 @@ public class EventSearchRepository {
         Optional<Predicate> dateRangePredicate = buildDateRangePredicate(cb, realization, dateRange);
         Optional<Predicate> textPredicate = buildTextPredicate(cb, event, instructor, text);
         Optional<Predicate> eventTypePredicate = buildEventTypePredicate(cb, event, eventType);
-        Predicate[] mergedPredicates = mergePredicates(eventFreePredicate, dateRangePredicate, textPredicate, eventTypePredicate);
+        Predicate[] mergedPredicates = mergePredicates(Optional.of(eventFreePredicate), dateRangePredicate, textPredicate, eventTypePredicate);
 
         cq.multiselect(event, cb.min(realization.get("start")));
         cq.where(cb.and(mergedPredicates));
@@ -65,7 +64,7 @@ public class EventSearchRepository {
             EventRealizationEntity> realization, Instant now) {
         return cb.and(
                 cb.equal(event.get("status"), EventStatus.FREE),
-                cb.equal(realization.get("status"), EventRealizationStatus.ACCEPTED),
+                cb.equal(realization.get("status"), EventRealizationStatus.FREE),
                 cb.greaterThan(realization.get("start"), now)
         );
     }
@@ -185,7 +184,7 @@ public class EventSearchRepository {
 
     private long computeNotStartedRealizationsAmount(EventEntity event, Instant now) {
         return event.getRealizations().stream()
-                .filter(realization -> realization.getStart().isAfter(now) && realization.getStatus() == EventRealizationStatus.ACCEPTED)
+                .filter(realization -> realization.getStart().isAfter(now) && realization.getStatus() == EventRealizationStatus.FREE)
                 .count();
     }
 

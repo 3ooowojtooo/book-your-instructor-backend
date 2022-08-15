@@ -89,12 +89,9 @@ public class EventRealizationStoreImpl implements EventRealizationStore {
 
     @Override
     public List<EventRealization> findAllByEventIdAndStatusStartingAfterSortedAscWithLockForUpdate(Integer eventId,
-                                                                                                   Set<EventRealizationStatus> statuses,
+                                                                                                   EventRealizationStatus status,
                                                                                                    Instant now) {
-        Set<String> statusesAsString = statuses.stream()
-                .map(EventRealizationStatus::name)
-                .collect(Collectors.toSet());
-        return eventRealizationRepository.findAllByEventIdAndStatusStartingAfterOrderByStartAscWithLockForUpdate(eventId, statusesAsString, now)
+        return eventRealizationRepository.findAllByEventIdAndStatusStartingAfterOrderByStartAscWithLockForUpdate(eventId, status.name(), now)
                 .stream()
                 .map(mapper::mapToEventRealization)
                 .collect(Collectors.toList());

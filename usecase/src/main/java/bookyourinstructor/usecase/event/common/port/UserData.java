@@ -1,5 +1,7 @@
 package bookyourinstructor.usecase.event.common.port;
 
+import com.quary.bookyourinstructor.model.user.UserType;
+
 public interface UserData {
 
     Integer getId();
@@ -11,4 +13,6 @@ public interface UserData {
     boolean isStudent();
 
     boolean isUndeclared();
+
+    UserType getType();
 }

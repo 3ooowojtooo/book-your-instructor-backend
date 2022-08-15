@@ -44,6 +44,11 @@ public class UserPrincipal implements UserDetails, UserData {
     }
 
     @Override
+    public UserType getType() {
+        return userType;
+    }
+
+    @Override
     public String getUsername() {
         return getEmail();
     }

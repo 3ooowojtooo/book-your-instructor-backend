@@ -13,9 +13,8 @@ import java.util.Optional;
 public class RepositoryUtils {
 
     @SafeVarargs
-    public static Predicate[] mergePredicates(Predicate predicate, Optional<Predicate>... optionalPredicates) {
+    public static Predicate[] mergePredicates(Optional<Predicate>... optionalPredicates) {
         List<Predicate> predicates = new ArrayList<>();
-        predicates.add(predicate);
         Arrays.stream(optionalPredicates)
                 .filter(Optional::isPresent)
                 .map(Optional::get)

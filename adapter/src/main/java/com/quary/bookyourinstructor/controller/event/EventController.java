@@ -1,14 +1,12 @@
 package com.quary.bookyourinstructor.controller.event;
 
-import bookyourinstructor.usecase.event.common.AcceptEventUseCase;
-import bookyourinstructor.usecase.event.common.DeleteDraftEventUseCase;
-import bookyourinstructor.usecase.event.common.GetEventDetailsAsStudentUseCase;
-import bookyourinstructor.usecase.event.common.ReportAbsenceUseCase;
+import bookyourinstructor.usecase.event.common.*;
 import bookyourinstructor.usecase.event.common.data.AcceptEventData;
 import bookyourinstructor.usecase.event.common.data.DeleteDraftEventData;
 import bookyourinstructor.usecase.event.common.data.GetEventDetailsAsStudentData;
 import bookyourinstructor.usecase.event.common.data.ReportAbsenceData;
 import bookyourinstructor.usecase.event.common.result.GetEventDetailsAsStudentResult;
+import bookyourinstructor.usecase.event.common.result.GetEventListResult;
 import bookyourinstructor.usecase.event.cyclic.DeclareCyclicEventUseCase;
 import bookyourinstructor.usecase.event.cyclic.ResignCyclicEventUseCase;
 import bookyourinstructor.usecase.event.cyclic.UpdateCyclicEventRealizationUseCase;
@@ -53,6 +51,7 @@ public class EventController {
     private final SearchEventsUseCase searchEventsUseCase;
     private final GetEventDetailsAsStudentUseCase getEventDetailsAsStudentUseCase;
     private final GetEventScheduleUseCase getEventScheduleUseCase;
+    private final GetEventListUseCase getEventListUseCase;
 
     @PostMapping(path = "/single", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @InstructorAllowed
@@ -140,5 +139,12 @@ public class EventController {
     public GetEventScheduleResponse getEventSchedule(@AuthenticationPrincipal final UserPrincipal user) {
         final GetEventScheduleResult result = getEventScheduleUseCase.getEventSchedule(user);
         return mapper.mapToGetEventScheduleResponse(result);
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @InstructorAndStudentAllowed
+    public GetEventListResponse getEventsList(@AuthenticationPrincipal final UserPrincipal user) {
+        final GetEventListResult result = getEventListUseCase.getEventList(user);
+        return mapper.mapToGetEventListResponse(result);
     }
 }

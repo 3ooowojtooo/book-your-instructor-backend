@@ -65,8 +65,8 @@ public class ScheduleCreatingHelperImpl implements ScheduleCreatingHelper {
 
     @Override
     public void handleCyclicEventResigned(CyclicEvent event, List<Integer> resignedRealizationsIds, Integer studentId) {
-        transactionFacade.executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.READ_COMMITTED, () -> {
-            eventScheduleStore.delete(event.getId(), resignedRealizationsIds, studentId, EventScheduleStatus.BOOKED);
-        });
+        transactionFacade.executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.READ_COMMITTED, () ->
+            eventScheduleStore.delete(event.getId(), resignedRealizationsIds, studentId, EventScheduleStatus.BOOKED)
+        );
     }
 }

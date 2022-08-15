@@ -38,6 +38,10 @@ public class EventEntity {
     @JoinColumn(name = "instructor_id", nullable = false)
     private UserEntity instructor;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_id")
+    private UserEntity student;
+
     @Column(name = "name", nullable = false)
     private String name;
 

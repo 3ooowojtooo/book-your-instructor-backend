@@ -62,9 +62,9 @@ public class ConfirmEventBookLockUseCase {
             validateEventFree(event);
             validateEventBookLockValidity(eventLock, now);
             eventRealizationStore.setStudentIdForEventRealizations(data.getStudentId(), event.getId());
-            eventRealizationStore.setStatusForEventRealizationsWithStatus(EventRealizationStatus.ACCEPTED, EventRealizationStatus.BOOKED, event.getId());
+            eventRealizationStore.setStatusForEventRealizationsWithStatus(EventRealizationStatus.FREE, EventRealizationStatus.BOOKED, event.getId());
             eventLockStore.deleteById(eventLock.getId());
-            eventStore.setStatusByIdAndIncrementVersion(event.getId(), EventStatus.BOOKED);
+            eventStore.setStatusAndStudentByIdAndIncrementVersion(event.getId(), data.getStudentId(), EventStatus.BOOKED);
             scheduleCreatingHelper.handleEventBooked(event, data.getStudentId());
         });
     }

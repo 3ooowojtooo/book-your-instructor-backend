@@ -46,8 +46,8 @@ public interface EventRealizationRepository extends CrudRepository<EventRealizat
     @Query("select r from EventRealizationEntity r where r.event.id = ?1 and r.start > ?2 and r.status = ?3")
     List<EventRealizationEntity> findAllByEventIdStartingAfterAndWithStatus(final Integer eventId, final Instant now, final EventRealizationStatus status);
 
-    @Query(value = "select * from event_realization where event_id = ?1 and status in ?2 and start_timestamp > ?3 order by start_timestamp for update nowait", nativeQuery = true)
-    List<EventRealizationEntity> findAllByEventIdAndStatusStartingAfterOrderByStartAscWithLockForUpdate(final Integer eventId, Collection<String> statuses, final Instant startThreshold);
+    @Query(value = "select * from event_realization where event_id = ?1 and status = ?2 and start_timestamp > ?3 order by start_timestamp for update nowait", nativeQuery = true)
+    List<EventRealizationEntity> findAllByEventIdAndStatusStartingAfterOrderByStartAscWithLockForUpdate(final Integer eventId, String status, final Instant startThreshold);
 
     @Query("select r from EventRealizationEntity r where r.event.id = ?1 and r.status = ?2 and r.student.id = ?3")
     List<EventRealizationEntity> findAllRealizationWithStatusAndStudentId(Integer eventId, EventRealizationStatus status, Integer studentId);
