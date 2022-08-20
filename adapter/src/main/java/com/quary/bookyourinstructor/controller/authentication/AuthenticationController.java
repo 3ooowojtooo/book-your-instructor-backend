@@ -11,6 +11,7 @@ import com.quary.bookyourinstructor.controller.authentication.response.Authentic
 import com.quary.bookyourinstructor.model.authentication.EmailAndPassword;
 import com.quary.bookyourinstructor.model.authentication.NewUserData;
 import com.quary.bookyourinstructor.model.authentication.exception.InvalidEmailOrPasswordException;
+import com.quary.bookyourinstructor.model.authentication.exception.UserNotFoundException;
 import com.quary.bookyourinstructor.model.authentication.exception.UserWithEmailAlreadyExists;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -37,8 +38,8 @@ public class AuthenticationController {
     }
 
     @PostMapping(path = "/facebook", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public AuthenticationResponse facebookAuthenticate(@RequestBody final FacebookAuthenticationRequest request) throws UserWithEmailAlreadyExists {
-        String jwtToken = facebookAuthenticateUseCase.authenticate(request.getAccessToken());
+    public AuthenticationResponse facebookAuthenticate(@RequestBody final FacebookAuthenticationRequest request) throws UserWithEmailAlreadyExists, UserNotFoundException {
+        String jwtToken = facebookAuthenticateUseCase.authenticate(request.getAccessToken(), request.getUserType());
         return new AuthenticationResponse(jwtToken);
     }
 

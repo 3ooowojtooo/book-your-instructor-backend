@@ -7,11 +7,9 @@ CREATE TABLE "user"
     origin               varchar(20) not null,
     password             varchar check ( (origin = 'EXTERNAL' AND password IS NULL) OR
                                          (origin = 'CREDENTIALS' AND password IS NOT NULL) ),
-    type                 varchar(20) default 'UNDECLARED',
-    name                 varchar check ( (type = 'UNDECLARED' AND name IS NULL) OR
-                                         (type != 'UNDECLARED' AND name IS NOT NULL)),
-    surname              varchar check ( (type = 'UNDECLARED' AND surname IS NULL) OR
-                                         (type != 'UNDECLARED' AND surname IS NOT NULL)),
+    type                 varchar(20) not null,
+    name                 varchar not null,
+    surname              varchar not null,
     external_id          varchar check ( (origin = 'CREDENTIALS' AND external_id IS NULL) OR
                                          (origin = 'EXTERNAL' AND external_id IS NOT NULL) ),
     external_id_provider varchar(20) check ( (origin = 'CREDENTIALS' AND external_id_provider IS NULL) OR
@@ -41,7 +39,6 @@ CREATE TABLE "event"
     cyclic_absence_event             bool,
     cyclic_absence_event_name        varchar(100),
     cyclic_absence_event_description varchar(255),
-    cyclic_absence_event_parent_id   int references "event" (id)
         CHECK (price > 0),
     CHECK ( (type = 'SINGLE' AND single_start_timestamp IS NOT NULL) OR
             (type != 'SINGLE' AND single_start_timestamp IS NULL)),
@@ -59,8 +56,7 @@ CREATE TABLE "event"
     CHECK (status = 'DRAFT' OR status = 'FREE' OR status = 'BOOKED' OR status = 'STUDENT_RESIGNED' OR status = 'INSTRUCTOR_ABSENT'),
     CHECK ((cyclic_absence_event = true AND cyclic_absence_event_name IS NOT NULL) OR
            (cyclic_absence_event = false AND cyclic_absence_event_name IS NULL)),
-    CHECK ((cyclic_absence_event = false AND cyclic_absence_event_description IS NULL) OR cyclic_absence_event = true),
-    CHECK ((type = 'CYCLIC' AND cyclic_absence_event_parent_id IS NULL) OR (type = 'SINGLE'))
+    CHECK ((cyclic_absence_event = false AND cyclic_absence_event_description IS NULL) OR cyclic_absence_event = true)
 );
 
 

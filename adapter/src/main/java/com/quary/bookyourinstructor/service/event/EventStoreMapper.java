@@ -35,17 +35,14 @@ public interface EventStoreMapper {
     @Mapping(target = "cyclicAbsenceEvent", ignore = true)
     @Mapping(target = "cyclicAbsenceEventName", ignore = true)
     @Mapping(target = "cyclicAbsenceEventDescription", ignore = true)
-    @Mapping(target = "cyclicEventAbsenceParentEvent", source = "absenceEventParent")
     @Mapping(target = "realizations", ignore = true)
     @Mapping(target = "locks", ignore = true)
-    @Mapping(target = "cyclicEventAbsenceChildEvent", ignore = true)
-    EventEntity mapToEntity(SingleEvent singleEvent, UserEntity student, UserEntity instructor, EventEntity absenceEventParent);
+    EventEntity mapToEntity(SingleEvent singleEvent, UserEntity student, UserEntity instructor);
 
     @Mapping(target = "startDateTime", source = "singleEventStart")
     @Mapping(target = "endDateTime", source = "singleEventEnd")
     @Mapping(target = "instructorId", source = "instructor.id")
     @Mapping(target = "studentId", source = "student.id")
-    @Mapping(target = "absenceEventParent", source = "cyclicEventAbsenceParentEvent.id")
     SingleEvent mapToSingleEvent(EventEntity eventEntity);
 
     @Mapping(target = "id", source = "cyclicEvent.id")
@@ -71,8 +68,6 @@ public interface EventStoreMapper {
     @Mapping(target = "cyclicAbsenceEvent", source = "cyclicEvent.absenceEvent")
     @Mapping(target = "cyclicAbsenceEventName", source = "cyclicEvent.absenceEventName")
     @Mapping(target = "cyclicAbsenceEventDescription", source = "cyclicEvent.absenceEventDescription")
-    @Mapping(target = "cyclicEventAbsenceParentEvent", ignore = true)
-    @Mapping(target = "cyclicEventAbsenceChildEvent", ignore = true)
     EventEntity mapToEntity(CyclicEvent cyclicEvent, UserEntity student, UserEntity instructor);
 
     @Mapping(target = "startTime", source = "cyclicEventStart")

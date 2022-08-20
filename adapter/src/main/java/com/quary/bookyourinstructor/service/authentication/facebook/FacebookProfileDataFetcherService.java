@@ -1,6 +1,7 @@
 package com.quary.bookyourinstructor.service.authentication.facebook;
 
 import bookyourinstructor.usecase.authentication.facebook.FacebookProfileDataFetcher;
+import bookyourinstructor.usecase.authentication.facebook.FacebookUserData;
 import com.quary.bookyourinstructor.model.authentication.EmailAndExternalIdentity;
 import com.quary.bookyourinstructor.model.user.ExternalIdentity;
 import com.quary.bookyourinstructor.model.user.ExternalIdentityProvider;
@@ -28,18 +29,25 @@ public class FacebookProfileDataFetcherService implements FacebookProfileDataFet
     }
 
     @Override
-    public EmailAndExternalIdentity fetchEmailAndExternalId(String accessToken) {
+    public FacebookUserData fetchEmailAndExternalId(String accessToken) {
         log.info("Getting facebook profile data basing on the access token");
-        final String path = "/me?fields=email&redirect=false&access_token=" + accessToken;
+        final String path = "/me?fields=email,first_name,last_name&redirect=false&access_token=" + accessToken;
         final FacebookMeEndpointResponse response = restTemplate.getForObject(graphApiBase + path, FacebookMeEndpointResponse.class);
         Objects.requireNonNull(response, "FB graph api /me endpoint responded with null object");
-        return new EmailAndExternalIdentity(response.getEmail(),
-                new ExternalIdentity(response.getId(), ExternalIdentityProvider.FACEBOOK));
+        return buildUserData(response);
+    }
+
+    private static FacebookUserData buildUserData(FacebookMeEndpointResponse facebookResponse) {
+        EmailAndExternalIdentity emailAndExternalIdentity = new EmailAndExternalIdentity(facebookResponse.getEmail(),
+                new ExternalIdentity(facebookResponse.getId(), ExternalIdentityProvider.FACEBOOK));
+        return new FacebookUserData(emailAndExternalIdentity, facebookResponse.getFirst_name(), facebookResponse.getLast_name());
     }
 
     @Data
     private static class FacebookMeEndpointResponse {
         private String email;
+        private String first_name;
+        private String last_name;
         private String id;
     }
 }

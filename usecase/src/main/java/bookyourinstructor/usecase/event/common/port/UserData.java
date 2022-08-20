@@ -12,7 +12,5 @@ public interface UserData {
 
     boolean isStudent();
 
-    boolean isUndeclared();
-
     UserType getType();
 }

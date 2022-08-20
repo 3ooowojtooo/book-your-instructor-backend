@@ -41,10 +41,8 @@ public class User {
         checkArgument(EMAIL_VALIDATOR.isValid(email), "Email is invalid");
         checkNotNull(origin, "User origin cannot be null");
         checkNotNull(type, "User type cannot be null");
-        if (type != UserType.UNDECLARED) {
-            checkArgument(isNotBlank(name), "User name cannot be blank");
-            checkArgument(isNotBlank(surname), "User surname cannot be blank");
-        }
+        checkArgument(isNotBlank(name), "User name cannot be blank");
+        checkArgument(isNotBlank(surname), "User surname cannot be blank");
         if (UserOrigin.CREDENTIALS.equals(origin)) {
             checkArgument(isNotBlank(password), "Password cannot be blank for CREDENTIALS user");
         }
@@ -57,7 +55,7 @@ public class User {
         return new User(null, email, password, name, surname, UserOrigin.CREDENTIALS, type, null);
     }
 
-    public static User createNewExternalUser(String email, UserType type, ExternalIdentity externalIdentity) {
-        return new User(null, email, null, null, null, UserOrigin.EXTERNAL, type, externalIdentity);
+    public static User createNewExternalUser(String email, String name, String surname, UserType type, ExternalIdentity externalIdentity) {
+        return new User(null, email, null, name, surname, UserOrigin.EXTERNAL, type, externalIdentity);
     }
 }

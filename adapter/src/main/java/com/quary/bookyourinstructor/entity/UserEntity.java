@@ -43,7 +43,7 @@ public class UserEntity {
 
     @Column(name = "type", nullable = false)
     @Enumerated(EnumType.STRING)
-    private UserType type = UserType.UNDECLARED;
+    private UserType type;
 
     @Column(name = "external_id")
     private String externalId;

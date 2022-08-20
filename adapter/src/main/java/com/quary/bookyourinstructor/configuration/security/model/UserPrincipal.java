@@ -39,11 +39,6 @@ public class UserPrincipal implements UserDetails, UserData {
     }
 
     @Override
-    public boolean isUndeclared() {
-        return this.userType == UserType.UNDECLARED;
-    }
-
-    @Override
     public UserType getType() {
         return userType;
     }

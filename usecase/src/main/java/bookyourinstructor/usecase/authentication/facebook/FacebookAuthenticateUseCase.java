@@ -3,6 +3,7 @@ package bookyourinstructor.usecase.authentication.facebook;
 import bookyourinstructor.usecase.authentication.jwt.JwtGenerator;
 import bookyourinstructor.usecase.authentication.user.UserStore;
 import com.quary.bookyourinstructor.model.authentication.EmailAndExternalIdentity;
+import com.quary.bookyourinstructor.model.authentication.exception.UserNotFoundException;
 import com.quary.bookyourinstructor.model.authentication.exception.UserWithEmailAlreadyExists;
 import com.quary.bookyourinstructor.model.user.User;
 import com.quary.bookyourinstructor.model.user.UserType;
@@ -22,28 +23,31 @@ public class FacebookAuthenticateUseCase {
     private final JwtGenerator jwtGenerator;
     private final Duration jwtValidityDuration;
 
-    public String authenticate(String facebookAccessKey) throws UserWithEmailAlreadyExists {
+    public String authenticate(String facebookAccessKey, UserType userType) throws UserWithEmailAlreadyExists, UserNotFoundException {
         checkArgument(isNotBlank(facebookAccessKey), "Facebook access key cannot be blank");
-        final EmailAndExternalIdentity emailAndExternalId = profileDataFetcher.fetchEmailAndExternalId(facebookAccessKey);
+        final FacebookUserData userData = profileDataFetcher.fetchEmailAndExternalId(facebookAccessKey);
+        final EmailAndExternalIdentity emailAndExternalId = userData.getEmailAndExternalIdentity();
         final Optional<User> existingUser = userStore.getByExternalIdentity(emailAndExternalId.getExternalIdentity());
-        final User jwtPrincipalUser;
         if (existingUser.isPresent()) {
-            jwtPrincipalUser = existingUser.get();
+            User jwtPrincipalUser = existingUser.get();
+            return jwtGenerator.generateJwt(jwtPrincipalUser.getEmail(), jwtPrincipalUser.getType(), jwtValidityDuration);
+        } else if (userType != null) {
+            User jwtPrincipalUser = registerUser(userData, userType);
+            return jwtGenerator.generateJwt(jwtPrincipalUser.getEmail(), jwtPrincipalUser.getType(), jwtValidityDuration);
         } else {
-            jwtPrincipalUser = registerUser(emailAndExternalId);
+            throw new UserNotFoundException();
         }
-        return jwtGenerator.generateJwt(jwtPrincipalUser.getEmail(), jwtPrincipalUser.getType(), jwtValidityDuration);
-
     }
 
-    private User registerUser(EmailAndExternalIdentity emailAndExternalIdentity) throws UserWithEmailAlreadyExists {
-        final User user = createUser(emailAndExternalIdentity);
+    private User registerUser(FacebookUserData facebookUserData, UserType userType) throws UserWithEmailAlreadyExists {
+        final User user = createUser(facebookUserData, userType);
         userStore.registerUser(user);
         return user;
     }
 
-    private static User createUser(EmailAndExternalIdentity emailAndExternalId) {
-        return User.createNewExternalUser(emailAndExternalId.getEmail(), UserType.UNDECLARED,
+    private static User createUser(FacebookUserData userData, UserType userType) {
+        final EmailAndExternalIdentity emailAndExternalId = userData.getEmailAndExternalIdentity();
+        return User.createNewExternalUser(emailAndExternalId.getEmail(), userData.getName(), userData.getSurname(), userType,
                 emailAndExternalId.getExternalIdentity());
     }
 }
