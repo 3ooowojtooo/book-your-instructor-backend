@@ -42,8 +42,7 @@ public class EventStoreImpl implements EventStore {
     private EventEntity mapToEntity(SingleEvent event) {
         final UserEntity student = getUser(event.getStudentId());
         final UserEntity instructor = getUser(event.getInstructorId());
-        final EventEntity absenceEventParentEvent = getParentEventIfNecessary(event.getAbsenceEventParent());
-        return mapper.mapToEntity(event, student, instructor, absenceEventParentEvent);
+        return mapper.mapToEntity(event, student, instructor);
     }
 
     private UserEntity getUser(Integer userId) {
@@ -52,15 +51,6 @@ public class EventStoreImpl implements EventStore {
         }
         return userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalStateException("User with id " + userId + " not found"));
-    }
-
-    private EventEntity getParentEventIfNecessary(Integer absenceEventParent) {
-        if (absenceEventParent != null) {
-            return eventRepository.findById(absenceEventParent)
-                    .filter(event -> event.getType() == EventType.CYCLIC)
-                    .orElseThrow(() -> new IllegalStateException("Cyclic event with id " + absenceEventParent + " not found"));
-        }
-        return null;
     }
 
     @Override

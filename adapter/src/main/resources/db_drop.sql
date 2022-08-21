@@ -1,3 +1,5 @@
+DROP TABLE "event_schedule";
+
 DROP TABLE "event_lock";
 
 DROP TABLE "event_realization";

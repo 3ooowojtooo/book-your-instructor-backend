@@ -125,13 +125,13 @@ public class StudentAbsenceReporter {
 
     private SingleEvent buildAbsenceEvent(SingleEvent event) {
         return SingleEvent.newAbsenceEvent(event.getInstructorId(), event.getName(), event.getDescription(), event.getLocation(),
-                event.getPrice(), event.getCreatedAt(), event.getStartDateTime(), event.getEndDateTime(), null);
+                event.getPrice(), event.getCreatedAt(), event.getStartDateTime(), event.getEndDateTime());
     }
 
     private SingleEvent buildAbsenceEvent(CyclicEvent event, EventRealization eventRealization) {
         LocalDateTime start = timeUtils.toLocalDateTimeUTCZone(eventRealization.getStart());
         LocalDateTime end = timeUtils.toLocalDateTimeUTCZone(eventRealization.getEnd());
         return SingleEvent.newAbsenceEvent(event.getInstructorId(), event.getAbsenceEventName(), event.getAbsenceEventDescription(),
-                event.getLocation(), event.getPrice(), event.getCreatedAt(), start, end, event.getId());
+                event.getLocation(), event.getPrice(), event.getCreatedAt(), start, end);
     }
 }
