@@ -6,3 +6,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - '80:8080'
+    environment:
+      - DB_URL
+      - DB_USERNAME
+      - DB_PASSWORD
+      - JWT_SECRET
+      - CORS_ALLOWED_ORIGINS
