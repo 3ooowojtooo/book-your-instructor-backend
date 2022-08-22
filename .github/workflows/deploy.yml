@@ -1,0 +1,30 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          lfs: 'true'
+      -
+        name: Build the Docker image
+        run: docker build -t book-your-instructor:latest -f Dockerfile .
+      -
+        name: Generate deployment ZIP package
+        run: zip -r deploy.zip *
+      -
+        name: Deploy to ElasticBenstalk
+        uses: einaregilsson/beanstalk-deploy@v14
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID}}
+          aws_secret_key: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
+          application_name: book-your-instructor-backend
+          environment_name: Bookyourinstructorbackend-env
+          version_label: latest
+          region: us-east-1
+          deployment_package: deploy.zip
