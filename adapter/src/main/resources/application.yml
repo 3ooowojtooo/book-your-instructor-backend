@@ -1,5 +1,5 @@
 jwt:
-  secret: ${jwt.token.secret}
+  secret: ${JWT_SECRET}
   validity-duration: PT72H
 
 external-login:
@@ -13,7 +13,7 @@ event:
     retry-max-attempts: 5
 
 cors:
-  allowed-origins: ${allowed.origins}
+  allowed-origins: ${CORS_ALLOWED_ORIGINS}
 
 spring:
   jpa:
@@ -25,6 +25,6 @@ spring:
       hibernate:
         format_sql: true
   datasource:
-    url: ${db.url}
-    username: ${db.username}
-    password: ${db.password}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
