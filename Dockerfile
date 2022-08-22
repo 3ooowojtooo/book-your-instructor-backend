@@ -17,5 +17,5 @@ ENV TZ=Europe/Warsaw
 
 COPY --from=build /home/app/adapter/target/adapter.jar /usr/local/lib/app.jar
 EXPOSE 8080
-ENTRYPOINT java -Ddb.username=$DB_USERNAME -Ddb.password=$DB_PASSWORD -Ddb.url=$DB_URL -Djwt.token.secret=$JWT_SECRET \
--Dallowed.origins=$CORS_ALLOWED_ORIGINS -jar /usr/local/lib/app.jar
+
+CMD ["java", "-jar", "/usr/local/lib/app.jar"]
