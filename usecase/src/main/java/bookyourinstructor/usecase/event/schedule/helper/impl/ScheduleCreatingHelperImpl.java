@@ -23,50 +23,46 @@ public class ScheduleCreatingHelperImpl implements ScheduleCreatingHelper {
     @Override
     public void handleEventBooked(Event event, Integer studentId) {
         transactionFacade.executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.READ_COMMITTED, () -> {
-           List<EventRealization> realizations = eventRealizationStore.findAllRealizationWithStatusAndStudentId(event.getId(),
-                   EventRealizationStatus.BOOKED, studentId);
-           List<EventSchedule> schedules = realizations.stream()
-                   .flatMap(realization -> Stream.of(
-                           EventSchedule.newDynamicEventSchedule(event.getId(), realization.getId(), studentId,
-                                   event.getInstructorId(), EventScheduleStatus.BOOKED, EventScheduleOwner.STUDENT,
-                                   realization.getStart(), realization.getEnd()),
-                           EventSchedule.newDynamicEventSchedule(event.getId(), realization.getId(), studentId,
-                                   event.getInstructorId(), EventScheduleStatus.BOOKED, EventScheduleOwner.INSTRUCTOR,
-                                   realization.getStart(), realization.getEnd())
-                   ))
-                   .collect(Collectors.toList());
-           eventScheduleStore.saveSchedules(schedules);
+            List<EventRealization> realizations = eventRealizationStore.findAllRealizationWithStatusAndStudentId(event.getId(),
+                    EventRealizationStatus.BOOKED, studentId);
+            List<EventSchedule> schedules = realizations.stream()
+                    .flatMap(realization -> Stream.of(
+                            EventSchedule.newDynamicEventSchedule(event.getId(), realization.getId(), studentId,
+                                    event.getInstructorId(), EventScheduleStatus.BOOKED, EventScheduleOwner.STUDENT,
+                                    realization.getStart(), realization.getEnd()),
+                            EventSchedule.newDynamicEventSchedule(event.getId(), realization.getId(), studentId,
+                                    event.getInstructorId(), EventScheduleStatus.BOOKED, EventScheduleOwner.INSTRUCTOR,
+                                    realization.getStart(), realization.getEnd())
+                    ))
+                    .collect(Collectors.toList());
+            eventScheduleStore.saveSchedules(schedules);
         });
     }
 
     @Override
     public void handleStudentAbsence(Event event, EventRealization eventRealization) {
         transactionFacade.executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.READ_COMMITTED, () -> {
-            eventScheduleStore.update(event.getId(), eventRealization.getId(), eventRealization.getStudentId(),
-                    EventScheduleStatus.BOOKED, EventScheduleOwner.INSTRUCTOR, EventScheduleStatus.STUDENT_ABSENT, EventScheduleType.STATIC,
-                    event.getName(), event.getDescription(), event.getLocation(), event.getPrice());
-            eventScheduleStore.update(event.getId(), eventRealization.getId(), eventRealization.getStudentId(),
-                    EventScheduleStatus.BOOKED, EventScheduleOwner.STUDENT, EventScheduleStatus.STUDENT_ABSENT, EventScheduleType.STATIC,
-                    event.getName(), event.getDescription(), event.getLocation(), event.getPrice());
+            eventScheduleStore.update(event.getId(), eventRealization.getId(), EventScheduleStatus.BOOKED, EventScheduleOwner.INSTRUCTOR,
+                    EventScheduleStatus.STUDENT_ABSENT);
+            eventScheduleStore.update(event.getId(), eventRealization.getId(), EventScheduleStatus.BOOKED, EventScheduleOwner.STUDENT,
+                    EventScheduleStatus.STUDENT_ABSENT);
         });
     }
 
     @Override
     public void handleInstructorAbsence(Event event, EventRealization eventRealization) {
         transactionFacade.executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.READ_COMMITTED, () -> {
-            eventScheduleStore.update(event.getId(), eventRealization.getId(), eventRealization.getStudentId(),
-                    EventScheduleStatus.BOOKED, EventScheduleOwner.INSTRUCTOR, EventScheduleStatus.INSTRUCTOR_ABSENT, EventScheduleType.STATIC,
-                    event.getName(), event.getDescription(), event.getLocation(), event.getPrice());
-            eventScheduleStore.update(event.getId(), eventRealization.getId(), eventRealization.getStudentId(),
-                    EventScheduleStatus.BOOKED, EventScheduleOwner.STUDENT, EventScheduleStatus.INSTRUCTOR_ABSENT, EventScheduleType.STATIC,
-                    event.getName(), event.getDescription(), event.getLocation(), event.getPrice());
+            eventScheduleStore.update(event.getId(), eventRealization.getId(), EventScheduleStatus.BOOKED, EventScheduleOwner.INSTRUCTOR,
+                    EventScheduleStatus.INSTRUCTOR_ABSENT);
+            eventScheduleStore.update(event.getId(), eventRealization.getId(), EventScheduleStatus.BOOKED, EventScheduleOwner.STUDENT,
+                    EventScheduleStatus.INSTRUCTOR_ABSENT);
         });
     }
 
     @Override
-    public void handleCyclicEventResigned(CyclicEvent event, List<Integer> resignedRealizationsIds, Integer studentId) {
+    public void handleCyclicEventResigned(CyclicEvent event, List<Integer> resignedRealizationsIds) {
         transactionFacade.executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.READ_COMMITTED, () ->
-            eventScheduleStore.delete(event.getId(), resignedRealizationsIds, studentId, EventScheduleStatus.BOOKED)
+                eventScheduleStore.delete(event.getId(), resignedRealizationsIds, EventScheduleStatus.BOOKED)
         );
     }
 }

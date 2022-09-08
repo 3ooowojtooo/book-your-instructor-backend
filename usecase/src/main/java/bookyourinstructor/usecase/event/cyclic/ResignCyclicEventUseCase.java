@@ -71,7 +71,7 @@ public class ResignCyclicEventUseCase {
             List<EventRealization> newRealizations = buildRealizations(resignedRealizations, savedEvent);
             eventRealizationStore.saveEventRealizations(newRealizations);
 
-            scheduleCreatingHelper.handleCyclicEventResigned(cyclicEvent, resignedRealizationsIds, data.getStudentId());
+            scheduleCreatingHelper.handleCyclicEventResigned(cyclicEvent, resignedRealizationsIds);
         });
     }
 

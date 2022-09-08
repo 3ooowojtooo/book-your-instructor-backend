@@ -19,17 +19,9 @@ public class EventSchedule {
     private final Integer instructorId;
     private final EventScheduleStatus status;
     private final EventScheduleOwner owner;
-    private final EventScheduleType type;
-    private final String eventName;
-    private final String eventDescription;
-    private final String eventLocation;
-    private final BigDecimal eventPrice;
-    private final Instant start;
-    private final Instant end;
 
     public EventSchedule(Integer id, Integer eventId, Integer eventRealizationId, Integer studentId, Integer instructorId, EventScheduleStatus status,
-                         EventScheduleOwner owner, EventScheduleType type, String eventName, String eventDescription, String eventLocation,
-                         BigDecimal eventPrice, Instant start, Instant end) {
+                         EventScheduleOwner owner) {
         validateConstructorArgs();
         this.id = id;
         this.eventId = eventId;
@@ -38,13 +30,6 @@ public class EventSchedule {
         this.instructorId = instructorId;
         this.status = status;
         this.owner = owner;
-        this.type = type;
-        this.eventName = eventName;
-        this.eventDescription = eventDescription;
-        this.eventLocation = eventLocation;
-        this.eventPrice = eventPrice;
-        this.start = start;
-        this.end = end;
     }
 
     private static void validateConstructorArgs() {
@@ -54,7 +39,6 @@ public class EventSchedule {
     public static EventSchedule newDynamicEventSchedule(Integer eventId, Integer eventRealizationId, Integer studentId, Integer instructorId,
                                                         EventScheduleStatus status, EventScheduleOwner owner, Instant start,
                                                         Instant end) {
-        return new EventSchedule(null, eventId, eventRealizationId, studentId, instructorId, status, owner, EventScheduleType.DYNAMIC,
-                null, null, null, null, start, end);
+        return new EventSchedule(null, eventId, eventRealizationId, studentId, instructorId, status, owner);
     }
 }

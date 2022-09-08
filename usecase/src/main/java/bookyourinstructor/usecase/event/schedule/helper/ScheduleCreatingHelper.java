@@ -14,5 +14,5 @@ public interface ScheduleCreatingHelper {
 
     void handleInstructorAbsence(Event event, EventRealization eventRealization);
 
-    void handleCyclicEventResigned(CyclicEvent event, List<Integer> resignedRealizationsIds, Integer studentId);
+    void handleCyclicEventResigned(CyclicEvent event, List<Integer> resignedRealizationsIds);
 }

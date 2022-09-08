@@ -2,15 +2,12 @@ package com.quary.bookyourinstructor.entity;
 
 import com.quary.bookyourinstructor.model.event.EventScheduleOwner;
 import com.quary.bookyourinstructor.model.event.EventScheduleStatus;
-import com.quary.bookyourinstructor.model.event.EventScheduleType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
-import java.time.Instant;
 
 @Entity
 @Table(name = "event_schedule", schema = "public")
@@ -48,26 +45,4 @@ public class EventScheduleEntity {
     @Column(name = "owner", nullable = false)
     @Enumerated(EnumType.STRING)
     private EventScheduleOwner owner;
-
-    @Column(name = "type", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private EventScheduleType type;
-
-    @Column(name = "event_name")
-    private String eventName;
-
-    @Column(name = "event_description")
-    private String eventDescription;
-
-    @Column(name = "event_location")
-    private String eventLocation;
-
-    @Column(name = "event_price")
-    private BigDecimal eventPrice;
-
-    @Column(name = "event_start_timestamp", nullable = false)
-    private Instant start;
-
-    @Column(name = "event_end_timestamp", nullable = false)
-    private Instant end;
 }

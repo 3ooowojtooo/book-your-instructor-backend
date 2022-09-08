@@ -134,10 +134,11 @@ public class EventController {
         return mapper.mapToGetEventDetailsAsStudentResponse(result);
     }
 
-    @GetMapping(path = "/schedule", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/schedule", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @InstructorAndStudentAllowed
-    public GetEventScheduleResponse getEventSchedule(@AuthenticationPrincipal final UserPrincipal user) {
-        final GetEventScheduleResult result = getEventScheduleUseCase.getEventSchedule(user);
+    public GetEventScheduleResponse getEventSchedule(@RequestBody final GetEventScheduleRequest request,
+                                                     @AuthenticationPrincipal final UserPrincipal user) {
+        final GetEventScheduleResult result = getEventScheduleUseCase.getEventSchedule(user, request.isShowPastEvents());
         return mapper.mapToGetEventScheduleResponse(result);
     }
 
