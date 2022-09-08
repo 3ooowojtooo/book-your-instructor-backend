@@ -1,5 +1,6 @@
 package com.quary.bookyourinstructor.controller.event.mapper;
 
+import bookyourinstructor.usecase.event.common.result.EventRealizationWithTimeStatus;
 import bookyourinstructor.usecase.event.common.result.GetEventDetailsAsStudentResult;
 import bookyourinstructor.usecase.event.common.result.GetEventListResult;
 import bookyourinstructor.usecase.event.common.result.GetEventListResultItem;
@@ -85,4 +86,6 @@ public interface EventMapper {
 
     @Mapping(target = "cyclicEventDurationSeconds", expression = "java(item.getCyclicEventDuration() == null ? null : item.getCyclicEventDuration().toSeconds())")
     GetEventListResponseItem mapToGetEventListResponse(GetEventListResultItem item);
+
+    EventRealizationTimeBoundariesWithTimeStatus map(EventRealizationWithTimeStatus realizationWithTimeStatus);
 }

@@ -1,6 +1,6 @@
 package com.quary.bookyourinstructor.model.event;
 
-public enum EventScheduleTimeStatus {
+public enum EventTimeStatus {
     PAST,
     IN_PROGRESS,
     FUTURE

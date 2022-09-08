@@ -6,7 +6,7 @@ import com.quary.bookyourinstructor.entity.EventRealizationEntity;
 import com.quary.bookyourinstructor.entity.EventScheduleEntity;
 import com.quary.bookyourinstructor.entity.UserEntity;
 import com.quary.bookyourinstructor.model.event.EventScheduleOwner;
-import com.quary.bookyourinstructor.model.event.EventScheduleTimeStatus;
+import com.quary.bookyourinstructor.model.event.EventTimeStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -102,17 +102,17 @@ public class GetEventScheduleRepository {
         String instructorName = item.getInstructor().getName() + " " + item.getInstructor().getSurname();
         EventEntity event = item.getEvent();
         EventRealizationEntity realization = item.getEventRealization();
-        EventScheduleTimeStatus timeStatus = buildTimeStatus(realization, now);
+        EventTimeStatus timeStatus = buildTimeStatus(realization, now);
         return new GetEventScheduleResultItem(event.getId(), event.getVersion(), realization.getId(), event.getName(), event.getDescription(),
                 event.getLocation(), event.getPrice(), instructorName, studentName, item.getStatus(), timeStatus, realization.getStart(), realization.getEnd());
     }
 
-    private static EventScheduleTimeStatus buildTimeStatus(EventRealizationEntity eventRealization, Instant now) {
+    private static EventTimeStatus buildTimeStatus(EventRealizationEntity eventRealization, Instant now) {
         if (now.isBefore(eventRealization.getStart())) {
-            return EventScheduleTimeStatus.FUTURE;
+            return EventTimeStatus.FUTURE;
         } else if (now.isAfter(eventRealization.getEnd())) {
-            return EventScheduleTimeStatus.PAST;
+            return EventTimeStatus.PAST;
         }
-        return EventScheduleTimeStatus.IN_PROGRESS;
+        return EventTimeStatus.IN_PROGRESS;
     }
 }

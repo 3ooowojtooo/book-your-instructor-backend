@@ -33,6 +33,8 @@ public class GetEventListResponseItem {
     private final BigDecimal price;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS", timezone = "UTC")
     private final Instant createdAt;
+    private final boolean finished;
+    private final boolean anyFutureRealization;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
     private final LocalDateTime singleEventStart;
@@ -52,5 +54,5 @@ public class GetEventListResponseItem {
     private final String cyclicAbsenceEventName;
     private final String cyclicAbsenceEventDescription;
 
-    private final List<EventRealizationTimeBoundaries> realizations;
+    private final List<EventRealizationTimeBoundariesWithTimeStatus> realizations;
 }
