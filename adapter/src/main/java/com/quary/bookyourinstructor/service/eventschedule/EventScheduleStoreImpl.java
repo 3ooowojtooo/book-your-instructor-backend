@@ -9,12 +9,10 @@ import com.quary.bookyourinstructor.entity.UserEntity;
 import com.quary.bookyourinstructor.model.event.EventSchedule;
 import com.quary.bookyourinstructor.model.event.EventScheduleOwner;
 import com.quary.bookyourinstructor.model.event.EventScheduleStatus;
-import com.quary.bookyourinstructor.model.event.EventScheduleType;
 import com.quary.bookyourinstructor.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
@@ -40,21 +38,19 @@ public class EventScheduleStoreImpl implements EventScheduleStore {
     }
 
     @Override
-    public void update(Integer eventId, Integer eventRealization, Integer studentId, EventScheduleStatus status,
-                       EventScheduleOwner owner, EventScheduleStatus newStatus, EventScheduleType newType, String eventName, String eventDescription,
-                       String eventLocation, BigDecimal eventPrice) {
-        eventScheduleRepository.update(eventId, eventRealization, studentId, status, owner, newStatus, newType, eventName,
-                eventDescription, eventLocation, eventPrice);
+    public void update(Integer eventId, Integer eventRealization, EventScheduleStatus status,
+                       EventScheduleOwner owner, EventScheduleStatus newStatus) {
+        eventScheduleRepository.update(eventId, eventRealization, status, owner, newStatus);
     }
 
     @Override
-    public void delete(Integer eventId, Collection<Integer> realizationIds, Integer studentId, EventScheduleStatus status) {
-        eventScheduleRepository.delete(eventId, realizationIds, studentId, status);
+    public void delete(Integer eventId, Collection<Integer> realizationIds, EventScheduleStatus status) {
+        eventScheduleRepository.delete(eventId, realizationIds, status);
     }
 
     @Override
-    public List<GetEventScheduleResultItem> getSchedule(Integer userId, EventScheduleOwner owner, Instant now) {
-        return getEventScheduleRepository.getSchedule(userId, owner, now);
+    public List<GetEventScheduleResultItem> getSchedule(Integer userId, EventScheduleOwner owner, Instant now, boolean showPastEvents) {
+        return getEventScheduleRepository.getSchedule(userId, owner, now, showPastEvents);
     }
 
     private EventScheduleEntity mapToEntity(EventSchedule eventSchedule) {

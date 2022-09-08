@@ -91,15 +91,6 @@ CREATE TABLE "event_schedule"
     instructor_id         int references "user" (id)              not null,
     status                varchar(20)                             not null,
     owner                 varchar(20)                             not null,
-    type                  varchar(20)                             not null,
-    event_name            varchar(100),
-    event_description     varchar(255),
-    event_location        varchar(255),
-    event_price           decimal,
-    event_start_timestamp timestamp with time zone                not null,
-    event_end_timestamp   timestamp with time zone                not null,
-    CHECK ("event_start_timestamp" < "event_end_timestamp"),
     CHECK (status = 'BOOKED' OR status = 'INSTRUCTOR_ABSENT' OR status = 'STUDENT_ABSENT'),
-    CHECK (owner = 'STUDENT' OR owner = 'INSTRUCTOR'),
-    CHECK (event_price > 0)
+    CHECK (owner = 'STUDENT' OR owner = 'INSTRUCTOR')
 );

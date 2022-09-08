@@ -2,6 +2,7 @@ package bookyourinstructor.usecase.event.schedule.result;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.quary.bookyourinstructor.model.event.EventScheduleStatus;
+import com.quary.bookyourinstructor.model.event.EventScheduleTimeStatus;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -14,6 +15,7 @@ public class GetEventScheduleResultItem {
 
     private final Integer eventId;
     private final Integer eventVersion;
+    private final Integer eventRealizationId;
     private final String eventName;
     private final String eventDescription;
     private final String eventLocation;
@@ -21,6 +23,7 @@ public class GetEventScheduleResultItem {
     private final String instructorName;
     private final String studentName;
     private final EventScheduleStatus status;
+    private final EventScheduleTimeStatus timeStatus;
     private final Instant eventStart;
     private final Instant eventEnd;
 }

@@ -21,11 +21,11 @@ public class GetEventScheduleUseCase {
     private final TransactionFacade transactionFacade;
     private final TimeUtils timeUtils;
 
-    public GetEventScheduleResult getEventSchedule(final UserData user) {
+    public GetEventScheduleResult getEventSchedule(final UserData user, final boolean showPastEvents) {
         final Instant now = timeUtils.nowInstant();
         final EventScheduleOwner owner = mapToScheduleOwner(user);
         return transactionFacade.executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.READ_COMMITTED, () -> {
-           List<GetEventScheduleResultItem> items = eventScheduleStore.getSchedule(user.getId(), owner, now);
+           List<GetEventScheduleResultItem> items = eventScheduleStore.getSchedule(user.getId(), owner, now, showPastEvents);
            return GetEventScheduleResult.of(items);
         });
     }

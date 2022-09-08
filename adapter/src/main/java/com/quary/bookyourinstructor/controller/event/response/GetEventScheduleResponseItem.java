@@ -2,6 +2,7 @@ package com.quary.bookyourinstructor.controller.event.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.quary.bookyourinstructor.model.event.EventScheduleStatus;
+import com.quary.bookyourinstructor.model.event.EventScheduleTimeStatus;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ public class GetEventScheduleResponseItem {
 
     private final Integer eventId;
     private final Integer eventVersion;
+    private final Integer eventRealizationId;
     private final String eventName;
     private final String eventDescription;
     private final String eventLocation;
@@ -25,6 +27,7 @@ public class GetEventScheduleResponseItem {
     private final String instructorName;
     private final String studentName;
     private final EventScheduleStatus status;
+    private final EventScheduleTimeStatus timeStatus;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS", timezone = "UTC")
     private final Instant eventStart;
