@@ -20,10 +20,10 @@ public class GetEventListUseCase {
     private final TransactionFacade transactionFacade;
     private final TimeUtils timeUtils;
 
-    public GetEventListResult getEventList(final UserData user) {
+    public GetEventListResult getEventList(final UserData user, final boolean showPastEvents) {
         Instant now = timeUtils.nowInstant();
         return transactionFacade.executeInTransaction(TransactionPropagation.REQUIRED, TransactionIsolation.READ_COMMITTED, () -> {
-            List<GetEventListResultItem> items = eventStore.getEventList(user.getId(), user.getType(), now);
+            List<GetEventListResultItem> items = eventStore.getEventList(user.getId(), user.getType(), now, showPastEvents);
             return GetEventListResult.of(items);
         });
     }

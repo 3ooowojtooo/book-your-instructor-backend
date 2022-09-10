@@ -40,5 +40,5 @@ public interface EventStore {
 
     List<SearchEventsResultItem> searchEvents(DateRangeFilter dateRange, TextSearchFilter text, EventTypeFilter eventType, Instant now);
 
-    List<GetEventListResultItem> getEventList(Integer userId, UserType userType, Instant now);
+    List<GetEventListResultItem> getEventList(Integer userId, UserType userType, Instant now, boolean showPastEvents);
 }

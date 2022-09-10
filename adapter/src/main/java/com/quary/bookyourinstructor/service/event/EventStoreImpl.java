@@ -111,7 +111,7 @@ public class EventStoreImpl implements EventStore {
     }
 
     @Override
-    public List<GetEventListResultItem> getEventList(Integer userId, UserType userType, Instant now) {
-        return eventListRepository.getEventList(userId, userType, now);
+    public List<GetEventListResultItem> getEventList(Integer userId, UserType userType, Instant now, boolean showPastEvents) {
+        return eventListRepository.getEventList(userId, userType, now, showPastEvents);
     }
 }

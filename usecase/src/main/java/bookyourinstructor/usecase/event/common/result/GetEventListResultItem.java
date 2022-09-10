@@ -1,13 +1,16 @@
 package bookyourinstructor.usecase.event.common.result;
 
-import com.quary.bookyourinstructor.model.event.EventRealization;
 import com.quary.bookyourinstructor.model.event.EventStatus;
 import com.quary.bookyourinstructor.model.event.EventType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.*;
+import java.time.DayOfWeek;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -25,6 +28,8 @@ public class GetEventListResultItem {
     private final EventStatus eventStatus;
     private final BigDecimal price;
     private final Instant createdAt;
+    private final boolean finished;
+    private final boolean anyFutureRealization;
 
     private final LocalDateTime singleEventStart;
     private final LocalDateTime singleEventEnd;
@@ -39,5 +44,5 @@ public class GetEventListResultItem {
     private final String cyclicAbsenceEventName;
     private final String cyclicAbsenceEventDescription;
 
-    private final List<EventRealization> realizations;
+    private final List<EventRealizationWithTimeStatus> realizations;
 }

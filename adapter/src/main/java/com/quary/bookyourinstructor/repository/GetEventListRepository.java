@@ -1,33 +1,44 @@
 package com.quary.bookyourinstructor.repository;
 
+import bookyourinstructor.usecase.event.common.result.EventRealizationWithTimeStatus;
 import bookyourinstructor.usecase.event.common.result.GetEventListResultItem;
 import com.quary.bookyourinstructor.entity.EventEntity;
 import com.quary.bookyourinstructor.entity.EventRealizationEntity;
 import com.quary.bookyourinstructor.entity.UserEntity;
-import com.quary.bookyourinstructor.model.event.EventRealization;
+import com.quary.bookyourinstructor.model.event.EventRealizationStatus;
+import com.quary.bookyourinstructor.model.event.EventStatus;
+import com.quary.bookyourinstructor.model.event.EventTimeStatus;
+import com.quary.bookyourinstructor.model.event.EventType;
 import com.quary.bookyourinstructor.model.user.UserType;
-import com.quary.bookyourinstructor.service.eventrealization.EventRealizationStoreMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.ListJoin;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.quary.bookyourinstructor.repository.util.RepositoryUtils.mergePredicates;
 
 @Repository
 @RequiredArgsConstructor
 public class GetEventListRepository {
 
     private final EntityManager entityManager;
-    private final EventRealizationStoreMapper mapper;
 
-    public List<GetEventListResultItem> getEventList(Integer userId, UserType userType, Instant now) {
+    public List<GetEventListResultItem> getEventList(Integer userId, UserType userType, Instant now, boolean showPastEvents) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<QueryResult> cq = cb.createQuery(QueryResult.class);
         Metamodel metamodel = entityManager.getMetamodel();
@@ -37,17 +48,20 @@ public class GetEventListRepository {
         ListJoin<EventEntity, EventRealizationEntity> realization = event.join(eventModel.getList("realizations", EventRealizationEntity.class));
         Join<EventEntity, UserEntity> user = buildUserJoin(event, eventModel, userType);
 
-        Predicate userPredicate = buildUserPredicate(cb, user, userId, userType);
+        Predicate userPredicate = buildUserPredicate(cb, user, userId);
+        Predicate notDraftPredicate = buildNotDraftPredicate(cb, event);
+        Optional<Predicate> showPastPredicate = buildShowPastPredicate(cb, realization, now, showPastEvents);
+        Predicate[] mergedPredicates = mergePredicates(Optional.of(userPredicate), Optional.of(notDraftPredicate), showPastPredicate);
 
         cq.multiselect(event, cb.min(realization.get("start")));
-        cq.where(new Predicate[]{userPredicate});
+        cq.where(mergedPredicates);
         cq.groupBy(event.get("id"));
         cq.orderBy(buildOrder(cb, event, realization));
 
         TypedQuery<QueryResult> query = entityManager.createQuery(cq);
         List<QueryResult> results = query.getResultList();
 
-        return mapResults(results);
+        return mapResults(results, now);
     }
 
     private static Join<EventEntity, UserEntity> buildUserJoin(Root<EventEntity> event, EntityType<EventEntity> eventModel,
@@ -59,8 +73,22 @@ public class GetEventListRepository {
     }
 
     private static Predicate buildUserPredicate(CriteriaBuilder cb, Join<EventEntity, UserEntity> user,
-                                                Integer userId, UserType userType) {
+                                                Integer userId) {
         return cb.equal(user.get("id"), userId);
+    }
+
+    private static Predicate buildNotDraftPredicate(CriteriaBuilder cb, Root<EventEntity> event) {
+        return cb.notEqual(event.get("status"), EventStatus.DRAFT);
+    }
+
+    private static Optional<Predicate> buildShowPastPredicate(CriteriaBuilder cb, Join<EventEntity, EventRealizationEntity> realization,
+                                                              Instant now, boolean showPastEvents) {
+        if (showPastEvents) {
+            return Optional.empty();
+        }
+        return Optional.of(
+                cb.greaterThanOrEqualTo(realization.get("end"), now)
+        );
     }
 
     private List<Order> buildOrder(CriteriaBuilder cb, Root<EventEntity> event, ListJoin<EventEntity, EventRealizationEntity> realization) {
@@ -70,26 +98,60 @@ public class GetEventListRepository {
         );
     }
 
-    private List<GetEventListResultItem> mapResults(List<QueryResult> queryResults) {
+    private List<GetEventListResultItem> mapResults(List<QueryResult> queryResults, Instant now) {
         return queryResults.stream()
-                .map(this::mapResult)
+                .map(result -> mapResult(result, now))
                 .collect(Collectors.toList());
     }
 
-    private GetEventListResultItem mapResult(QueryResult queryResult) {
+    private GetEventListResultItem mapResult(QueryResult queryResult, Instant now) {
         EventEntity event = queryResult.getEvent();
-        List<EventRealization> realizations = mapper.mapToEventRealizations(event.getRealizations());
         UserEntity instructor = event.getInstructor();
         UserEntity student = event.getStudent();
 
-        String instructorName = buildUserFullName(instructor);
+        List<EventRealizationWithTimeStatus> realizations = mapToRealizationsWithTimeStatus(event.getRealizations(), now);
+        boolean hasAnyFutureRealizations = buildHasAnyFutureRealizations(event, realizations);
+        boolean isFinished = buildIsFinished(realizations);
+                String instructorName = buildUserFullName(instructor);
         String studentName = buildUserFullName(student);
 
         return new GetEventListResultItem(event.getId(), event.getVersion(), event.getName(), event.getDescription(),
-                event.getLocation(), instructorName, studentName, event.getType(), event.getStatus(), event.getPrice(), event.getCreatedAt(),
+                event.getLocation(), instructorName, studentName, event.getType(), event.getStatus(), event.getPrice(), event.getCreatedAt(), isFinished, hasAnyFutureRealizations,
                 event.getSingleEventStart(), event.getSingleEventEnd(), event.getCyclicDayOfWeek(), event.getCyclicEventStart(),
                 event.getCyclicEventDuration(), event.getCyclicStartBoundary(), event.getCyclicEndBoundary(), event.getCyclicAbsenceEvent(),
                 event.getCyclicAbsenceEventName(), event.getCyclicAbsenceEventDescription(), realizations);
+    }
+
+    private static List<EventRealizationWithTimeStatus> mapToRealizationsWithTimeStatus(List<EventRealizationEntity> realizations, Instant now) {
+        return realizations.stream()
+                .map(realization -> mapToRealizationWithTimeStatus(realization, now))
+                .collect(Collectors.toList());
+    }
+
+    private static EventRealizationWithTimeStatus mapToRealizationWithTimeStatus(EventRealizationEntity realization, Instant now) {
+        EventTimeStatus timeStatus = buildTimeStatus(realization, now);
+        return new EventRealizationWithTimeStatus(realization.getId(), realization.getStart(), realization.getEnd(),
+                realization.getStatus(), timeStatus);
+    }
+
+    private static EventTimeStatus buildTimeStatus(EventRealizationEntity eventRealization, Instant now) {
+        if (now.isBefore(eventRealization.getStart())) {
+            return EventTimeStatus.FUTURE;
+        } else if (now.isAfter(eventRealization.getEnd())) {
+            return EventTimeStatus.PAST;
+        }
+        return EventTimeStatus.IN_PROGRESS;
+    }
+
+    private static boolean buildHasAnyFutureRealizations(EventEntity event, List<EventRealizationWithTimeStatus> realizations) {
+        return realizations.stream()
+                .anyMatch(realization -> realization.getTimeStatus() == EventTimeStatus.FUTURE && realization.getStatus() == EventRealizationStatus.BOOKED);
+    }
+
+    private static boolean buildIsFinished(List<EventRealizationWithTimeStatus> realizations) {
+        return realizations.stream()
+                .map(EventRealizationWithTimeStatus::getTimeStatus)
+                .allMatch(timeStatus -> timeStatus == EventTimeStatus.PAST);
     }
 
     private static String buildUserFullName(UserEntity user) {
