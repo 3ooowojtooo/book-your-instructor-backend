@@ -1,6 +1,10 @@
 package com.quary.bookyourinstructor.controller.event;
 
-import bookyourinstructor.usecase.event.common.*;
+import bookyourinstructor.usecase.event.common.AcceptEventUseCase;
+import bookyourinstructor.usecase.event.common.DeleteDraftEventUseCase;
+import bookyourinstructor.usecase.event.common.GetEventDetailsAsStudentUseCase;
+import bookyourinstructor.usecase.event.common.GetEventListUseCase;
+import bookyourinstructor.usecase.event.common.ReportAbsenceUseCase;
 import bookyourinstructor.usecase.event.common.data.AcceptEventData;
 import bookyourinstructor.usecase.event.common.data.DeleteDraftEventData;
 import bookyourinstructor.usecase.event.common.data.GetEventDetailsAsStudentData;
@@ -27,13 +31,37 @@ import com.quary.bookyourinstructor.configuration.security.annotation.Instructor
 import com.quary.bookyourinstructor.configuration.security.annotation.StudentAllowed;
 import com.quary.bookyourinstructor.configuration.security.model.UserPrincipal;
 import com.quary.bookyourinstructor.controller.event.mapper.EventMapper;
-import com.quary.bookyourinstructor.controller.event.request.*;
-import com.quary.bookyourinstructor.controller.event.response.*;
-import com.quary.bookyourinstructor.model.event.exception.*;
+import com.quary.bookyourinstructor.controller.event.request.DeclareCyclicEventRequest;
+import com.quary.bookyourinstructor.controller.event.request.DeclareSingleEventRequest;
+import com.quary.bookyourinstructor.controller.event.request.GetEventListRequest;
+import com.quary.bookyourinstructor.controller.event.request.GetEventScheduleRequest;
+import com.quary.bookyourinstructor.controller.event.request.ReportAbsenceRequest;
+import com.quary.bookyourinstructor.controller.event.request.ResignCyclicEventRequest;
+import com.quary.bookyourinstructor.controller.event.request.SearchEventsRequest;
+import com.quary.bookyourinstructor.controller.event.request.UpdateCyclicEventRealizationRequest;
+import com.quary.bookyourinstructor.controller.event.response.DeclareCyclicEventResponse;
+import com.quary.bookyourinstructor.controller.event.response.DeclareSingleEventResponse;
+import com.quary.bookyourinstructor.controller.event.response.GetEventDetailsAsStudentResponse;
+import com.quary.bookyourinstructor.controller.event.response.GetEventListResponse;
+import com.quary.bookyourinstructor.controller.event.response.GetEventScheduleResponse;
+import com.quary.bookyourinstructor.controller.event.response.SearchEventsResponse;
+import com.quary.bookyourinstructor.model.event.exception.ConcurrentDataModificationException;
+import com.quary.bookyourinstructor.model.event.exception.CyclicEventNoFutureRealizationsFoundException;
+import com.quary.bookyourinstructor.model.event.exception.CyclicEventRealizationCollisionException;
+import com.quary.bookyourinstructor.model.event.exception.CyclicEventRealizationOutOfEventBoundException;
+import com.quary.bookyourinstructor.model.event.exception.EventChangedException;
+import com.quary.bookyourinstructor.model.event.exception.InvalidCyclicEventBoundariesException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/event")
@@ -107,13 +135,12 @@ public class EventController {
         reportAbsenceUseCase.reportAbsence(data);
     }
 
-    @PutMapping(path = "/cyclic/{id}/{version}/resign")
+    @PutMapping(path = "/cyclic/resign", consumes = MediaType.APPLICATION_JSON_VALUE)
     @StudentAllowed
-    public void resignCyclicEvent(@PathVariable("id") final Integer cyclicEventId,
-                                  @PathVariable("version") final Integer cyclicEventVersion,
+    public void resignCyclicEvent(@RequestBody final ResignCyclicEventRequest request,
                                   @AuthenticationPrincipal final UserPrincipal user) throws EventChangedException,
             CyclicEventNoFutureRealizationsFoundException, ConcurrentDataModificationException {
-        ResignCyclicEventData data = new ResignCyclicEventData(cyclicEventId, cyclicEventVersion, user.getId());
+        ResignCyclicEventData data = new ResignCyclicEventData(request.getEventId(), request.getEventVersion(), user.getId());
         resignCyclicEventUseCase.resignCyclicEvent(data);
     }
 
